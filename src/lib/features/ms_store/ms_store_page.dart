@@ -57,9 +57,7 @@ class _MSStorePageState extends ConsumerState<MSStorePage> {
     final AsyncValue<List<SearchProduct>> searchState = ref.watch(
       storeControllerProvider.select((s) => s.search),
     );
-    final StoreRing selectedRing = ref.watch(
-      storeControllerProvider.select((s) => s.ring),
-    );
+    final StoreRing selectedRing = ref.watch(storeControllerProvider.select((s) => s.ring));
 
     return ScaffoldPage(
       padding: kScaffoldPagePadding,
@@ -96,8 +94,7 @@ class _MSStorePageState extends ConsumerState<MSStorePage> {
           return LayoutBuilder(
             builder: (context, constraints) {
               final int crossAxisCount =
-                  (constraints.maxWidth /
-                          (MSStoreProductCard.cardHeight / 1.22 + _spacing))
+                  (constraints.maxWidth / (MSStoreProductCard.cardHeight / 1.22 + _spacing))
                       .floor()
                       .clamp(1, 6);
 

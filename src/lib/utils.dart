@@ -1,5 +1,5 @@
-import 'dart:core';
 import 'dart:convert';
+import 'dart:core';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
@@ -33,18 +33,9 @@ String appLanguage =
     ) ??
     'en';
 
-final String ameTemp = path.join(
-  Directory.systemTemp.path,
-  'AME',
-  'Playbooks',
-  'Revision-ReviOS',
-);
+final String ameTemp = path.join(Directory.systemTemp.path, 'AME', 'Playbooks', 'Revision-ReviOS');
 
-final String tempReviPath = path.join(
-  Directory.systemTemp.path,
-  'Revision-Tool',
-  'Logs',
-);
+final String tempReviPath = path.join(Directory.systemTemp.path, 'Revision-Tool', 'Logs');
 
 final logger = Logger(
   filter: ProductionFilter(),
@@ -61,10 +52,7 @@ typedef IsRunningDart = int Function(Pointer<Utf16>);
 
 bool isProcessRunning(String name) {
   final String dllPath = const bool.fromEnvironment('dart.vm.product')
-      ? path.join(
-          mainPath.substring(0, mainPath.lastIndexOf(r'\')),
-          'process_checker.dll',
-        )
+      ? path.join(mainPath.substring(0, mainPath.lastIndexOf(r'\')), 'process_checker.dll')
       : path.join(
           path.current.substring(0, path.current.lastIndexOf(r'\')),
           r'native_utils\process_checker.dll',
@@ -77,8 +65,7 @@ bool isProcessRunning(String name) {
 
   final dylib = DynamicLibrary.open(dllPath);
 
-  final IsRunningDart isRunning = dylib
-      .lookupFunction<IsRunningFunc, IsRunningDart>('IsRunning');
+  final IsRunningDart isRunning = dylib.lookupFunction<IsRunningFunc, IsRunningDart>('IsRunning');
 
   final Pointer<Utf16> processName = name.toNativeUtf16();
   final int result = isRunning(processName);
@@ -106,24 +93,11 @@ Future<ProcessResult> runPSCommand(
       command,
     ],
   ];
-  final ProcessResult result = await Process.run(
-    'powershell',
-    args,
-    runInShell: true,
-  );
+  final ProcessResult result = await Process.run('powershell', args, runInShell: true);
 
   if (result.exitCode != 0) {
-    logger.e(
-      'ps_command',
-      error: result.stderr,
-      stackTrace: StackTrace.current,
-    );
-    throw ProcessException(
-      'powershell',
-      args,
-      result.stderr.toString(),
-      result.exitCode,
-    );
+    logger.e('ps_command', error: result.stderr, stackTrace: StackTrace.current);
+    throw ProcessException('powershell', args, result.stderr.toString(), result.exitCode);
   }
   if (loggerInfoOutput) {
     logger.i('ps_command: $command; ${stdout ? result.stdout : ''}');

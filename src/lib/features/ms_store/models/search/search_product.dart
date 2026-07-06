@@ -20,8 +20,7 @@ sealed class SearchProduct with _$SearchProduct {
     @JsonKey(name: 'previews') List<SearchProductPreviews>? previews,
   }) = _SearchProduct;
 
-  factory SearchProduct.fromJson(Map<String, Object?> json) =>
-      _$SearchProductFromJson(json);
+  factory SearchProduct.fromJson(Map<String, Object?> json) => _$SearchProductFromJson(json);
 }
 
 @freezed

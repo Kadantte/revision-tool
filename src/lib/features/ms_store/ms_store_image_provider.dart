@@ -29,10 +29,7 @@ class MSStoreImageProvider extends ImageProvider<MSStoreImageProvider> {
   }
 
   @override
-  ImageStreamCompleter loadImage(
-    MSStoreImageProvider key,
-    ImageDecoderCallback decode,
-  ) {
+  ImageStreamCompleter loadImage(MSStoreImageProvider key, ImageDecoderCallback decode) {
     final int fetchWidth = width + fetchPadding;
     final int fetchHeight = height + fetchPadding;
     final ({int height, int width})? maxDims = _maxFetched[baseUrl];

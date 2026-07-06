@@ -52,10 +52,7 @@ class _VbsCard extends ConsumerWidget {
     final bool status = ref.watch(vbsStatusProvider);
 
     return CardListTile(
-      leading: const Icon(
-        msicons.FluentIcons.window_shield_20_regular,
-        size: 24,
-      ),
+      leading: const Icon(msicons.FluentIcons.window_shield_20_regular, size: 24),
       title: t.tweaksSecurityVBS,
       description: t.tweaksSecurityVBSDescription,
       trailing: CardToggleSwitch(
@@ -89,9 +86,7 @@ class _MemoryIntegrityCard extends ConsumerWidget {
         onChanged: (value) async {
           value
               ? await ref.read(securityServiceProvider).enableMemoryIntegrity()
-              : await ref
-                    .read(securityServiceProvider)
-                    .disableMemoryIntegrity();
+              : await ref.read(securityServiceProvider).disableMemoryIntegrity();
           ref.invalidate(memoryIntegrityStatusProvider);
         },
       ),

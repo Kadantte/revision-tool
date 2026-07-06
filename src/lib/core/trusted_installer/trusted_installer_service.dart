@@ -5,18 +5,13 @@ import 'trusted_installer_exception.dart';
 import 'win32_token_helper.dart';
 
 class CommandResult {
-  const CommandResult({
-    required this.exitCode,
-    required this.output,
-    required this.error,
-  });
+  const CommandResult({required this.exitCode, required this.output, required this.error});
   final int exitCode;
   final String output;
   final String error;
 
   @override
-  String toString() =>
-      'CommandResult(exitCode: $exitCode, output: $output, error: $error)';
+  String toString() => 'CommandResult(exitCode: $exitCode, output: $output, error: $error)';
 }
 
 /// Service for executing operations with TrustedInstaller privileges.
@@ -74,9 +69,7 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
 
     if (!Win32TokenHelper.enableDebugPrivilege()) {
       final int error = Win32TokenHelper.getLastError();
-      logger.e(
-        '[TrustedInstaller] Failed to enable SeDebugPrivilege during init (Error: $error)',
-      );
+      logger.e('[TrustedInstaller] Failed to enable SeDebugPrivilege during init (Error: $error)');
       throw TrustedInstallerException(
         'Failed to enable SeDebugPrivilege during initialization',
         error,
@@ -87,24 +80,16 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
     _cachedSystemPid ??= await Win32TokenHelper.findProcessByName('lsass.exe');
 
     if (_cachedSystemPid == null || _cachedSystemPid == 0) {
-      logger.e(
-        '[TrustedInstaller] Failed to find winlogon.exe or lsass.exe during init',
-      );
-      throw TrustedInstallerException(
-        'Failed to find system process during initialization',
-      );
+      logger.e('[TrustedInstaller] Failed to find winlogon.exe or lsass.exe during init');
+      throw TrustedInstallerException('Failed to find system process during initialization');
     }
 
     _initialized = true;
-    logger.i(
-      '[TrustedInstaller] Initialized successfully (System PID: $_cachedSystemPid)',
-    );
+    logger.i('[TrustedInstaller] Initialized successfully (System PID: $_cachedSystemPid)');
   }
 
   @override
-  Future<T> executeWithTrustedInstaller<T>(
-    Future<T> Function() callback,
-  ) async {
+  Future<T> executeWithTrustedInstaller<T>(Future<T> Function() callback) async {
     if (!_initialized) {
       await initialize();
     }
@@ -134,17 +119,12 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
 
       try {
         systemToken =
-            Win32TokenHelper.openProcessToken(
-              winlogonProcess,
-              Win32TokenHelper.TOKEN_DUPLICATE,
-            ) ??
+            Win32TokenHelper.openProcessToken(winlogonProcess, Win32TokenHelper.TOKEN_DUPLICATE) ??
             0;
 
         if (!Win32TokenHelper.isValidHandle(systemToken)) {
           final int error = Win32TokenHelper.getLastError();
-          logger.e(
-            '[TrustedInstaller] Failed to open SYSTEM token (Error: $error)',
-          );
+          logger.e('[TrustedInstaller] Failed to open SYSTEM token (Error: $error)');
           throw TrustedInstallerException('Failed to open SYSTEM token', error);
         }
 
@@ -159,26 +139,16 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
 
         if (!Win32TokenHelper.isValidHandle(systemDupToken)) {
           final int error = Win32TokenHelper.getLastError();
-          logger.e(
-            '[TrustedInstaller] Failed to duplicate SYSTEM token (Error: $error)',
-          );
-          throw TrustedInstallerException(
-            'Failed to duplicate SYSTEM token',
-            error,
-          );
+          logger.e('[TrustedInstaller] Failed to duplicate SYSTEM token (Error: $error)');
+          throw TrustedInstallerException('Failed to duplicate SYSTEM token', error);
         }
 
         // Impersonate as SYSTEM
         if (!Win32TokenHelper.impersonateLoggedOnUser(systemDupToken)) {
           final int error = Win32TokenHelper.getLastError();
-          logger.e(
-            '[TrustedInstaller] Failed to impersonate as SYSTEM (Error: $error)',
-          );
+          logger.e('[TrustedInstaller] Failed to impersonate as SYSTEM (Error: $error)');
           Win32TokenHelper.closeHandle(systemDupToken);
-          throw TrustedInstallerException(
-            'Failed to impersonate as SYSTEM',
-            error,
-          );
+          throw TrustedInstallerException('Failed to impersonate as SYSTEM', error);
         }
 
         Win32TokenHelper.closeHandle(systemDupToken);
@@ -187,38 +157,25 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
 
         if (!Win32TokenHelper.isValidHandle(scManager)) {
           final int error = Win32TokenHelper.getLastError();
-          logger.e(
-            '[TrustedInstaller] Failed to open Service Control Manager (Error: $error)',
-          );
-          throw TrustedInstallerException(
-            'Failed to open Service Control Manager',
-            error,
-          );
+          logger.e('[TrustedInstaller] Failed to open Service Control Manager (Error: $error)');
+          throw TrustedInstallerException('Failed to open Service Control Manager', error);
         }
 
         service = Win32TokenHelper.openService(
           scManager,
           _serviceName,
-          Win32TokenHelper.SERVICE_QUERY_STATUS |
-              Win32TokenHelper.SERVICE_START,
+          Win32TokenHelper.SERVICE_QUERY_STATUS | Win32TokenHelper.SERVICE_START,
         );
 
         if (!Win32TokenHelper.isValidHandle(service)) {
           final int error = Win32TokenHelper.getLastError();
-          logger.e(
-            '[TrustedInstaller] Failed to open TrustedInstaller service (Error: $error)',
-          );
-          throw TrustedInstallerException(
-            'Failed to open TrustedInstaller service',
-            error,
-          );
+          logger.e('[TrustedInstaller] Failed to open TrustedInstaller service (Error: $error)');
+          throw TrustedInstallerException('Failed to open TrustedInstaller service', error);
         }
 
         final int? processId = await _ensureServiceRunning(service);
         if (processId == null || processId == 0) {
-          logger.e(
-            '[TrustedInstaller] Failed to start TrustedInstaller service or get process ID',
-          );
+          logger.e('[TrustedInstaller] Failed to start TrustedInstaller service or get process ID');
           throw TrustedInstallerException(
             'Failed to start TrustedInstaller service or get process ID',
           );
@@ -241,21 +198,12 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
         }
 
         processToken =
-            Win32TokenHelper.openProcessToken(
-              process,
-              Win32TokenHelper.TOKEN_DUPLICATE,
-            ) ??
-            0;
+            Win32TokenHelper.openProcessToken(process, Win32TokenHelper.TOKEN_DUPLICATE) ?? 0;
 
         if (!Win32TokenHelper.isValidHandle(processToken)) {
           final int error = Win32TokenHelper.getLastError();
-          logger.e(
-            '[TrustedInstaller] Failed to open TrustedInstaller token (Error: $error)',
-          );
-          throw TrustedInstallerException(
-            'Failed to open TrustedInstaller token',
-            error,
-          );
+          logger.e('[TrustedInstaller] Failed to open TrustedInstaller token (Error: $error)');
+          throw TrustedInstallerException('Failed to open TrustedInstaller token', error);
         }
 
         duplicatedToken =
@@ -269,26 +217,16 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
 
         if (!Win32TokenHelper.isValidHandle(duplicatedToken)) {
           final int error = Win32TokenHelper.getLastError();
-          logger.e(
-            '[TrustedInstaller] Failed to duplicate TrustedInstaller token (Error: $error)',
-          );
-          throw TrustedInstallerException(
-            'Failed to duplicate TrustedInstaller token',
-            error,
-          );
+          logger.e('[TrustedInstaller] Failed to duplicate TrustedInstaller token (Error: $error)');
+          throw TrustedInstallerException('Failed to duplicate TrustedInstaller token', error);
         }
 
         Win32TokenHelper.revertToSelf();
 
         if (!Win32TokenHelper.impersonateLoggedOnUser(duplicatedToken)) {
           final int error = Win32TokenHelper.getLastError();
-          logger.e(
-            '[TrustedInstaller] Failed to impersonate as TrustedInstaller (Error: $error)',
-          );
-          throw TrustedInstallerException(
-            'Failed to impersonate as TrustedInstaller',
-            error,
-          );
+          logger.e('[TrustedInstaller] Failed to impersonate as TrustedInstaller (Error: $error)');
+          throw TrustedInstallerException('Failed to impersonate as TrustedInstaller', error);
         }
 
         final T result = await callback();
@@ -298,11 +236,7 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
         Win32TokenHelper.closeHandle(winlogonProcess);
       }
     } catch (e, stackTrace) {
-      logger.e(
-        '[TrustedInstaller] Exception occurred: $e',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      logger.e('[TrustedInstaller] Exception occurred: $e', error: e, stackTrace: stackTrace);
       rethrow;
     } finally {
       Win32TokenHelper.revertToSelf();
@@ -329,13 +263,8 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
   }
 
   @override
-  Future<CommandResult> executeCommand(
-    String command,
-    List<String> args,
-  ) async {
-    logger.i(
-      '[TrustedInstaller] Executing command: $command ${args.join(' ')}',
-    );
+  Future<CommandResult> executeCommand(String command, List<String> args) async {
+    logger.i('[TrustedInstaller] Executing command: $command ${args.join(' ')}');
 
     int? tiToken;
 
@@ -358,9 +287,7 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
       });
 
       if (tiToken == null) {
-        throw TrustedInstallerException(
-          'Failed to obtain TrustedInstaller token',
-        );
+        throw TrustedInstallerException('Failed to obtain TrustedInstaller token');
       }
 
       final Map<String, dynamic> result = await Win32TokenHelper.executeAsToken(
@@ -369,9 +296,7 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
         args,
       );
 
-      logger.i(
-        '[TrustedInstaller] Command completed: exit=${result['exitCode']}',
-      );
+      logger.i('[TrustedInstaller] Command completed: exit=${result['exitCode']}');
 
       return CommandResult(
         exitCode: result['exitCode'] as int,
@@ -379,11 +304,7 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
         error: result['stderr'] as String,
       );
     } catch (e, stackTrace) {
-      logger.e(
-        '[TrustedInstaller] Command failed: $e',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      logger.e('[TrustedInstaller] Command failed: $e', error: e, stackTrace: stackTrace);
       rethrow;
     } finally {
       if (tiToken != null && Win32TokenHelper.isValidHandle(tiToken!)) {
@@ -426,8 +347,10 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
   Future<int?> _ensureServiceRunning(int service) async {
     for (var attempt = 0; attempt < _maxRetries; attempt++) {
       // Calculate exponential backoff delay
-      final int delayMs = (_initialRetryDelay.inMilliseconds * (1 << attempt))
-          .clamp(0, _maxRetryDelay.inMilliseconds);
+      final int delayMs = (_initialRetryDelay.inMilliseconds * (1 << attempt)).clamp(
+        0,
+        _maxRetryDelay.inMilliseconds,
+      );
       final delay = Duration(milliseconds: delayMs);
 
       final int state = Win32TokenHelper.getServiceState(service);

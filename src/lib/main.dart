@@ -31,11 +31,7 @@ Future<void> main(List<String> args) async {
   }
 
   FlutterError.onError = (details) {
-    logger.e(
-      '$tag flutter_framework_error',
-      error: details.exception,
-      stackTrace: details.stack,
-    );
+    logger.e('$tag flutter_framework_error', error: details.exception, stackTrace: details.stack);
   };
   PlatformDispatcher.instance.onError = (error, stack) {
     logger.e('$tag platform_dispatcher_error', error: error, stackTrace: stack);
@@ -120,9 +116,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppSettings appSettings = ref.watch(appSettingsProvider);
-    final AppSettingsNotifier settingsNotifier = ref.read(
-      appSettingsProvider.notifier,
-    );
+    final AppSettingsNotifier settingsNotifier = ref.read(appSettingsProvider.notifier);
 
     return SystemThemeBuilder(
       builder: (context, accent) {
@@ -138,20 +132,14 @@ class MyApp extends ConsumerWidget {
           localizationsDelegates: const [FluentLocalizations.delegate],
           themeMode: appSettings.themeMode,
           color: accentColor,
-          darkTheme: settingsNotifier.buildDarkTheme(
-            accentColor,
-            isLargeScreen,
-          ),
+          darkTheme: settingsNotifier.buildDarkTheme(accentColor, isLargeScreen),
           theme: settingsNotifier.buildLightTheme(accentColor, isLargeScreen),
           builder: (context, child) {
             settingsNotifier.setEffect(
               FluentTheme.of(context).micaBackgroundColor,
               FluentTheme.of(context).brightness == .dark,
             );
-            return Directionality(
-              textDirection: appSettings.textDirection,
-              child: child!,
-            );
+            return Directionality(textDirection: appSettings.textDirection, child: child!);
           },
         );
       },

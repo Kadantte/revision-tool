@@ -12,11 +12,7 @@ Future<Object?> showLoadingDialog(BuildContext context, String title) {
       content: Center(
         child: Column(
           mainAxisAlignment: .center,
-          children: [
-            const ProgressRing(),
-            const SizedBox(height: 10),
-            Text(t.msstoreWait),
-          ],
+          children: [const ProgressRing(), const SizedBox(height: 10), Text(t.msstoreWait)],
         ),
       ),
     ),

@@ -175,12 +175,7 @@ abstract class PerformanceService {
   Future<void> enableWindowedOptimization();
   Future<void> disableWindowedOptimization();
 
-  @CliToggle(
-    name: 'swapchain-mpo',
-    status: 'statusMPO',
-    enable: 'enableMPO',
-    disable: 'disableMPO',
-  )
+  @CliToggle(name: 'swapchain-mpo', status: 'statusMPO', enable: 'enableMPO', disable: 'disableMPO')
   bool get statusMPO;
   Future<void> enableMPO();
   Future<void> disableMPO();
@@ -360,10 +355,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   }
 
   Future<void> _setActiveSchemeCurrent() async {
-    await runPSCommand(
-      'powercfg /setactive scheme_current',
-      loggerInfoOutput: false,
-    );
+    await runPSCommand('powercfg /setactive scheme_current', loggerInfoOutput: false);
   }
 
   /// Processor idle promote/demote threshold
@@ -460,8 +452,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
       r'SYSTEM\ControlSet001\Control\Class\{71a27cdd-812a-11d0-bec7-08002be2092f}',
       'LowerFilters',
     );
-    if (lowerFilters != null &&
-        !lowerFilters.any((e) => e.toLowerCase() == 'rdyboost')) {
+    if (lowerFilters != null && !lowerFilters.any((e) => e.toLowerCase() == 'rdyboost')) {
       lowerFilters.add('rdyboost');
       await WinRegistryService.writeRegistryValue(
         Registry.localMachine,
@@ -922,10 +913,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
         Registry.localMachine,
         r'SYSTEM\ControlSet001\Services\TextInputManagementService\Parameters',
         'ServiceDll',
-        const RegistryValue.unexpandedString(
-          'ServiceDll',
-          r'%SystemRoot%\System32\TabSvc.dll',
-        ),
+        const RegistryValue.unexpandedString('ServiceDll', r'%SystemRoot%\System32\TabSvc.dll'),
       ),
     ]);
   }
@@ -949,10 +937,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
         Registry.localMachine,
         r'SYSTEM\ControlSet001\Services\TextInputManagementService\Parameters',
         'ServiceDll',
-        const RegistryValue.unexpandedString(
-          'ServiceDll',
-          r'%SystemRoot%\System32\MSCTF.DLL',
-        ),
+        const RegistryValue.unexpandedString('ServiceDll', r'%SystemRoot%\System32\MSCTF.DLL'),
       ),
     ]);
   }
@@ -1024,8 +1009,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
         ) ==
         1) {
       for (final String service in _userSvcSplitDisabled) {
-        final Iterable<String> finalService =
-            WinRegistryService.getUserServices(service);
+        final Iterable<String> finalService = WinRegistryService.getUserServices(service);
         finalService.forEach(_recommendedSplitDisabled.add);
       }
       return ServiceGrouping.recommended;
@@ -1051,10 +1035,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
           'SvcHostSplitThresholdInKB',
           0x380000, // default value
         );
-        final Set<String> services = {
-          ..._defaultSplitDisabled,
-          ..._recommendedSplitDisabled,
-        };
+        final Set<String> services = {..._defaultSplitDisabled, ..._recommendedSplitDisabled};
         await TrustedInstallerServiceImpl().executeWithTrustedInstaller(
           () async => Future.wait(
             services.map(
@@ -1069,8 +1050,9 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
         );
       }(),
       .disabled => () async {
-        final Set<String> servicesToDelete = _recommendedSplitDisabled
-            .difference(_defaultSplitDisabled);
+        final Set<String> servicesToDelete = _recommendedSplitDisabled.difference(
+          _defaultSplitDisabled,
+        );
         await TrustedInstallerServiceImpl().executeWithTrustedInstaller(
           () async => Future.wait([
             ...servicesToDelete.map(
@@ -1225,9 +1207,7 @@ ServiceGrouping servicesGroupingStatus(Ref ref) {
 
 @riverpod
 int backgroundWindowMessageRateLimitStatus(Ref ref) {
-  return ref
-      .watch(performanceServiceProvider)
-      .statusBackgroundWindowMessageRateLimit;
+  return ref.watch(performanceServiceProvider).statusBackgroundWindowMessageRateLimit;
 }
 
 @riverpod

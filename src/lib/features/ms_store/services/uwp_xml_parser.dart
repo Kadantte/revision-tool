@@ -4,9 +4,7 @@ import 'package:xml/xml.dart';
 import '../../../utils.dart';
 import '../models/uwp/uwp_package.dart';
 
-final storeUwpXmlParserProvider = Provider<UwpXmlParser>(
-  (_) => const UwpXmlParser(),
-);
+final storeUwpXmlParserProvider = Provider<UwpXmlParser>((_) => const UwpXmlParser());
 
 /// Stateless parser for UWP-related XML responses.
 /// Designed to be run in an isolate via [compute].
@@ -39,15 +37,11 @@ class UwpXmlParser {
     final document = XmlDocument.parse(xmlString);
     final updatesMap = <String, UpdateModel>{};
 
-    final XmlElement? syncUpdatesResult = document
-        .findAllElements('SyncUpdatesResult')
-        .firstOrNull;
+    final XmlElement? syncUpdatesResult = document.findAllElements('SyncUpdatesResult').firstOrNull;
     if (syncUpdatesResult == null) return const UwpPackageResponse(updates: {});
 
     // 1. Parse ExtendedUpdateInfo for files and metadata
-    final XmlElement? extendedUpdateInfo = syncUpdatesResult.getElement(
-      'ExtendedUpdateInfo',
-    );
+    final XmlElement? extendedUpdateInfo = syncUpdatesResult.getElement('ExtendedUpdateInfo');
     if (extendedUpdateInfo != null) {
       final XmlElement? updates = extendedUpdateInfo.getElement('Updates');
       if (updates != null) {
@@ -61,22 +55,16 @@ class UwpXmlParser {
           if (filesElement == null || filesElement.children.isEmpty) continue;
 
           final files = <FileModel>{};
-          for (final XmlElement fileElement in filesElement.findElements(
-            'File',
-          )) {
+          for (final XmlElement fileElement in filesElement.findElements('File')) {
             final String fileName = fileElement.getAttribute('FileName')!;
-            final String? packageFullName = fileElement.getAttribute(
-              'InstallerSpecificIdentifier',
-            );
+            final String? packageFullName = fileElement.getAttribute('InstallerSpecificIdentifier');
             final String fileType = fileName.split('.').last;
 
             if (fileType.startsWith('e') || packageFullName == null) {
               continue; // encrypted files installation is not supported
             }
 
-            final XmlElement? additionalDigest = _preferredAdditionalDigest(
-              fileElement,
-            );
+            final XmlElement? additionalDigest = _preferredAdditionalDigest(fileElement);
 
             files.add(
               FileModel(
@@ -86,42 +74,28 @@ class UwpXmlParser {
                 digest: fileElement.getAttribute('Digest'),
                 digestAlgorithm: fileElement.getAttribute('DigestAlgorithm'),
                 additionalDigest: additionalDigest?.innerText.trim(),
-                additionalDigestAlgorithm: additionalDigest?.getAttribute(
-                  'Algorithm',
-                ),
+                additionalDigestAlgorithm: additionalDigest?.getAttribute('Algorithm'),
                 size: int.tryParse(fileElement.getAttribute('Size') ?? '0'),
-                modifiedDate: DateTime.tryParse(
-                  fileElement.getAttribute('Modified') ?? '',
-                ),
+                modifiedDate: DateTime.tryParse(fileElement.getAttribute('Modified') ?? ''),
               ),
             );
           }
 
           if (files.isEmpty) continue;
 
-          final XmlElement? propsElement = xmlElement.getElement(
-            'ExtendedProperties',
-          );
+          final XmlElement? propsElement = xmlElement.getElement('ExtendedProperties');
           final ExtendedProperties? extendedProperties = propsElement != null
               ? ExtendedProperties(
                   contentType: propsElement.getAttribute('ContentType'),
-                  isAppxFramework:
-                      propsElement.getAttribute('IsAppxFramework') == 'true',
-                  creationDate: DateTime.tryParse(
-                    propsElement.getAttribute('CreationDate') ?? '',
-                  ),
-                  packageIdentityName: propsElement.getAttribute(
-                    'PackageIdentityName',
-                  ),
+                  isAppxFramework: propsElement.getAttribute('IsAppxFramework') == 'true',
+                  creationDate: DateTime.tryParse(propsElement.getAttribute('CreationDate') ?? ''),
+                  packageIdentityName: propsElement.getAttribute('PackageIdentityName'),
                 )
               : null;
 
           updatesMap[id] = UpdateModel(
             id: id,
-            xml: ElementXml(
-              fileModel: files,
-              extendedProperties: extendedProperties,
-            ),
+            xml: ElementXml(fileModel: files, extendedProperties: extendedProperties),
           );
         }
       }
@@ -130,18 +104,14 @@ class UwpXmlParser {
     // 2. Parse NewUpdates for identity and architecture
     final XmlElement? newUpdates = syncUpdatesResult.getElement('NewUpdates');
     if (newUpdates != null) {
-      for (final XmlElement updateInfoElement in newUpdates.findElements(
-        'UpdateInfo',
-      )) {
+      for (final XmlElement updateInfoElement in newUpdates.findElements('UpdateInfo')) {
         final String? id = updateInfoElement.getElement('ID')?.innerText;
         final XmlElement? xmlElement = updateInfoElement.getElement('Xml');
         if (id == null || !updatesMap.containsKey(id) || xmlElement == null) {
           continue;
         }
 
-        final XmlElement? identityElement = xmlElement.getElement(
-          'UpdateIdentity',
-        );
+        final XmlElement? identityElement = xmlElement.getElement('UpdateIdentity');
         if (identityElement == null) continue;
 
         final updateIdentity = UpdateIdentity(
@@ -150,9 +120,7 @@ class UwpXmlParser {
         );
 
         String? packageMoniker;
-        final XmlElement? appRules = xmlElement.getElement(
-          'ApplicabilityRules',
-        );
+        final XmlElement? appRules = xmlElement.getElement('ApplicabilityRules');
         final XmlElement? appxMetadata = appRules
             ?.getElement('Metadata')
             ?.getElement('AppxPackageMetadata')
@@ -161,8 +129,7 @@ class UwpXmlParser {
         if (appxMetadata != null) {
           packageMoniker = appxMetadata.getAttribute('PackageMoniker');
           // skip ads
-          if (packageMoniker != null &&
-              packageMoniker.startsWith('Microsoft.Advertising')) {
+          if (packageMoniker != null && packageMoniker.startsWith('Microsoft.Advertising')) {
             updatesMap.remove(id);
             continue;
           }
@@ -185,8 +152,7 @@ class UwpXmlParser {
     // 3. Filter to keep only latest packages by comparing modified dates
     final latestPackages = <String, UpdateModel>{};
     for (final UpdateModel update in updatesMap.values) {
-      final String? identityName =
-          update.xml.extendedProperties?.packageIdentityName;
+      final String? identityName = update.xml.extendedProperties?.packageIdentityName;
       if (identityName == null || update.arch == null) continue;
 
       final cacheKey = '$identityName-${update.arch}';
@@ -195,13 +161,10 @@ class UwpXmlParser {
         latestPackages[cacheKey] = update;
       } else {
         final UpdateModel existing = latestPackages[cacheKey]!;
-        final DateTime? existingDate =
-            existing.xml.fileModel.firstOrNull?.modifiedDate;
-        final DateTime? currentDate =
-            update.xml.fileModel.firstOrNull?.modifiedDate;
+        final DateTime? existingDate = existing.xml.fileModel.firstOrNull?.modifiedDate;
+        final DateTime? currentDate = update.xml.fileModel.firstOrNull?.modifiedDate;
 
-        if (currentDate != null &&
-            (existingDate == null || currentDate.isAfter(existingDate))) {
+        if (currentDate != null && (existingDate == null || currentDate.isAfter(existingDate))) {
           latestPackages[cacheKey] = update;
         }
       }
@@ -211,15 +174,11 @@ class UwpXmlParser {
   }
 
   static XmlElement? _preferredAdditionalDigest(XmlElement fileElement) {
-    final Iterable<XmlElement> additionalDigests = fileElement.findElements(
-      'AdditionalDigest',
-    );
+    final Iterable<XmlElement> additionalDigests = fileElement.findElements('AdditionalDigest');
     XmlElement? fallback;
     for (final element in additionalDigests) {
       fallback ??= element;
-      if (_normalizeDigestAlgorithm(
-        element.getAttribute('Algorithm'),
-      ).contains('SHA256')) {
+      if (_normalizeDigestAlgorithm(element.getAttribute('Algorithm')).contains('SHA256')) {
         return element;
       }
     }
@@ -236,9 +195,7 @@ class UwpXmlParser {
     final document = XmlDocument.parse(xmlString);
 
     if (digest != null) {
-      final Iterable<XmlElement> locations = document.findAllElements(
-        'FileLocation',
-      );
+      final Iterable<XmlElement> locations = document.findAllElements('FileLocation');
       for (final location in locations) {
         final String? fileDigest = location.getElement('FileDigest')?.innerText;
         if (fileDigest == digest) {

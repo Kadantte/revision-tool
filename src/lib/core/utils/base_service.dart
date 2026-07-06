@@ -2,8 +2,7 @@ import '../error/app_exception.dart';
 import '../error/result.dart';
 
 /// Signature for mapping raw errors into domain exceptions.
-typedef ErrorMapper =
-    AppException Function(Object error, StackTrace stackTrace);
+typedef ErrorMapper = AppException Function(Object error, StackTrace stackTrace);
 
 /// Mixin that provides [run] (try-catch → Result) and [failure]
 /// (validation short-circuit) to every feature service.

@@ -5,10 +5,7 @@ import 'package:revitool/features/tweaks/performance/performance_service.dart';
 class MockPerformanceService extends Mock implements PerformanceService {}
 
 void main() {
-  const skipIntegration = bool.fromEnvironment(
-    'SKIP_INTEGRATION',
-    defaultValue: true,
-  );
+  const skipIntegration = bool.fromEnvironment('SKIP_INTEGRATION', defaultValue: true);
 
   group(
     'PerformanceService (Real Implementation)',
@@ -208,35 +205,17 @@ void main() {
           );
         });
 
-        test(
-          'setServiceGroupingMode(forced) completes without error',
-          () async {
-            await expectLater(
-              service.setServiceGroupingMode(ServiceGrouping.forced),
-              completes,
-            );
-          },
-        );
+        test('setServiceGroupingMode(forced) completes without error', () async {
+          await expectLater(service.setServiceGroupingMode(ServiceGrouping.forced), completes);
+        });
 
-        test(
-          'setServiceGroupingMode(recommended) completes without error',
-          () async {
-            await expectLater(
-              service.setServiceGroupingMode(ServiceGrouping.recommended),
-              completes,
-            );
-          },
-        );
+        test('setServiceGroupingMode(recommended) completes without error', () async {
+          await expectLater(service.setServiceGroupingMode(ServiceGrouping.recommended), completes);
+        });
 
-        test(
-          'setServiceGroupingMode(disabled) completes without error',
-          () async {
-            await expectLater(
-              service.setServiceGroupingMode(ServiceGrouping.disabled),
-              completes,
-            );
-          },
-        );
+        test('setServiceGroupingMode(disabled) completes without error', () async {
+          await expectLater(service.setServiceGroupingMode(ServiceGrouping.disabled), completes);
+        });
       });
 
       group('Background Window Message Rate Limit', () {
@@ -244,108 +223,63 @@ void main() {
           expect(service.statusBackgroundWindowMessageRateLimit, isA<int>());
         });
 
-        test(
-          'statusBackgroundWindowMessageRateLimit returns valid value or -1',
-          () {
-            final int status = service.statusBackgroundWindowMessageRateLimit;
-            expect(status == -1 || (status >= 50 && status <= 333), isTrue);
-          },
-        );
+        test('statusBackgroundWindowMessageRateLimit returns valid value or -1', () {
+          final int status = service.statusBackgroundWindowMessageRateLimit;
+          expect(status == -1 || (status >= 50 && status <= 333), isTrue);
+        });
 
-        test(
-          'setBackgroundWindowMessageRateLimit throws error for value < 3',
-          () {
-            expect(
-              () => service.setBackgroundWindowMessageRateLimit(2),
-              throwsA(isA<ArgumentError>()),
-            );
-          },
-        );
+        test('setBackgroundWindowMessageRateLimit throws error for value < 3', () {
+          expect(
+            () => service.setBackgroundWindowMessageRateLimit(2),
+            throwsA(isA<ArgumentError>()),
+          );
+        });
 
-        test(
-          'setBackgroundWindowMessageRateLimit throws error for value > 20',
-          () {
-            expect(
-              () => service.setBackgroundWindowMessageRateLimit(21),
-              throwsA(isA<ArgumentError>()),
-            );
-          },
-        );
+        test('setBackgroundWindowMessageRateLimit throws error for value > 20', () {
+          expect(
+            () => service.setBackgroundWindowMessageRateLimit(21),
+            throwsA(isA<ArgumentError>()),
+          );
+        });
 
-        test(
-          'setBackgroundWindowMessageRateLimit throws error for value = 0',
-          () {
-            expect(
-              () => service.setBackgroundWindowMessageRateLimit(0),
-              throwsA(isA<ArgumentError>()),
-            );
-          },
-        );
+        test('setBackgroundWindowMessageRateLimit throws error for value = 0', () {
+          expect(
+            () => service.setBackgroundWindowMessageRateLimit(0),
+            throwsA(isA<ArgumentError>()),
+          );
+        });
 
-        test(
-          'setBackgroundWindowMessageRateLimit throws error for negative value',
-          () {
-            expect(
-              () => service.setBackgroundWindowMessageRateLimit(-5),
-              throwsA(isA<ArgumentError>()),
-            );
-          },
-        );
+        test('setBackgroundWindowMessageRateLimit throws error for negative value', () {
+          expect(
+            () => service.setBackgroundWindowMessageRateLimit(-5),
+            throwsA(isA<ArgumentError>()),
+          );
+        });
 
-        test(
-          'setBackgroundWindowMessageRateLimit accepts minimum valid value (3)',
-          () async {
-            await expectLater(
-              service.setBackgroundWindowMessageRateLimit(3),
-              completes,
-            );
-          },
-        );
+        test('setBackgroundWindowMessageRateLimit accepts minimum valid value (3)', () async {
+          await expectLater(service.setBackgroundWindowMessageRateLimit(3), completes);
+        });
 
-        test(
-          'setBackgroundWindowMessageRateLimit accepts maximum valid value (20)',
-          () async {
-            await expectLater(
-              service.setBackgroundWindowMessageRateLimit(20),
-              completes,
-            );
-          },
-        );
+        test('setBackgroundWindowMessageRateLimit accepts maximum valid value (20)', () async {
+          await expectLater(service.setBackgroundWindowMessageRateLimit(20), completes);
+        });
 
-        test(
-          'setBackgroundWindowMessageRateLimit accepts mid-range value (10)',
-          () async {
-            await expectLater(
-              service.setBackgroundWindowMessageRateLimit(10),
-              completes,
-            );
-          },
-        );
+        test('setBackgroundWindowMessageRateLimit accepts mid-range value (10)', () async {
+          await expectLater(service.setBackgroundWindowMessageRateLimit(10), completes);
+        });
 
-        test(
-          'setBackgroundWindowMessageRateLimit accepts default value (8)',
-          () async {
-            await expectLater(
-              service.setBackgroundWindowMessageRateLimit(8),
-              completes,
-            );
-          },
-        );
+        test('setBackgroundWindowMessageRateLimit accepts default value (8)', () async {
+          await expectLater(service.setBackgroundWindowMessageRateLimit(8), completes);
+        });
       });
 
       group('Input Validation', () {
         test('_rmtdValidator accepts valid minimum boundary (3)', () async {
-          await expectLater(
-            service.setBackgroundWindowMessageRateLimit(3),
-            completes,
-          );
+          await expectLater(service.setBackgroundWindowMessageRateLimit(3), completes);
         });
 
         test('_rmtdValidator accepts valid maximum boundary (20)', () async {
-          await expectLater(
-            service.setBackgroundWindowMessageRateLimit(20),
-            completes,
-          );
+          await expectLater(service.setBackgroundWindowMessageRateLimit(20), completes);
         });
 
         test('_rmtdValidator rejects below minimum (2)', () {
@@ -353,9 +287,7 @@ void main() {
             () => service.setBackgroundWindowMessageRateLimit(2),
             throwsA(
               predicate(
-                (e) =>
-                    e is ArgumentError &&
-                    (e.message as String).contains('between 3 and 20'),
+                (e) => e is ArgumentError && (e.message as String).contains('between 3 and 20'),
               ),
             ),
           );
@@ -366,27 +298,22 @@ void main() {
             () => service.setBackgroundWindowMessageRateLimit(21),
             throwsA(
               predicate(
-                (e) =>
-                    e is ArgumentError &&
-                    (e.message as String).contains('between 3 and 20'),
+                (e) => e is ArgumentError && (e.message as String).contains('between 3 and 20'),
               ),
             ),
           );
         });
 
-        test(
-          '_rmtdValidator error message contains range information',
-          () async {
-            await expectLater(
-              () => service.setBackgroundWindowMessageRateLimit(100),
-              throwsA(
-                isA<ArgumentError>()
-                    .having((e) => e.toString(), 'message', contains('3'))
-                    .having((e) => e.toString(), 'message', contains('20')),
-              ),
-            );
-          },
-        );
+        test('_rmtdValidator error message contains range information', () async {
+          await expectLater(
+            () => service.setBackgroundWindowMessageRateLimit(100),
+            throwsA(
+              isA<ArgumentError>()
+                  .having((e) => e.toString(), 'message', contains('3'))
+                  .having((e) => e.toString(), 'message', contains('20')),
+            ),
+          );
+        });
       });
 
       group('Service Instance', () {
@@ -451,22 +378,10 @@ void main() {
           expect(service.disableBackgroundApps(), isA<Future<void>>());
           expect(service.enableCtfmonInput(), isA<Future<void>>());
           expect(service.disableCtfmonInput(), isA<Future<void>>());
-          expect(
-            service.setServiceGroupingMode(ServiceGrouping.forced),
-            isA<Future<void>>(),
-          );
-          expect(
-            service.setServiceGroupingMode(ServiceGrouping.recommended),
-            isA<Future<void>>(),
-          );
-          expect(
-            service.setServiceGroupingMode(ServiceGrouping.disabled),
-            isA<Future<void>>(),
-          );
-          expect(
-            service.setBackgroundWindowMessageRateLimit(8),
-            isA<Future<void>>(),
-          );
+          expect(service.setServiceGroupingMode(ServiceGrouping.forced), isA<Future<void>>());
+          expect(service.setServiceGroupingMode(ServiceGrouping.recommended), isA<Future<void>>());
+          expect(service.setServiceGroupingMode(ServiceGrouping.disabled), isA<Future<void>>());
+          expect(service.setBackgroundWindowMessageRateLimit(8), isA<Future<void>>());
         });
       });
     },
@@ -504,16 +419,12 @@ void main() {
       });
 
       test('statusServicesGrouping can be mocked', () {
-        when(
-          () => mockService.statusServicesGrouping,
-        ).thenReturn(ServiceGrouping.recommended);
+        when(() => mockService.statusServicesGrouping).thenReturn(ServiceGrouping.recommended);
         expect(mockService.statusServicesGrouping, ServiceGrouping.recommended);
       });
 
       test('statusBackgroundWindowMessageRateLimit can be mocked', () {
-        when(
-          () => mockService.statusBackgroundWindowMessageRateLimit,
-        ).thenReturn(125);
+        when(() => mockService.statusBackgroundWindowMessageRateLimit).thenReturn(125);
         expect(mockService.statusBackgroundWindowMessageRateLimit, 125);
       });
 
@@ -525,76 +436,54 @@ void main() {
     });
 
     group('Enable/Disable Methods', () {
-      test(
-        'enableReviPowerPlan can be called without system changes',
-        () async {
-          when(
-            () => mockService.enableReviPowerPlan(),
-          ).thenAnswer((_) async => Future.value());
+      test('enableReviPowerPlan can be called without system changes', () async {
+        when(() => mockService.enableReviPowerPlan()).thenAnswer((_) async => Future.value());
 
-          await mockService.enableReviPowerPlan();
-          verify(() => mockService.enableReviPowerPlan()).called(1);
-        },
-      );
+        await mockService.enableReviPowerPlan();
+        verify(() => mockService.enableReviPowerPlan()).called(1);
+      });
 
-      test(
-        'disableReviPowerPlan can be called without system changes',
-        () async {
-          when(
-            () => mockService.disableReviPowerPlan(),
-          ).thenAnswer((_) async => Future.value());
+      test('disableReviPowerPlan can be called without system changes', () async {
+        when(() => mockService.disableReviPowerPlan()).thenAnswer((_) async => Future.value());
 
-          await mockService.disableReviPowerPlan();
-          verify(() => mockService.disableReviPowerPlan()).called(1);
-        },
-      );
+        await mockService.disableReviPowerPlan();
+        verify(() => mockService.disableReviPowerPlan()).called(1);
+      });
 
-      test(
-        'enableReviPowerPlanC6States can be called without system changes',
-        () async {
-          when(
-            () => mockService.enableReviPowerPlanC6States(),
-          ).thenAnswer((_) async => Future.value());
+      test('enableReviPowerPlanC6States can be called without system changes', () async {
+        when(
+          () => mockService.enableReviPowerPlanC6States(),
+        ).thenAnswer((_) async => Future.value());
 
-          await mockService.enableReviPowerPlanC6States();
-          verify(() => mockService.enableReviPowerPlanC6States()).called(1);
-        },
-      );
+        await mockService.enableReviPowerPlanC6States();
+        verify(() => mockService.enableReviPowerPlanC6States()).called(1);
+      });
 
-      test(
-        'disableReviPowerPlanC6States can be called without system changes',
-        () async {
-          when(
-            () => mockService.disableReviPowerPlanC6States(),
-          ).thenAnswer((_) async => Future.value());
+      test('disableReviPowerPlanC6States can be called without system changes', () async {
+        when(
+          () => mockService.disableReviPowerPlanC6States(),
+        ).thenAnswer((_) async => Future.value());
 
-          await mockService.disableReviPowerPlanC6States();
-          verify(() => mockService.disableReviPowerPlanC6States()).called(1);
-        },
-      );
+        await mockService.disableReviPowerPlanC6States();
+        verify(() => mockService.disableReviPowerPlanC6States()).called(1);
+      });
 
       test('enableSuperfetch can be called without system changes', () async {
-        when(
-          () => mockService.enableSuperfetch(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableSuperfetch()).thenAnswer((_) async => Future.value());
 
         await mockService.enableSuperfetch();
         verify(() => mockService.enableSuperfetch()).called(1);
       });
 
       test('disableDefender can be called without system changes', () async {
-        when(
-          () => mockService.disableSuperfetch(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableSuperfetch()).thenAnswer((_) async => Future.value());
 
         await mockService.disableSuperfetch();
         verify(() => mockService.disableSuperfetch()).called(1);
       });
 
       test('enableIntelTSX can be called without registry changes', () async {
-        when(
-          () => mockService.enableIntelTSX(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableIntelTSX()).thenAnswer((_) async => Future.value());
 
         await mockService.enableIntelTSX();
         verify(() => mockService.enableIntelTSX()).called(1);
@@ -606,34 +495,22 @@ void main() {
         ).thenAnswer((_) async => Future.value());
 
         await mockService.setBackgroundWindowMessageRateLimit(8);
-        verify(
-          () => mockService.setBackgroundWindowMessageRateLimit(8),
-        ).called(1);
+        verify(() => mockService.setBackgroundWindowMessageRateLimit(8)).called(1);
       });
 
-      test(
-        'enableCtfmonInput can be called without registry changes',
-        () async {
-          when(
-            () => mockService.enableCtfmonInput(),
-          ).thenAnswer((_) async => Future.value());
+      test('enableCtfmonInput can be called without registry changes', () async {
+        when(() => mockService.enableCtfmonInput()).thenAnswer((_) async => Future.value());
 
-          await mockService.enableCtfmonInput();
-          verify(() => mockService.enableCtfmonInput()).called(1);
-        },
-      );
+        await mockService.enableCtfmonInput();
+        verify(() => mockService.enableCtfmonInput()).called(1);
+      });
 
-      test(
-        'disableCtfmonInput can be called without registry changes',
-        () async {
-          when(
-            () => mockService.disableCtfmonInput(),
-          ).thenAnswer((_) async => Future.value());
+      test('disableCtfmonInput can be called without registry changes', () async {
+        when(() => mockService.disableCtfmonInput()).thenAnswer((_) async => Future.value());
 
-          await mockService.disableCtfmonInput();
-          verify(() => mockService.disableCtfmonInput()).called(1);
-        },
-      );
+        await mockService.disableCtfmonInput();
+        verify(() => mockService.disableCtfmonInput()).called(1);
+      });
     });
 
     group('Error Scenarios', () {
@@ -651,9 +528,7 @@ void main() {
 
     group('Behavior Verification', () {
       test('can verify method never called', () {
-        verifyNever(
-          () => mockService.setServiceGroupingMode(ServiceGrouping.forced),
-        );
+        verifyNever(() => mockService.setServiceGroupingMode(ServiceGrouping.forced));
       });
     });
   });

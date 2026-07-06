@@ -60,9 +60,7 @@ class _MemoryCompressionCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool superfetchStatus = ref.watch(superfetchStatusProvider);
-    final bool memoryCompressionStatus = ref.watch(
-      memoryCompressionStatusProvider,
-    );
+    final bool memoryCompressionStatus = ref.watch(memoryCompressionStatusProvider);
 
     if (!superfetchStatus) {
       return const SizedBox();
@@ -77,12 +75,8 @@ class _MemoryCompressionCard extends ConsumerWidget {
         requiresRestart: true,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(performanceServiceProvider)
-                    .enableMemoryCompression()
-              : await ref
-                    .read(performanceServiceProvider)
-                    .disableMemoryCompression();
+              ? await ref.read(performanceServiceProvider).enableMemoryCompression()
+              : await ref.read(performanceServiceProvider).disableMemoryCompression();
           ref.invalidate(memoryCompressionStatusProvider);
         },
       ),
@@ -108,9 +102,7 @@ class _ServicesGroupingCard extends ConsumerWidget {
           if (value == .forced) {
             _showServicesGroupingWarning(context);
           }
-          await ref
-              .read(performanceServiceProvider)
-              .setServiceGroupingMode(value);
+          await ref.read(performanceServiceProvider).setServiceGroupingMode(value);
 
           ref.invalidate(servicesGroupingStatusProvider);
         },
@@ -130,9 +122,7 @@ class _ServicesGroupingCard extends ConsumerWidget {
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 300),
         title: Text(t.warning),
         content: Text(t.tweaksPerformanceServiceGroupingDialog),
-        actions: [
-          FilledButton(child: Text(t.close), onPressed: () => context.pop()),
-        ],
+        actions: [FilledButton(child: Text(t.close), onPressed: () => context.pop())],
       ),
     );
   }
@@ -153,12 +143,8 @@ class _LastTimeAccessCard extends ConsumerWidget {
         requiresRestart: true,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(performanceServiceProvider)
-                    .enableLastTimeAccessNTFS()
-              : await ref
-                    .read(performanceServiceProvider)
-                    .disableLastTimeAccessNTFS();
+              ? await ref.read(performanceServiceProvider).enableLastTimeAccessNTFS()
+              : await ref.read(performanceServiceProvider).disableLastTimeAccessNTFS();
           ref.invalidate(lastTimeAccessNTFSStatusProvider);
         },
       ),
@@ -181,12 +167,8 @@ class _Dot3NamingCard extends ConsumerWidget {
         requiresRestart: true,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(performanceServiceProvider)
-                    .enable8dot3NamingNTFS()
-              : await ref
-                    .read(performanceServiceProvider)
-                    .disable8dot3NamingNTFS();
+              ? await ref.read(performanceServiceProvider).enable8dot3NamingNTFS()
+              : await ref.read(performanceServiceProvider).disable8dot3NamingNTFS();
           ref.invalidate(dot3NamingNTFSStatusProvider);
         },
       ),
@@ -209,12 +191,8 @@ class _MemoryUsageCard extends ConsumerWidget {
         requiresRestart: true,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(performanceServiceProvider)
-                    .enableMemoryUsageNTFS()
-              : await ref
-                    .read(performanceServiceProvider)
-                    .disableMemoryUsageNTFS();
+              ? await ref.read(performanceServiceProvider).enableMemoryUsageNTFS()
+              : await ref.read(performanceServiceProvider).disableMemoryUsageNTFS();
           ref.invalidate(memoryUsageNTFSStatusProvider);
         },
       ),

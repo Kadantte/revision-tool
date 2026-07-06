@@ -47,9 +47,7 @@ class _NotificationCard extends ConsumerWidget {
             showRestartDialog(context);
           }
 
-          await ref
-              .read(personalizationServiceProvider)
-              .setNotificationMode(value);
+          await ref.read(personalizationServiceProvider).setNotificationMode(value);
 
           ref.invalidate(notificationStatusProvider);
         },
@@ -77,12 +75,8 @@ class _LegacyBalloonCard extends ConsumerWidget {
         value: status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(personalizationServiceProvider)
-                    .enableLegacyBalloon()
-              : await ref
-                    .read(personalizationServiceProvider)
-                    .disableLegacyBalloon();
+              ? await ref.read(personalizationServiceProvider).enableLegacyBalloon()
+              : await ref.read(personalizationServiceProvider).disableLegacyBalloon();
           ref.invalidate(legacyBalloonStatusProvider);
         },
       ),
@@ -103,12 +97,8 @@ class _ScreenEdgeSwipeCard extends ConsumerWidget {
         value: status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(personalizationServiceProvider)
-                    .enableScreenEdgeSwipe()
-              : await ref
-                    .read(personalizationServiceProvider)
-                    .disableScreenEdgeSwipe();
+              ? await ref.read(personalizationServiceProvider).enableScreenEdgeSwipe()
+              : await ref.read(personalizationServiceProvider).disableScreenEdgeSwipe();
           ref.invalidate(screenEdgeSwipeStatusProvider);
         },
       ),
@@ -128,12 +118,8 @@ class _NewContextMenuCard extends ConsumerWidget {
         value: status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(personalizationServiceProvider)
-                    .enableNewContextMenu()
-              : await ref
-                    .read(personalizationServiceProvider)
-                    .disableNewContextMenu();
+              ? await ref.read(personalizationServiceProvider).enableNewContextMenu()
+              : await ref.read(personalizationServiceProvider).disableNewContextMenu();
           ref.invalidate(newContextMenuStatusProvider);
         },
       ),
@@ -154,12 +140,8 @@ class _ExplorerHomeCard extends ConsumerWidget {
         value: status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(personalizationServiceProvider)
-                    .enableExplorerHome()
-              : await ref
-                    .read(personalizationServiceProvider)
-                    .disableExplorerHome();
+              ? await ref.read(personalizationServiceProvider).enableExplorerHome()
+              : await ref.read(personalizationServiceProvider).disableExplorerHome();
           ref.invalidate(explorerHomeStatusProvider);
         },
       ),
@@ -180,12 +162,8 @@ class _ExplorerGalleryCard extends ConsumerWidget {
         value: status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(personalizationServiceProvider)
-                    .enableExplorerGallery()
-              : await ref
-                    .read(personalizationServiceProvider)
-                    .disableExplorerGallery();
+              ? await ref.read(personalizationServiceProvider).enableExplorerGallery()
+              : await ref.read(personalizationServiceProvider).disableExplorerGallery();
           ref.invalidate(explorerGalleryStatusProvider);
         },
       ),

@@ -29,20 +29,14 @@ void main() {
       );
 
       expect(result, isA<Failure<Response<dynamic>>>());
-      expect(
-        (result as Failure<Response<dynamic>>).exception,
-        isA<NetworkException>(),
-      );
+      expect((result as Failure<Response<dynamic>>).exception, isA<NetworkException>());
     });
 
     test('maps timeout failures to TimeoutException', () async {
       final client = ApiClient(
         dio: Dio()
           ..httpClientAdapter = _SequenceAdapter((options, attempt) {
-            throw DioException(
-              requestOptions: options,
-              type: DioExceptionType.receiveTimeout,
-            );
+            throw DioException(requestOptions: options, type: DioExceptionType.receiveTimeout);
           }),
         retryPolicy: const RetryPolicy(maxRetries: 0),
       );
@@ -52,10 +46,7 @@ void main() {
       );
 
       expect(result, isA<Failure<Response<dynamic>>>());
-      expect(
-        (result as Failure<Response<dynamic>>).exception,
-        isA<TimeoutException>(),
-      );
+      expect((result as Failure<Response<dynamic>>).exception, isA<TimeoutException>());
     });
 
     test('maps bad responses to HttpStatusException', () async {
@@ -72,8 +63,7 @@ void main() {
       );
 
       expect(result, isA<Failure<Response<dynamic>>>());
-      final AppException exception =
-          (result as Failure<Response<dynamic>>).exception;
+      final AppException exception = (result as Failure<Response<dynamic>>).exception;
       expect(exception, isA<HttpStatusException>());
       expect((exception as HttpStatusException).statusCode, 404);
     });
@@ -141,18 +131,13 @@ void main() {
       );
 
       expect(result, isA<Failure<Response<dynamic>>>());
-      expect(
-        (result as Failure<Response<dynamic>>).exception,
-        isA<CancelledRequestException>(),
-      );
+      expect((result as Failure<Response<dynamic>>).exception, isA<CancelledRequestException>());
       expect(attempts, 0);
     });
 
     test('download retry deletes partial file before retrying', () async {
       var attempts = 0;
-      final Directory tempDir = Directory.systemTemp.createTempSync(
-        'api_client_test_',
-      );
+      final Directory tempDir = Directory.systemTemp.createTempSync('api_client_test_');
       final file = File('${tempDir.path}\\download.txt');
       final client = ApiClient(
         dio: Dio()
@@ -169,10 +154,7 @@ void main() {
             }
             return ResponseBody.fromString('complete', 200);
           }),
-        retryPolicy: const RetryPolicy(
-          maxRetries: 1,
-          initialDelay: Duration.zero,
-        ),
+        retryPolicy: const RetryPolicy(maxRetries: 1, initialDelay: Duration.zero),
       );
 
       final Result<Response<dynamic>> result = await client.downloadFile(
@@ -189,8 +171,7 @@ void main() {
   });
 }
 
-typedef _AdapterHandler =
-    FutureOr<ResponseBody> Function(RequestOptions options, int attempt);
+typedef _AdapterHandler = FutureOr<ResponseBody> Function(RequestOptions options, int attempt);
 
 final class _SequenceAdapter implements HttpClientAdapter {
   _SequenceAdapter(this._handler);

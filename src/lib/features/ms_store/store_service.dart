@@ -17,9 +17,7 @@ import 'ms_store_repository.dart';
 import 'services/package_file_service.dart';
 import 'store_enums.dart';
 
-final _punctuationRegex = RegExp(
-  r'[^A-Za-z0-9,]',
-); // remove all punctuation except commas
+final _punctuationRegex = RegExp(r'[^A-Za-z0-9,]'); // remove all punctuation except commas
 
 final storeServiceProvider = Provider<StoreService>((ref) {
   return StoreService(
@@ -112,9 +110,7 @@ final class StoreService with BaseService {
           });
 
       if (idsByType.isEmpty) {
-        throw const UnexpectedNetworkException(
-          message: 'At least one product ID required',
-        );
+        throw const UnexpectedNetworkException(message: 'At least one product ID required');
       }
 
       final String resolvedArch = arch == .auto
@@ -124,19 +120,13 @@ final class StoreService with BaseService {
       final merged = <String, Set<PackageInfo>>{};
 
       // Fetch for each type in parallel
-      for (final MapEntry<StoreAppType, Set<String>> entry
-          in idsByType.entries) {
+      for (final MapEntry<StoreAppType, Set<String>> entry in idsByType.entries) {
         final StoreAppType type = entry.key;
-        final StoreRepository repo = type == .uwp
-            ? _uwpRepository
-            : _win32Repository;
+        final StoreRepository repo = type == .uwp ? _uwpRepository : _win32Repository;
         await Future.wait(
           entry.value.map((productId) async {
             final Set<PackageInfo> packages =
-                (await repo.getPackages(
-                  productId: productId,
-                  ring: ring,
-                )).where((p) {
+                (await repo.getPackages(productId: productId, ring: ring)).where((p) {
                   if (arch == .all) return true;
                   final String a = p.arch.toLowerCase();
                   if (a == 'neutral' || a == resolvedArch) return true;
@@ -147,9 +137,7 @@ final class StoreService with BaseService {
 
             if (packages.isEmpty) {
               throw UnexpectedNetworkException(
-                cause: Exception(
-                  'No matching packages for $productId arch=${arch.value}',
-                ),
+                cause: Exception('No matching packages for $productId arch=${arch.value}'),
               );
             }
             merged[productId] = packages;
@@ -174,8 +162,7 @@ final class StoreService with BaseService {
       }
 
       final flat = <({PackageInfo package, String productId})>{};
-      for (final MapEntry<String, Iterable<PackageInfo>> entry
-          in packagesByProductId.entries) {
+      for (final MapEntry<String, Iterable<PackageInfo>> entry in packagesByProductId.entries) {
         for (final PackageInfo pkg in entry.value) {
           flat.add((package: pkg, productId: entry.key.toUpperCase()));
         }
@@ -186,10 +173,7 @@ final class StoreService with BaseService {
           : DateTime.now().millisecondsSinceEpoch.toString();
 
       final int totalPackages = flat.length;
-      final int totalBytes = flat.fold<int>(
-        0,
-        (s, e) => s + e.package.expectedBytes,
-      );
+      final int totalBytes = flat.fold<int>(0, (s, e) => s + e.package.expectedBytes);
       var downloadedBytes = 0;
       var completedCount = 0;
       final downloads = <StorePackageFileDownload>{};
@@ -203,8 +187,7 @@ final class StoreService with BaseService {
         final StoreAppType type = .fromProductId(productId)!;
 
         // Build local path
-        final String tempDir =
-            downloadPath ?? _fileService.downloadPath(downloadId, ring);
+        final String tempDir = downloadPath ?? _fileService.downloadPath(downloadId, ring);
         final String fileName = package.downloadName;
         var storedPath = package.isDependency
             ? '$tempDir\\Dependencies\\$fileName'
@@ -223,8 +206,7 @@ final class StoreService with BaseService {
                   digest: package.digest!,
                   algorithm: package.algorithm!,
                 )
-              : package.expectedBytes <= 0 ||
-                    cachedFile.lengthSync() == package.expectedBytes;
+              : package.expectedBytes <= 0 || cachedFile.lengthSync() == package.expectedBytes;
           if (valid) {
             downloads.add(
               StorePackageFileDownload(
@@ -262,14 +244,8 @@ final class StoreService with BaseService {
 
         // Get download URL using the correct repository
         final String url = switch (type) {
-          .uwp => await _uwpRepository.getPackageDownloadUrl(
-            package: package,
-            ring: ring,
-          ),
-          .win32 => await _win32Repository.getPackageDownloadUrl(
-            package: package,
-            ring: ring,
-          ),
+          .uwp => await _uwpRepository.getPackageDownloadUrl(package: package, ring: ring),
+          .win32 => await _win32Repository.getPackageDownloadUrl(package: package, ring: ring),
         };
         if (cancelToken.isCancelled) throw const CancelledRequestException();
 
@@ -345,9 +321,7 @@ final class StoreService with BaseService {
 
       final List<StorePackageFileDownload> ordered = [
         ...downloads.where((d) => d.appType == .uwp && d.package.isDependency),
-        ...downloads.where(
-          (d) => !(d.appType == .uwp && d.package.isDependency),
-        ),
+        ...downloads.where((d) => !(d.appType == .uwp && d.package.isDependency)),
       ];
 
       final results = <String, ProcessResult>{};
@@ -360,9 +334,7 @@ final class StoreService with BaseService {
             algorithm: package.algorithm!,
           );
           if (!ok) {
-            throw Exception(
-              'Hash verification failed for ${package.progressName}',
-            );
+            throw Exception('Hash verification failed for ${package.progressName}');
           }
           logger.i('Hash verified for ${package.progressName}');
         } else {

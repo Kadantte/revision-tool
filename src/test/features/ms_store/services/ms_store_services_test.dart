@@ -36,10 +36,7 @@ void main() {
 
     test('search parses products from ApiClient response', () async {
       when(
-        () => apiClient.get<dynamic>(
-          any<Uri>(),
-          options: any<Options?>(named: 'options'),
-        ),
+        () => apiClient.get<dynamic>(any<Uri>(), options: any<Options?>(named: 'options')),
       ).thenAnswer(
         (_) async => Result<Response<dynamic>>.success(
           Response<dynamic>(
@@ -54,18 +51,13 @@ void main() {
         ),
       );
 
-      final List<SearchProduct> products = await _uwpRepository(
-        apiClient,
-      ).searchProducts('test');
+      final List<SearchProduct> products = await _uwpRepository(apiClient).searchProducts('test');
       expect(products.single.productId, '9TEST');
     });
 
     test('product details parses ApiClient response', () async {
       when(
-        () => apiClient.get<dynamic>(
-          any<Uri>(),
-          options: any<Options?>(named: 'options'),
-        ),
+        () => apiClient.get<dynamic>(any<Uri>(), options: any<Options?>(named: 'options')),
       ).thenAnswer(
         (_) async => Result<Response<dynamic>>.success(
           Response<dynamic>(
@@ -76,20 +68,14 @@ void main() {
         ),
       );
 
-      final ProductDetails details = await _uwpRepository(
-        apiClient,
-      ).getProductDetails('9TEST');
+      final ProductDetails details = await _uwpRepository(apiClient).getProductDetails('9TEST');
 
       expect(details.title, 'Test App');
     });
 
     test('UWP repository parses packages and resolves session URL', () async {
       final parser = _FakeUwpXmlParser();
-      final repository = UwpStoreRepository(
-        api: apiClient,
-        cache: StoreCache(),
-        xmlParser: parser,
-      );
+      final repository = UwpStoreRepository(api: apiClient, cache: StoreCache(), xmlParser: parser);
       var unsecurePostCalls = 0;
       var downloadUriCalls = 0;
 
@@ -110,9 +96,7 @@ void main() {
         }
 
         unsecurePostCalls++;
-        return _response(
-          data: unsecurePostCalls == 1 ? '<cookie />' : _uwpPackageXml,
-        );
+        return _response(data: unsecurePostCalls == 1 ? '<cookie />' : _uwpPackageXml);
       });
 
       final Set<PackageInfo> packages = await repository.getPackages(
@@ -147,13 +131,12 @@ void main() {
           options: any<Options?>(named: 'options'),
         ),
       ).thenAnswer((_) async => _response(data: '<cookie />'));
-      when(() => apiClient.get<dynamic>(any<Uri>())).thenAnswer(
-        (_) async => _response(statusCode: 500, data: 'category failure'),
-      );
+      when(
+        () => apiClient.get<dynamic>(any<Uri>()),
+      ).thenAnswer((_) async => _response(statusCode: 500, data: 'category failure'));
 
       expect(
-        () =>
-            repository.getPackages(productId: '9TEST', ring: StoreRing.retail),
+        () => repository.getPackages(productId: '9TEST', ring: StoreRing.retail),
         throwsA(isA<HttpStatusException>()),
       );
     });
@@ -172,13 +155,12 @@ void main() {
           options: any<Options?>(named: 'options'),
         ),
       ).thenAnswer((_) async => _response(data: '<cookie />'));
-      when(() => apiClient.get<dynamic>(any<Uri>())).thenAnswer(
-        (_) async => _response(data: _uwpProductJson(wuCategoryId: null)),
-      );
+      when(
+        () => apiClient.get<dynamic>(any<Uri>()),
+      ).thenAnswer((_) async => _response(data: _uwpProductJson(wuCategoryId: null)));
 
       expect(
-        () =>
-            repository.getPackages(productId: '9TEST', ring: StoreRing.retail),
+        () => repository.getPackages(productId: '9TEST', ring: StoreRing.retail),
         throwsA(isA<UnexpectedNetworkException>()),
       );
     });
@@ -186,10 +168,7 @@ void main() {
     test('Win32 repository uses product details installer first', () async {
       final Win32StoreRepository repository = _win32Repository(apiClient);
       when(
-        () => apiClient.get<dynamic>(
-          any<Uri>(),
-          options: any<Options?>(named: 'options'),
-        ),
+        () => apiClient.get<dynamic>(any<Uri>(), options: any<Options?>(named: 'options')),
       ).thenAnswer(
         (_) async => Result<Response<dynamic>>.success(
           Response<dynamic>(
@@ -215,10 +194,7 @@ void main() {
 
     test('Win32 repository falls back to manifest API', () async {
       when(
-        () => apiClient.get<dynamic>(
-          any<Uri>(),
-          options: any<Options?>(named: 'options'),
-        ),
+        () => apiClient.get<dynamic>(any<Uri>(), options: any<Options?>(named: 'options')),
       ).thenAnswer(
         (_) async => Result<Response<dynamic>>.success(
           Response<dynamic>(
@@ -251,10 +227,7 @@ void main() {
 
     test('Win32 repository propagates manifest API failure', () async {
       when(
-        () => apiClient.get<dynamic>(
-          any<Uri>(),
-          options: any<Options?>(named: 'options'),
-        ),
+        () => apiClient.get<dynamic>(any<Uri>(), options: any<Options?>(named: 'options')),
       ).thenAnswer(
         (_) async => Result<Response<dynamic>>.success(
           Response<dynamic>(
@@ -264,63 +237,47 @@ void main() {
           ),
         ),
       );
-      when(() => apiClient.get<dynamic>(any<Uri>())).thenAnswer(
-        (_) async =>
-            const Result<Response<dynamic>>.failure(NetworkException()),
-      );
+      when(
+        () => apiClient.get<dynamic>(any<Uri>()),
+      ).thenAnswer((_) async => const Result<Response<dynamic>>.failure(NetworkException()));
 
       expect(
-        () => _win32Repository(
-          apiClient,
-        ).getPackages(productId: 'XPTEST', ring: StoreRing.retail),
+        () => _win32Repository(apiClient).getPackages(productId: 'XPTEST', ring: StoreRing.retail),
         throwsA(isA<NetworkException>()),
       );
     });
 
-    test(
-      'package downloads delegate to ApiClient and preserve progress',
-      () async {
-        final Directory tempDir = Directory.systemTemp.createTempSync(
-          'ms_store_file_service_test_',
+    test('package downloads delegate to ApiClient and preserve progress', () async {
+      final Directory tempDir = Directory.systemTemp.createTempSync('ms_store_file_service_test_');
+      final path = '${tempDir.path}\\package.msix';
+      final progress = <double>[];
+
+      when(
+        () => apiClient.downloadFile(
+          any<Uri>(),
+          any<String>(),
+          onReceiveProgress: any<ProgressCallback?>(named: 'onReceiveProgress'),
+          cancelToken: any<CancelToken?>(named: 'cancelToken'),
+        ),
+      ).thenAnswer((invocation) async {
+        final callback = invocation.namedArguments[#onReceiveProgress] as ProgressCallback?;
+        callback?.call(5, 10);
+        return Result<Response<dynamic>>.success(
+          Response<dynamic>(requestOptions: RequestOptions(), statusCode: 200),
         );
-        final path = '${tempDir.path}\\package.msix';
-        final progress = <double>[];
+      });
 
-        when(
-          () => apiClient.downloadFile(
-            any<Uri>(),
-            any<String>(),
-            onReceiveProgress: any<ProgressCallback?>(
-              named: 'onReceiveProgress',
-            ),
-            cancelToken: any<CancelToken?>(named: 'cancelToken'),
-          ),
-        ).thenAnswer((invocation) async {
-          final callback =
-              invocation.namedArguments[#onReceiveProgress]
-                  as ProgressCallback?;
-          callback?.call(5, 10);
-          return Result<Response<dynamic>>.success(
-            Response<dynamic>(
-              requestOptions: RequestOptions(),
-              statusCode: 200,
-            ),
-          );
-        });
+      final Result<void> result = await PackageFileService(apiClient).download(
+        'https://example.test/package.msix',
+        path,
+        onProgress: (count, total) => progress.add(count / total),
+      );
 
-        final Result<void> result = await PackageFileService(apiClient)
-            .download(
-              'https://example.test/package.msix',
-              path,
-              onProgress: (count, total) => progress.add(count / total),
-            );
+      expect(result, isA<Success<void>>());
+      expect(progress, [0.5]);
 
-        expect(result, isA<Success<void>>());
-        expect(progress, [0.5]);
-
-        tempDir.deleteSync(recursive: true);
-      },
-    );
+      tempDir.deleteSync(recursive: true);
+    });
 
     test('service package download delegates to ApiClient', () async {
       final StoreService service = _service(
@@ -339,8 +296,7 @@ void main() {
           cancelToken: any<CancelToken?>(named: 'cancelToken'),
         ),
       ).thenAnswer((invocation) async {
-        final callback =
-            invocation.namedArguments[#onReceiveProgress] as ProgressCallback?;
+        final callback = invocation.namedArguments[#onReceiveProgress] as ProgressCallback?;
         callback?.call(6, 12);
         return Result<Response<dynamic>>.success(
           Response<dynamic>(requestOptions: RequestOptions(), statusCode: 200),
@@ -348,15 +304,14 @@ void main() {
       });
 
       try {
-        final Result<Set<StorePackageFileDownload>> result = await service
-            .download(
-              ring: StoreRing.retail,
-              packagesByProductId: {
-                '9TEST': [_sharedPackage(digest: 'digest', size: 12)],
-              },
-              cancelToken: CancelToken(),
-              onProgress: (value) => progress.add(value.fileProgress),
-            );
+        final Result<Set<StorePackageFileDownload>> result = await service.download(
+          ring: StoreRing.retail,
+          packagesByProductId: {
+            '9TEST': [_sharedPackage(digest: 'digest', size: 12)],
+          },
+          cancelToken: CancelToken(),
+          onProgress: (value) => progress.add(value.fileProgress),
+        );
 
         expect(result, isA<Success<Set<StorePackageFileDownload>>>());
         expect(progress, [0.5, 1]);
@@ -383,8 +338,7 @@ void main() {
         ),
       ).thenAnswer((invocation) async {
         final path = invocation.positionalArguments[1] as String;
-        final callback =
-            invocation.namedArguments[#onReceiveProgress] as ProgressCallback?;
+        final callback = invocation.namedArguments[#onReceiveProgress] as ProgressCallback?;
         final file = File(path)..parent.createSync(recursive: true);
         file.writeAsBytesSync(bytes);
         callback?.call(bytes.length, bytes.length);
@@ -411,9 +365,7 @@ void main() {
           () => apiClient.downloadFile(
             any<Uri>(),
             any<String>(),
-            onReceiveProgress: any<ProgressCallback?>(
-              named: 'onReceiveProgress',
-            ),
+            onReceiveProgress: any<ProgressCallback?>(named: 'onReceiveProgress'),
             cancelToken: any<CancelToken?>(named: 'cancelToken'),
           ),
         ).called(1);
@@ -428,47 +380,18 @@ void main() {
         uwpRepository: _FakeStoreRepository({
           '9TEST': {
             _mainPackage(id: 'm64', fileName: 'main-x64', digest: 'a', size: 1),
-            _mainPackage(
-              id: 'm86',
-              fileName: 'main-x86',
-              digest: 'b',
-              size: 1,
-              arch: 'x86',
-            ),
-            _sharedPackage(
-              id: 'd86',
-              fileName: 'dep-x86',
-              digest: 'c',
-              size: 1,
-              arch: 'x86',
-            ),
-            _mainPackage(
-              id: 'ma64',
-              fileName: 'main-arm64',
-              digest: 'd',
-              size: 1,
-              arch: 'arm64',
-            ),
-            _sharedPackage(
-              id: 'da',
-              fileName: 'dep-arm',
-              digest: 'e',
-              size: 1,
-              arch: 'arm',
-            ),
+            _mainPackage(id: 'm86', fileName: 'main-x86', digest: 'b', size: 1, arch: 'x86'),
+            _sharedPackage(id: 'd86', fileName: 'dep-x86', digest: 'c', size: 1, arch: 'x86'),
+            _mainPackage(id: 'ma64', fileName: 'main-arm64', digest: 'd', size: 1, arch: 'arm64'),
+            _sharedPackage(id: 'da', fileName: 'dep-arm', digest: 'e', size: 1, arch: 'arm'),
           },
         }),
       );
       Future<Set<String>> names(StoreArch arch) => service
-          .getPackages(
-            productIds: ['9TEST'],
-            ring: StoreRing.retail,
-            arch: arch,
-          )
+          .getPackages(productIds: ['9TEST'], ring: StoreRing.retail, arch: arch)
           .then(
             (r) => r.when(
-              success: (m) =>
-                  m['9TEST']!.map((p) => p.fileModel!.fileName!).toSet(),
+              success: (m) => m['9TEST']!.map((p) => p.fileModel!.fileName!).toSet(),
               failure: (e) => throw e,
             ),
           );
@@ -523,8 +446,7 @@ void main() {
       ).thenAnswer((invocation) async {
         final path = invocation.positionalArguments[1] as String;
         downloadPaths.add(path);
-        final callback =
-            invocation.namedArguments[#onReceiveProgress] as ProgressCallback?;
+        final callback = invocation.namedArguments[#onReceiveProgress] as ProgressCallback?;
         final file = File(path)..parent.createSync(recursive: true);
         file.writeAsBytesSync(bytes);
         callback?.call(bytes.length, bytes.length);
@@ -541,34 +463,26 @@ void main() {
               arch: StoreArch.all,
             )
             .then(
-              (result) => result.when(
-                success: (value) => value,
-                failure: (exception) => throw exception,
-              ),
+              (result) =>
+                  result.when(success: (value) => value, failure: (exception) => throw exception),
             );
-        final Result<Set<StorePackageFileDownload>> result = await service
-            .download(
-              ring: StoreRing.retail,
-              packagesByProductId: packagesByProductId,
-              cancelToken: CancelToken(),
-              onProgress: (value) => progress.add(value.completedCount),
-            );
+        final Result<Set<StorePackageFileDownload>> result = await service.download(
+          ring: StoreRing.retail,
+          packagesByProductId: packagesByProductId,
+          cancelToken: CancelToken(),
+          onProgress: (value) => progress.add(value.completedCount),
+        );
 
         expect(result, isA<Success<Set<StorePackageFileDownload>>>());
         verify(
           () => apiClient.downloadFile(
             any<Uri>(),
             any<String>(),
-            onReceiveProgress: any<ProgressCallback?>(
-              named: 'onReceiveProgress',
-            ),
+            onReceiveProgress: any<ProgressCallback?>(named: 'onReceiveProgress'),
             cancelToken: any<CancelToken?>(named: 'cancelToken'),
           ),
         ).called(3);
-        expect(
-          downloadPaths,
-          contains(endsWith(r'Retail\Dependencies\shared-a.appx')),
-        );
+        expect(downloadPaths, contains(endsWith(r'Retail\Dependencies\shared-a.appx')));
         expect(downloadPaths, contains(endsWith(r'Retail\first-main.appx')));
         expect(downloadPaths, contains(endsWith(r'Retail\second-main.appx')));
         expect(progress.last, 4);
@@ -579,16 +493,15 @@ void main() {
 
     test('mixed app type batch fails clearly', () async {
       final StoreService service = _service(apiClient);
-      final Result<Set<StorePackageFileDownload>> result = await service
-          .download(
-            ring: StoreRing.retail,
-            packagesByProductId: {
-              '9TEST': [_sharedPackage(digest: 'digest', size: 12)],
-              'XPTEST': [_win32Package()],
-            },
-            cancelToken: CancelToken(),
-            onProgress: (_) {},
-          );
+      final Result<Set<StorePackageFileDownload>> result = await service.download(
+        ring: StoreRing.retail,
+        packagesByProductId: {
+          '9TEST': [_sharedPackage(digest: 'digest', size: 12)],
+          'XPTEST': [_win32Package()],
+        },
+        cancelToken: CancelToken(),
+        onProgress: (_) {},
+      );
 
       expect(result, isA<Failure<Set<StorePackageFileDownload>>>());
       expect(
@@ -632,13 +545,12 @@ void main() {
               onProgress: (_) {},
             )
             .then(
-              (result) => result.when(
-                success: (value) => value,
-                failure: (exception) => throw exception,
-              ),
+              (result) =>
+                  result.when(success: (value) => value, failure: (exception) => throw exception),
             );
-        final Result<Map<String, ProcessResult>> installResult = await service
-            .install(downloads: downloads);
+        final Result<Map<String, ProcessResult>> installResult = await service.install(
+          downloads: downloads,
+        );
 
         expect(installResult, isA<Success<Map<String, ProcessResult>>>());
         expect(recording.win32InstallPaths, isNotEmpty);
@@ -696,49 +608,31 @@ void main() {
       expect(file.verificationDigestAlgorithm, 'SHA256');
     });
 
-    test(
-      'file digest verifier supports Store SHA1 and SHA256 base64',
-      () async {
-        final Directory tempDir = Directory.systemTemp.createTempSync(
-          'ms_store_digest_test_',
-        );
-        final file = File('${tempDir.path}\\package.appx')
-          ..writeAsStringSync('store-digest');
-        final List<int> bytes = file.readAsBytesSync();
-        final String sha1Base64 = base64.encode(sha1.convert(bytes).bytes);
-        final String sha256Base64 = base64.encode(sha256.convert(bytes).bytes);
-        final sha256Hex = sha256.convert(bytes).toString();
+    test('file digest verifier supports Store SHA1 and SHA256 base64', () async {
+      final Directory tempDir = Directory.systemTemp.createTempSync('ms_store_digest_test_');
+      final file = File('${tempDir.path}\\package.appx')..writeAsStringSync('store-digest');
+      final List<int> bytes = file.readAsBytesSync();
+      final String sha1Base64 = base64.encode(sha1.convert(bytes).bytes);
+      final String sha256Base64 = base64.encode(sha256.convert(bytes).bytes);
+      final sha256Hex = sha256.convert(bytes).toString();
 
-        final service = PackageFileService(apiClient);
+      final service = PackageFileService(apiClient);
 
-        expect(
-          await service.verifyFileDigest(
-            file: file,
-            digest: sha1Base64,
-            algorithm: 'SHA1',
-          ),
-          isTrue,
-        );
-        expect(
-          await service.verifyFileDigest(
-            file: file,
-            digest: sha256Base64,
-            algorithm: 'SHA256',
-          ),
-          isTrue,
-        );
-        expect(
-          await service.verifyFileDigest(
-            file: file,
-            digest: sha256Hex,
-            algorithm: 'SHA256',
-          ),
-          isTrue,
-        );
+      expect(
+        await service.verifyFileDigest(file: file, digest: sha1Base64, algorithm: 'SHA1'),
+        isTrue,
+      );
+      expect(
+        await service.verifyFileDigest(file: file, digest: sha256Base64, algorithm: 'SHA256'),
+        isTrue,
+      );
+      expect(
+        await service.verifyFileDigest(file: file, digest: sha256Hex, algorithm: 'SHA256'),
+        isTrue,
+      );
 
-        tempDir.deleteSync(recursive: true);
-      },
-    );
+      tempDir.deleteSync(recursive: true);
+    });
   });
 }
 
@@ -746,26 +640,18 @@ final class _MockApiClient extends Mock implements ApiClient {}
 
 Result<Response<dynamic>> _response({Object? data, int statusCode = 200}) {
   return Result<Response<dynamic>>.success(
-    Response<dynamic>(
-      requestOptions: RequestOptions(),
-      statusCode: statusCode,
-      data: data,
-    ),
+    Response<dynamic>(requestOptions: RequestOptions(), statusCode: statusCode, data: data),
   );
 }
 
 Map<String, Object?> _uwpProductJson({String? wuCategoryId = 'category-id'}) {
   return <String, Object?>{
-    'ExpiryUtc': DateTime.now()
-        .add(const Duration(minutes: 5))
-        .toIso8601String(),
+    'ExpiryUtc': DateTime.now().add(const Duration(minutes: 5)).toIso8601String(),
     'Payload': <String, Object?>{
       'Skus': <Object?>[
         <String, Object?>{
           'SkuType': 'full',
-          'FulfillmentData': jsonEncode(<String, Object?>{
-            'WuCategoryId': wuCategoryId,
-          }),
+          'FulfillmentData': jsonEncode(<String, Object?>{'WuCategoryId': wuCategoryId}),
         },
       ],
     },
@@ -773,17 +659,13 @@ Map<String, Object?> _uwpProductJson({String? wuCategoryId = 'category-id'}) {
 }
 
 final class _FakeStoreRepository extends StoreRepository {
-  _FakeStoreRepository(this._packagesById)
-    : super(api: _MockApiClient(), cache: StoreCache());
+  _FakeStoreRepository(this._packagesById) : super(api: _MockApiClient(), cache: StoreCache());
 
   final Map<String, Set<PackageInfo>> _packagesById;
   static const String _downloadUrl = 'https://example.test/package.appx';
 
   @override
-  Future<Set<PackageInfo>> getPackages({
-    required String productId,
-    required StoreRing ring,
-  }) async {
+  Future<Set<PackageInfo>> getPackages({required String productId, required StoreRing ring}) async {
     return _packagesById[productId] ?? <PackageInfo>{};
   }
 
@@ -830,19 +712,11 @@ final class _RecordingPackageFileService extends PackageFileService {
 }
 
 UwpStoreRepository _uwpRepository(ApiClient apiClient) {
-  return UwpStoreRepository(
-    api: apiClient,
-    cache: StoreCache(),
-    xmlParser: const UwpXmlParser(),
-  );
+  return UwpStoreRepository(api: apiClient, cache: StoreCache(), xmlParser: const UwpXmlParser());
 }
 
 Win32StoreRepository _win32Repository(ApiClient apiClient) {
-  return Win32StoreRepository(
-    api: apiClient,
-    cache: StoreCache(),
-    xmlParser: const UwpXmlParser(),
-  );
+  return Win32StoreRepository(api: apiClient, cache: StoreCache(), xmlParser: const UwpXmlParser());
 }
 
 StoreService _service(
@@ -851,10 +725,8 @@ StoreService _service(
   StoreRepository? win32Repository,
   PackageFileService? fileService,
 }) => StoreService(
-  uwpRepository:
-      uwpRepository ?? _FakeStoreRepository(<String, Set<PackageInfo>>{}),
-  win32Repository:
-      win32Repository ?? _FakeStoreRepository(<String, Set<PackageInfo>>{}),
+  uwpRepository: uwpRepository ?? _FakeStoreRepository(<String, Set<PackageInfo>>{}),
+  win32Repository: win32Repository ?? _FakeStoreRepository(<String, Set<PackageInfo>>{}),
   fileService: fileService ?? PackageFileService(apiClient),
 );
 

@@ -46,19 +46,9 @@ extension StoreStateX on StoreState {
   );
 }
 
-typedef _ProgressTotals = ({
-  int completed,
-  int total,
-  int downloadedBytes,
-  int totalBytes,
-});
+typedef _ProgressTotals = ({int completed, int total, int downloadedBytes, int totalBytes});
 
-const _ProgressTotals _zeroTotals = (
-  completed: 0,
-  total: 0,
-  downloadedBytes: 0,
-  totalBytes: 0,
-);
+const _ProgressTotals _zeroTotals = (completed: 0, total: 0, downloadedBytes: 0, totalBytes: 0);
 
 @Riverpod(keepAlive: true)
 class StoreController extends _$StoreController {
@@ -96,8 +86,7 @@ class StoreController extends _$StoreController {
         .searchProducts(query);
     state = result.when(
       success: (products) => state.copyWith(search: AsyncValue.data(products)),
-      failure: (error) =>
-          state.copyWith(search: AsyncValue.error(error, StackTrace.current)),
+      failure: (error) => state.copyWith(search: AsyncValue.error(error, StackTrace.current)),
     );
   }
 
@@ -190,9 +179,8 @@ class StoreController extends _$StoreController {
     );
   }
 
-  String? downloadFolderPath() => state.sessionDownloads.isEmpty
-      ? null
-      : File(state.sessionDownloads.first.path).parent.path;
+  String? downloadFolderPath() =>
+      state.sessionDownloads.isEmpty ? null : File(state.sessionDownloads.first.path).parent.path;
 
   Future<void> installCurrentDownload() async {
     await state.download.maybeMap(
@@ -219,26 +207,19 @@ class StoreController extends _$StoreController {
     _pendingTotals = _zeroTotals;
 
     state = state.copyWith(
-      download: .preparing(
-        productId: productId,
-        message: t.msstoreSearchingPackages,
-      ),
+      download: .preparing(productId: productId, message: t.msstoreSearchingPackages),
     );
 
     try {
       final StorePackagesByProductId packages =
-          existingPackages ??
-          await _fetchPackages(productId: productId, ring: ring, arch: arch);
+          existingPackages ?? await _fetchPackages(productId: productId, ring: ring, arch: arch);
 
       state = state.copyWith(
         ring: ring,
         sessionPackages: packages,
         sessionInstallAfter: install,
         sessionDownloads: const {},
-        download: .preparing(
-          productId: productId,
-          message: t.msstorePreparingToDownload,
-        ),
+        download: .preparing(productId: productId, message: t.msstorePreparingToDownload),
       );
 
       await _performDownload(productId: productId);
@@ -259,15 +240,9 @@ class StoreController extends _$StoreController {
       .getPackages(productIds: {productId}, ring: ring, arch: arch)
       .then((r) => r.when(success: (v) => v, failure: (e) => throw e));
 
-  Future<void> _performDownload({
-    required String productId,
-    StoreDownloadState? resumeFrom,
-  }) async {
+  Future<void> _performDownload({required String productId, StoreDownloadState? resumeFrom}) async {
     final StorePackagesByProductId packages = state.sessionPackages!;
-    final int totalCount = packages.values.fold<int>(
-      0,
-      (sum, p) => sum + p.length,
-    );
+    final int totalCount = packages.values.fold<int>(0, (sum, p) => sum + p.length);
     final int totalBytes = packages.values
         .expand((e) => e)
         .fold<int>(0, (s, p) => s + p.expectedBytes);
@@ -323,11 +298,7 @@ class StoreController extends _$StoreController {
       } else {
         ref.read(storeServiceProvider).releaseDownloadLocks();
         state = state.copyWith(
-          download: .completed(
-            productId: productId,
-            installResults: const {},
-            installed: false,
-          ),
+          download: .completed(productId: productId, installResults: const {}, installed: false),
         );
       }
     } on Exception {
@@ -351,11 +322,7 @@ class StoreController extends _$StoreController {
     if (_cancelToken?.isCancelled == true) return;
 
     state = state.copyWith(
-      download: .completed(
-        productId: productId,
-        installResults: result,
-        installed: true,
-      ),
+      download: .completed(productId: productId, installResults: result, installed: true),
     );
   }
 

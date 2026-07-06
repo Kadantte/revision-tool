@@ -9,22 +9,16 @@ sealed class AppException implements Exception {
 }
 
 final class NetworkException extends AppException {
-  const NetworkException({Object? cause})
-    : super('Network connection failed', cause: cause);
+  const NetworkException({Object? cause}) : super('Network connection failed', cause: cause);
 }
 
 final class TimeoutException extends AppException {
-  const TimeoutException({Object? cause})
-    : super('The network request timed out', cause: cause);
+  const TimeoutException({Object? cause}) : super('The network request timed out', cause: cause);
 }
 
 final class HttpStatusException extends AppException {
-  const HttpStatusException(
-    this.statusCode,
-    String message, {
-    this.responseBody,
-    Object? cause,
-  }) : super(message, cause: cause);
+  const HttpStatusException(this.statusCode, String message, {this.responseBody, Object? cause})
+    : super(message, cause: cause);
 
   final int statusCode;
   final Object? responseBody;
@@ -36,8 +30,6 @@ final class CancelledRequestException extends AppException {
 }
 
 final class UnexpectedNetworkException extends AppException {
-  const UnexpectedNetworkException({
-    String message = 'Unexpected network error',
-    Object? cause,
-  }) : super(message, cause: cause);
+  const UnexpectedNetworkException({String message = 'Unexpected network error', Object? cause})
+    : super(message, cause: cause);
 }

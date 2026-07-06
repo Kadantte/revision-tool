@@ -7,10 +7,7 @@ import 'package:win32_registry/win32_registry.dart';
 const String testRegistryPath = r'SOFTWARE\Revision\RevitoolTest';
 
 void main() {
-  const skipIntegration = bool.fromEnvironment(
-    'SKIP_INTEGRATION',
-    defaultValue: true,
-  );
+  const skipIntegration = bool.fromEnvironment('SKIP_INTEGRATION', defaultValue: true);
 
   setUpAll(() {
     if (skipIntegration) return;
@@ -48,14 +45,8 @@ void main() {
       test('cpuArch is not null and is lowercase', () {
         expect(WinRegistryService.cpuArch, isNotNull);
         expect(WinRegistryService.cpuArch, isNotEmpty);
-        expect(
-          WinRegistryService.cpuArch,
-          equals(WinRegistryService.cpuArch.toLowerCase()),
-        );
-        expect(
-          WinRegistryService.cpuArch,
-          anyOf(['amd64', 'x86', 'arm64', 'arm']),
-        );
+        expect(WinRegistryService.cpuArch, equals(WinRegistryService.cpuArch.toLowerCase()));
+        expect(WinRegistryService.cpuArch, anyOf(['amd64', 'x86', 'arm64', 'arm']));
       });
 
       test('CPU vendor flags are mutually exclusive', () {
@@ -77,10 +68,7 @@ void main() {
       });
 
       test('defaultUserHivePath is valid path', () {
-        expect(
-          WinRegistryService.defaultUserHivePath,
-          equals(r'C:\Users\Default\NTUSER.DAT'),
-        );
+        expect(WinRegistryService.defaultUserHivePath, equals(r'C:\Users\Default\NTUSER.DAT'));
         expect(WinRegistryService.defaultUserHivePath, contains(r':\'));
       });
 
@@ -260,15 +248,12 @@ void main() {
         expect(result, isNull);
       });
 
-      test(
-        'null checks prevent crashes when accessing build-dependent values',
-        () {
-          expect(() => WinRegistryService.buildNumber, returnsNormally);
-          expect(WinRegistryService.buildNumber, isNotNull);
-          expect(WinRegistryService.buildNumber, isA<int>());
-          expect(WinRegistryService.buildNumber, greaterThan(0));
-        },
-      );
+      test('null checks prevent crashes when accessing build-dependent values', () {
+        expect(() => WinRegistryService.buildNumber, returnsNormally);
+        expect(WinRegistryService.buildNumber, isNotNull);
+        expect(WinRegistryService.buildNumber, isA<int>());
+        expect(WinRegistryService.buildNumber, greaterThan(0));
+      });
 
       test('CPU architecture never returns null', () {
         expect(WinRegistryService.cpuArch, isNotNull);
@@ -303,9 +288,7 @@ void main() {
       });
 
       test('getUserServices handles common services', () {
-        final Iterable<String> wpnServices = WinRegistryService.getUserServices(
-          'WpnUserService',
-        );
+        final Iterable<String> wpnServices = WinRegistryService.getUserServices('WpnUserService');
         expect(wpnServices, isA<Iterable<String>>());
       });
     },
@@ -318,31 +301,19 @@ void main() {
         : false,
     () {
       test('hidePageVisibilitySettings handles null current value', () async {
-        await expectLater(
-          WinRegistryService.hidePageVisibilitySettings('test-page'),
-          completes,
-        );
+        await expectLater(WinRegistryService.hidePageVisibilitySettings('test-page'), completes);
       });
 
       test('unhidePageVisibilitySettings handles null current value', () async {
-        await expectLater(
-          WinRegistryService.unhidePageVisibilitySettings('test-page'),
-          completes,
-        );
+        await expectLater(WinRegistryService.unhidePageVisibilitySettings('test-page'), completes);
       });
 
       test('hidePageVisibilitySettings handles empty string', () async {
-        await expectLater(
-          WinRegistryService.hidePageVisibilitySettings(''),
-          completes,
-        );
+        await expectLater(WinRegistryService.hidePageVisibilitySettings(''), completes);
       });
 
       test('unhidePageVisibilitySettings handles empty string', () async {
-        await expectLater(
-          WinRegistryService.unhidePageVisibilitySettings(''),
-          completes,
-        );
+        await expectLater(WinRegistryService.unhidePageVisibilitySettings(''), completes);
       });
     },
   );
@@ -424,10 +395,7 @@ void main() {
 
       test('createKey creates key without crashing', () {
         expect(
-          () => WinRegistryService.createKey(
-            Registry.currentUser,
-            '$testRegistryPath\\SubKey',
-          ),
+          () => WinRegistryService.createKey(Registry.currentUser, '$testRegistryPath\\SubKey'),
           returnsNormally,
         );
       });
@@ -521,10 +489,7 @@ void main() {
       test('getUserServices handles invalid service names', () {
         expect(() => WinRegistryService.getUserServices(''), returnsNormally);
 
-        expect(
-          () => WinRegistryService.getUserServices(r'Invalid\Service\Name'),
-          returnsNormally,
-        );
+        expect(() => WinRegistryService.getUserServices(r'Invalid\Service\Name'), returnsNormally);
       });
     },
   );
@@ -542,10 +507,7 @@ void main() {
           'CurrentBuildNumber',
         );
         expect(registryBuildNumber, isNotNull);
-        expect(
-          WinRegistryService.buildNumber,
-          equals(int.parse(registryBuildNumber!)),
-        );
+        expect(WinRegistryService.buildNumber, equals(int.parse(registryBuildNumber!)));
       });
 
       test('cpuArch matches registry value', () {
@@ -566,10 +528,7 @@ void main() {
         );
 
         if (registryValue != null) {
-          expect(
-            WinRegistryService.themeTransparencyEffect,
-            equals(registryValue == 1),
-          );
+          expect(WinRegistryService.themeTransparencyEffect, equals(registryValue == 1));
         }
       });
 

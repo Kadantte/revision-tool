@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart' as msicons;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:win32/win32.dart';
@@ -30,9 +29,7 @@ class AppShell extends ConsumerStatefulWidget {
 }
 
 class _AppShellState extends ConsumerState<AppShell> {
-  final GlobalKey<State<StatefulWidget>> _viewKey = GlobalKey(
-    debugLabel: 'Navigation View Key',
-  );
+  final GlobalKey<State<StatefulWidget>> _viewKey = GlobalKey(debugLabel: 'Navigation View Key');
   final GlobalKey<AutoSuggestBoxState<dynamic>> _searchKey = GlobalKey(
     debugLabel: 'Search Bar Key',
   );
@@ -44,8 +41,7 @@ class _AppShellState extends ConsumerState<AppShell> {
   static const imgXY = 60.0;
   AutoSuggestBoxItem<dynamic>? selectedPage;
 
-  late final List<AutoSuggestBoxItem<dynamic>> _searchItems = AppRoutes
-      .searchableItems
+  late final List<AutoSuggestBoxItem<dynamic>> _searchItems = AppRoutes.searchableItems
       .map((e) {
         final item = e as PaneItem;
         return AutoSuggestBoxItem(
@@ -74,11 +70,7 @@ class _AppShellState extends ConsumerState<AppShell> {
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\AccountPicture\Users\' +
         WinRegistryService.currentUserSid;
 
-    final String? imagePath = WinRegistryService.readString(
-      .localMachine,
-      path,
-      'Image192',
-    );
+    final String? imagePath = WinRegistryService.readString(.localMachine, path, 'Image192');
     if (imagePath != null && File(imagePath).existsSync()) {
       return File(imagePath);
     }
@@ -115,14 +107,12 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
-    final int imgCacheSize = (imgXY * MediaQuery.devicePixelRatioOf(context))
-        .toInt();
+    final int imgCacheSize = (imgXY * MediaQuery.devicePixelRatioOf(context)).toInt();
 
     final AutoSuggestBox<dynamic> autoSuggestBox = AutoSuggestBox(
       // Needed to override decoration when autoSuggestBox is an overlay
       decoration: .resolveWith((states) {
-        final bool isOverlayVisible =
-            _searchKey.currentState?.isOverlayVisible ?? false;
+        final bool isOverlayVisible = _searchKey.currentState?.isOverlayVisible ?? false;
 
         final Color color = states.isFocused
             ? context.theme.resources.solidBackgroundFillColorSecondary
@@ -153,9 +143,7 @@ class _AppShellState extends ConsumerState<AppShell> {
       onPointerDown: (PointerDownEvent event) async {
         if (event.buttons & kBackMouseButton != 0 && context.canPop()) {
           await Future<void>.delayed(
-            Duration(
-              milliseconds: context.theme.fastAnimationDuration.inMilliseconds,
-            ),
+            Duration(milliseconds: context.theme.fastAnimationDuration.inMilliseconds),
           );
           if (context.mounted && context.canPop()) {
             context.pop();
@@ -187,16 +175,11 @@ class _AppShellState extends ConsumerState<AppShell> {
               return PaneBackButton(
                 enabled: onPressed != null,
                 onPressed: onPressed,
-                backIcon: const Center(
-                  child: Icon(FluentIcons.back, size: 12.0),
-                ),
+                backIcon: const Center(child: Icon(FluentIcons.back, size: 12.0)),
               );
             }(),
             // To match W11's Settings app title bar style, `leftHeader` must be the title, when width > 800 `title` must be a search [IconButton] that spawns an overlay otherwise it must be null and the search [AutoSuggestBox] must be in `content`
-            leftHeader: const Text(
-              'Revision Tool',
-              style: TextStyle(fontSize: 12),
-            ),
+            leftHeader: const Text('Revision Tool', style: TextStyle(fontSize: 12)),
             title: MediaQuery.widthOf(context) > 800
                 ? null
                 : OverlayPortal(
@@ -210,12 +193,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                             child: const SizedBox.expand(),
                           ),
                         ),
-                        Positioned(
-                          top: 50,
-                          left: 25,
-                          right: 25,
-                          child: autoSuggestBox,
-                        ),
+                        Positioned(top: 50, left: 25, right: 25, child: autoSuggestBox),
                       ],
                     ),
                     child: IconButton(
@@ -231,9 +209,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                 ? ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 470),
                     child: Padding(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
                       child: autoSuggestBox,
                     ),
                   )
@@ -245,10 +221,7 @@ class _AppShellState extends ConsumerState<AppShell> {
           ),
           pane: NavigationPane(
             acrylicDisabled: true,
-            indicator: const StickyNavigationIndicator(
-              indicatorSize: 3.5,
-              leftPadding: 12.5,
-            ),
+            indicator: const StickyNavigationIndicator(indicatorSize: 3.5, leftPadding: 12.5),
             size: const .new(openWidth: 300, headerHeight: 90.5),
             selected: ref.watch(navigationIndexProvider),
             onItemPressed: (index) {
@@ -258,9 +231,7 @@ class _AppShellState extends ConsumerState<AppShell> {
               ref.read(navigationIndexProvider.notifier).index = index;
               context.push(route.path);
             },
-            displayMode: MediaQuery.widthOf(context) >= 800
-                ? .expanded
-                : .minimal,
+            displayMode: MediaQuery.widthOf(context) >= 800 ? .expanded : .minimal,
             header: RepaintBoundary(
               child: Center(
                 heightFactor: 5,

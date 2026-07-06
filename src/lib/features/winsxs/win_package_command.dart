@@ -9,30 +9,16 @@ import 'win_package_service.dart';
 
 class WindowsPackageCommand extends Command<void> {
   WindowsPackageCommand({required this._container}) {
-    final Set<String> allowedList = WinPackageType.values
-        .map((e) => e.cliKey)
-        .toSet();
+    final Set<String> allowedList = WinPackageType.values.map((e) => e.cliKey).toSet();
 
-    argParser.addOption(
-      'download',
-      help: 'Downloads a package',
-      allowed: allowedList,
-    );
+    argParser.addOption('download', help: 'Downloads a package', allowed: allowedList);
     argParser.addOption(
       'download-path',
       help: 'Custom download path for packages',
       defaultsTo: WinPackageService.cabPath,
     );
-    argParser.addOption(
-      'install',
-      help: 'Install a package',
-      allowed: allowedList,
-    );
-    argParser.addOption(
-      'uninstall',
-      help: 'Uninstall a package',
-      allowed: allowedList,
-    );
+    argParser.addOption('install', help: 'Install a package', allowed: allowedList);
+    argParser.addOption('uninstall', help: 'Uninstall a package', allowed: allowedList);
   }
 
   final ProviderContainer _container;
@@ -54,16 +40,12 @@ class WindowsPackageCommand extends Command<void> {
 
     final String? cliKey = downloadOption ?? installOption ?? uninstallOption;
     if (cliKey == null) {
-      logger.e(
-        '$name: No valid options provided. Use --help for usage information.',
-      );
+      logger.e('$name: No valid options provided. Use --help for usage information.');
       exit(0);
     }
 
     final WinPackageType type = WinPackageType.byCliKey(cliKey);
-    final WinPackageService service = _container.read(
-      winPackageServiceProvider(type),
-    );
+    final WinPackageService service = _container.read(winPackageServiceProvider(type));
 
     try {
       if (downloadOption != null) {

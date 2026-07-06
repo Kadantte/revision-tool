@@ -55,8 +55,7 @@ abstract class ProductDetails with _$ProductDetails {
     ProductInstaller? installer,
   }) = _ProductDetails;
 
-  factory ProductDetails.fromJson(Map<String, Object?> json) =>
-      _$ProductDetailsFromJson(json);
+  factory ProductDetails.fromJson(Map<String, Object?> json) => _$ProductDetailsFromJson(json);
 }
 
 @freezed
@@ -78,8 +77,7 @@ abstract class ProductRating with _$ProductRating {
     bool? hasInAppPurchases,
   }) = _ProductRating;
 
-  factory ProductRating.fromJson(Map<String, Object?> json) =>
-      _$ProductRatingFromJson(json);
+  factory ProductRating.fromJson(Map<String, Object?> json) => _$ProductRatingFromJson(json);
 }
 
 @freezed
@@ -94,8 +92,7 @@ abstract class ProductSystemRequirements with _$ProductSystemRequirements {
 }
 
 @freezed
-abstract class ProductSystemRequirementSection
-    with _$ProductSystemRequirementSection {
+abstract class ProductSystemRequirementSection with _$ProductSystemRequirementSection {
   const factory ProductSystemRequirementSection({
     String? title,
     List<ProductSystemRequirementItem>? items,
@@ -106,8 +103,7 @@ abstract class ProductSystemRequirementSection
 }
 
 @freezed
-abstract class ProductSystemRequirementItem
-    with _$ProductSystemRequirementItem {
+abstract class ProductSystemRequirementItem with _$ProductSystemRequirementItem {
   const factory ProductSystemRequirementItem({
     String? level,
     String? itemCode,
@@ -131,8 +127,7 @@ abstract class ProductInstaller with _$ProductInstaller {
     Map<String, ProductInstallerArch>? architectures,
   }) = _ProductInstaller;
 
-  factory ProductInstaller.fromJson(Map<String, Object?> json) =>
-      _$ProductInstallerFromJson(json);
+  factory ProductInstaller.fromJson(Map<String, Object?> json) => _$ProductInstallerFromJson(json);
 }
 
 @freezed

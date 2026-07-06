@@ -7,11 +7,9 @@ part 'win32_manifest_dto.g.dart';
 
 @freezed
 sealed class Win32ManifestDto with _$Win32ManifestDto {
-  const factory Win32ManifestDto({@JsonKey(name: 'Data') Data? data}) =
-      _Win32ManifestDto;
+  const factory Win32ManifestDto({@JsonKey(name: 'Data') Data? data}) = _Win32ManifestDto;
 
-  factory Win32ManifestDto.fromJson(Map<String, Object?> json) =>
-      _$Win32ManifestDtoFromJson(json);
+  factory Win32ManifestDto.fromJson(Map<String, Object?> json) => _$Win32ManifestDtoFromJson(json);
 }
 
 @freezed
@@ -32,18 +30,14 @@ sealed class Versions with _$Versions {
     @JsonKey(name: 'Installers') List<Installers>? installers,
   }) = _Versions;
 
-  factory Versions.fromJson(Map<String, Object?> json) =>
-      _$VersionsFromJson(json);
+  factory Versions.fromJson(Map<String, Object?> json) => _$VersionsFromJson(json);
 }
 
 @freezed
 sealed class DefaultLocale with _$DefaultLocale {
-  const factory DefaultLocale({
-    @JsonKey(name: 'PackageName') String? packageName,
-  }) = _DefaultLocale;
+  const factory DefaultLocale({@JsonKey(name: 'PackageName') String? packageName}) = _DefaultLocale;
 
-  factory DefaultLocale.fromJson(Map<String, Object?> json) =>
-      _$DefaultLocaleFromJson(json);
+  factory DefaultLocale.fromJson(Map<String, Object?> json) => _$DefaultLocaleFromJson(json);
 }
 
 @freezed
@@ -58,14 +52,12 @@ sealed class Installers with _$Installers {
     @JsonKey(name: 'InstallerType') String? installerType,
   }) = _Installers;
 
-  factory Installers.fromJson(Map<String, Object?> json) =>
-      _$InstallersFromJson(json);
+  factory Installers.fromJson(Map<String, Object?> json) => _$InstallersFromJson(json);
 }
 
 @freezed
 sealed class InstallerSwitches with _$InstallerSwitches {
-  const factory InstallerSwitches({@JsonKey(name: 'Silent') String? silent}) =
-      _InstallerSwitches;
+  const factory InstallerSwitches({@JsonKey(name: 'Silent') String? silent}) = _InstallerSwitches;
 
   factory InstallerSwitches.fromJson(Map<String, Object?> json) =>
       _$InstallerSwitchesFromJson(json);

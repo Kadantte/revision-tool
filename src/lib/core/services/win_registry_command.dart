@@ -13,8 +13,7 @@ abstract class _WinRegistryServiceCommandBase extends Command<void> {
   final WinRegistryService _service;
 }
 
-final class WinRegistryServiceCliCommand
-    extends _WinRegistryServiceCommandBase {
+final class WinRegistryServiceCliCommand extends _WinRegistryServiceCommandBase {
   WinRegistryServiceCliCommand(super.service) {
     addSubcommand(_ActionHidePageCommand(_service));
     addSubcommand(_ActionUnhidePageCommand(_service));
@@ -38,11 +37,7 @@ final class WinRegistryServiceCliCommand
 
 class _ActionHidePageCommand extends _WinRegistryServiceCommandBase {
   _ActionHidePageCommand(super.service) {
-    argParser.addOption(
-      'value',
-      mandatory: true,
-      help: 'The value (type: String)',
-    );
+    argParser.addOption('value', mandatory: true, help: 'The value (type: String)');
   }
 
   @override
@@ -71,11 +66,7 @@ class _ActionHidePageCommand extends _WinRegistryServiceCommandBase {
 
 class _ActionUnhidePageCommand extends _WinRegistryServiceCommandBase {
   _ActionUnhidePageCommand(super.service) {
-    argParser.addOption(
-      'value',
-      mandatory: true,
-      help: 'The value (type: String)',
-    );
+    argParser.addOption('value', mandatory: true, help: 'The value (type: String)');
   }
 
   @override

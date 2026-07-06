@@ -57,14 +57,8 @@ class _ThemeModeCard extends ConsumerWidget {
             value: ThemeMode.system,
             child: Text(ThemeMode.system.name.uppercaseFirst()),
           ),
-          ComboBoxItem(
-            value: ThemeMode.light,
-            child: Text(ThemeMode.light.name.uppercaseFirst()),
-          ),
-          ComboBoxItem(
-            value: ThemeMode.dark,
-            child: Text(ThemeMode.dark.name.uppercaseFirst()),
-          ),
+          ComboBoxItem(value: ThemeMode.light, child: Text(ThemeMode.light.name.uppercaseFirst())),
+          ComboBoxItem(value: ThemeMode.dark, child: Text(ThemeMode.dark.name.uppercaseFirst())),
         ],
       ),
     );
@@ -149,9 +143,7 @@ class _UpdateCardState extends ConsumerState<_UpdateCard> {
                   context: context,
                   builder: (dialogCtx) => ContentDialog(
                     title: Text(t.settingsUpdateButtonAvailable),
-                    content: Text(
-                      "${t.settingsUpdateButtonAvailablePrompt} ${data["tag_name"]}?",
-                    ),
+                    content: Text("${t.settingsUpdateButtonAvailablePrompt} ${data["tag_name"]}?"),
                     actions: [
                       FilledButton(
                         child: Text(t.okButton),
@@ -182,10 +174,7 @@ class _UpdateCardState extends ConsumerState<_UpdateCard> {
                         title: const Text('Error'),
                         content: Text(e.toString()),
                         actions: [
-                          Button(
-                            child: Text(t.okButton),
-                            onPressed: () => Navigator.pop(c),
-                          ),
+                          Button(child: Text(t.okButton), onPressed: () => Navigator.pop(c)),
                         ],
                       ),
                     );
@@ -207,12 +196,7 @@ class _UpdateCardState extends ConsumerState<_UpdateCard> {
                 builder: (c) => ContentDialog(
                   title: const Text('Error'),
                   content: Text(e.toString()),
-                  actions: [
-                    Button(
-                      child: Text(t.okButton),
-                      onPressed: () => Navigator.pop(c),
-                    ),
-                  ],
+                  actions: [Button(child: Text(t.okButton), onPressed: () => Navigator.pop(c))],
                 ),
               );
               _resetTitleAfterDelay();

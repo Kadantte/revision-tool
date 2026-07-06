@@ -37,7 +37,6 @@ class _CertificatesCard extends ConsumerWidget {
   const _CertificatesCard();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: move to troubleshooting page
     return CardHighlight(
       icon: msicons.FluentIcons.certificate_20_regular,
       label: t.tweaksSecurityCerts,
@@ -55,12 +54,7 @@ class _CertificatesCard extends ConsumerWidget {
               context: context,
               builder: (context) => ContentDialog(
                 content: Text(t.tweaksSecurityCertsUpdateDialog),
-                actions: [
-                  Button(
-                    child: Text(t.okButton),
-                    onPressed: () => context.pop(),
-                  ),
-                ],
+                actions: [Button(child: Text(t.okButton), onPressed: () => context.pop())],
               ),
             );
           },
@@ -85,9 +79,7 @@ class _UpdateKGLCard extends ConsumerWidget {
           onPressed: () async {
             var message = '';
             try {
-              unawaited(
-                showLoadingDialog(context, '${t.settingsUpdatingStatus} KGL'),
-              );
+              unawaited(showLoadingDialog(context, '${t.settingsUpdatingStatus} KGL'));
               await ref.read(updatesServiceProvider).updateKGL();
               if (!context.mounted) return;
               message = t.restartDialog;
@@ -95,11 +87,7 @@ class _UpdateKGLCard extends ConsumerWidget {
               message = e.toString();
             } finally {
               context.pop();
-              showRestartDialog(
-                context,
-                title: t.settingsUpdatingStatusSuccess,
-                content: message,
-              );
+              showRestartDialog(context, title: t.settingsUpdatingStatusSuccess, content: message);
             }
           },
           child: Text(t.updateButton),

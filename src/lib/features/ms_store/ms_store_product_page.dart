@@ -19,10 +19,7 @@ import 'models/search/search_product.dart';
 import 'store_providers.dart';
 import 'widgets/ms_store_download_widget.dart';
 
-const BorderRadius _borderRadiusTop = .only(
-  topLeft: .circular(8),
-  topRight: .circular(8),
-);
+const BorderRadius _borderRadiusTop = .only(topLeft: .circular(8), topRight: .circular(8));
 
 Color parseHexColor(String hexColor) {
   try {
@@ -100,23 +97,14 @@ class _MSStoreProductPageState extends ConsumerState<MSStoreProductPage> {
       ),
       error: (error, stack) => ScaffoldPage.scrollable(
         padding: kScaffoldPagePadding,
-        children: [
-          Center(child: Text(t.msstoreProductLoadError(error: error))),
-        ],
+        children: [Center(child: Text(t.msstoreProductLoadError(error: error)))],
       ),
     );
   }
 
-  List<Widget> _buildContent(
-    BuildContext context,
-    WidgetRef ref,
-    ProductDetails details,
-  ) {
+  List<Widget> _buildContent(BuildContext context, WidgetRef ref, ProductDetails details) {
     return [
-      _HeroSection(
-        details: details,
-        onGet: () => _showInstallDialog(context, ref),
-      ),
+      _HeroSection(details: details, onGet: () => _showInstallDialog(context, ref)),
       const SizedBox(height: 50),
       if (details.screenshots?.isNotEmpty ?? false) ...[
         _ContentCards(
@@ -125,10 +113,7 @@ class _MSStoreProductPageState extends ConsumerState<MSStoreProductPage> {
         ),
       ],
       if (details.description?.isNotEmpty ?? false) ...[
-        _ContentCards(
-          title: t.description,
-          content: Text(details.description!),
-        ),
+        _ContentCards(title: t.description, content: Text(details.description!)),
       ],
       if (details.averageRating != null || details.ratingCount != null) ...[
         _ContentCards(
@@ -137,10 +122,7 @@ class _MSStoreProductPageState extends ConsumerState<MSStoreProductPage> {
         ),
       ],
       if (details.features?.isNotEmpty ?? false) ...[
-        _ContentCards(
-          title: t.features,
-          content: Text(details.features!.join('\n')),
-        ),
+        _ContentCards(title: t.features, content: Text(details.features!.join('\n'))),
       ],
       if (details.systemRequirements != null) ...[
         _ContentCards(
@@ -148,9 +130,7 @@ class _MSStoreProductPageState extends ConsumerState<MSStoreProductPage> {
           content: Text(
             details.systemRequirements!.minimum!.when(
               (title, items) => items != null
-                  ? items
-                        .map((item) => '${item.name}: ${item.description}')
-                        .join('\n')
+                  ? items.map((item) => '${item.name}: ${item.description}').join('\n')
                   : 'N/A',
             ),
           ),
@@ -195,9 +175,7 @@ class _ContentCards extends StatelessWidget {
               padding: const .symmetric(horizontal: 12),
               child: Text(
                 title,
-                style: context.theme.typography.bodyStrong!.copyWith(
-                  fontSize: 18,
-                ),
+                style: context.theme.typography.bodyStrong!.copyWith(fontSize: 18),
               ),
             ),
             const Divider(
@@ -230,26 +208,16 @@ class _HeroSection extends ConsumerWidget {
 
     final bool isWideScreen = MediaQuery.widthOf(context) >= 550;
     final AsyncValue<List<Color>?> paletteAsync = details.heroImageUrl != null
-        ? ref.watch(
-            msStoreProductPaletteProvider(
-              details.productId!,
-              details.heroImageUrl!,
-            ),
-          )
+        ? ref.watch(msStoreProductPaletteProvider(details.productId!, details.heroImageUrl!))
         : const AsyncValue.data(null);
-    final Color iconUrlBackgroundColor = parseHexColor(
-      details.iconUrlBackground ?? '',
-    );
+    final Color iconUrlBackgroundColor = parseHexColor(details.iconUrlBackground ?? '');
 
     final decoratedBox = DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: .topCenter,
           end: .bottomCenter,
-          colors: [
-            iconUrlBackgroundColor,
-            context.theme.scaffoldBackgroundColor,
-          ],
+          colors: [iconUrlBackgroundColor, context.theme.scaffoldBackgroundColor],
         ),
       ),
     );
@@ -299,18 +267,14 @@ class _HeroSection extends ConsumerWidget {
                                   palette.elementAt(1),
                                   palette.elementAt(1),
                                 ],
-                                stops: isWideScreen
-                                    ? null
-                                    : const [0, 0.1, 0.2],
+                                stops: isWideScreen ? null : const [0, 0.1, 0.2],
                               ),
                               LinearGradient(
                                 begin: .center,
                                 end: .bottomCenter,
                                 colors: [
                                   palette.first.withAlpha(140),
-                                  darkTheme.scaffoldBackgroundColor.withAlpha(
-                                    50,
-                                  ),
+                                  darkTheme.scaffoldBackgroundColor.withAlpha(50),
                                 ],
                               ),
                               LinearGradient(
@@ -318,23 +282,16 @@ class _HeroSection extends ConsumerWidget {
                                 end: .bottomRight,
                                 stops: const [0, 0.5, 1],
                                 colors: [
-                                  darkTheme.scaffoldBackgroundColor.withAlpha(
-                                    250,
-                                  ),
+                                  darkTheme.scaffoldBackgroundColor.withAlpha(250),
                                   Colors.transparent,
-                                  darkTheme.scaffoldBackgroundColor.withAlpha(
-                                    250,
-                                  ),
+                                  darkTheme.scaffoldBackgroundColor.withAlpha(250),
                                 ],
                               ),
                               LinearGradient(
                                 begin: .center,
                                 end: .bottomCenter,
                                 stops: const [0.2, 1],
-                                colors: [
-                                  Colors.transparent,
-                                  context.theme.scaffoldBackgroundColor,
-                                ],
+                                colors: [Colors.transparent, context.theme.scaffoldBackgroundColor],
                               ),
                             ]),
                           )
@@ -369,9 +326,7 @@ class _HeroSection extends ConsumerWidget {
                         children: [
                           Text(
                             details.title ?? '',
-                            style: darkTheme.typography.title!.copyWith(
-                              fontSize: 32,
-                            ),
+                            style: darkTheme.typography.title!.copyWith(fontSize: 32),
                             maxLines: 2,
                             textAlign: isWideScreen ? .start : .center,
                           ),
@@ -397,9 +352,7 @@ class _HeroSection extends ConsumerWidget {
                                 Icon(
                                   msicons.FluentIcons.star_16_filled,
                                   size: 16,
-                                  color: darkTheme
-                                      .resources
-                                      .textFillColorSecondary,
+                                  color: darkTheme.resources.textFillColorSecondary,
                                 ),
                                 divider,
                                 Text(
@@ -440,15 +393,11 @@ class _HeroSection extends ConsumerWidget {
                           ),
                         ),
 
-                      _InstallActionBar(
-                        productId: details.productId!,
-                        onGet: onGet,
-                      ),
+                      _InstallActionBar(productId: details.productId!, onGet: onGet),
 
                       if (details.productRatings != null &&
                           details.productRatings!.isNotEmpty &&
-                          details.productRatings!.first.ratingId !=
-                              'Microsoft:E')
+                          details.productRatings!.first.ratingId != 'Microsoft:E')
                         Wrap(
                           spacing: 12,
                           crossAxisAlignment: .end,
@@ -458,10 +407,7 @@ class _HeroSection extends ConsumerWidget {
                               height: 48,
                               child: AppImage(
                                 fetchPadding: 0,
-                                baseUrl: details
-                                    .productRatings!
-                                    .first
-                                    .ratingValueLogoUrl!,
+                                baseUrl: details.productRatings!.first.ratingValueLogoUrl!,
                               ),
                             ),
                             Column(
@@ -473,27 +419,16 @@ class _HeroSection extends ConsumerWidget {
                                   style: theme.typography.bodyStrong,
                                 ),
                                 Text(
-                                  details
-                                          .productRatings
-                                          ?.first
-                                          .ratingDescriptors
-                                          ?.join(', ') ??
-                                      '',
+                                  details.productRatings?.first.ratingDescriptors?.join(', ') ?? '',
                                   style: theme.typography.caption!.copyWith(
-                                    color:
-                                        theme.resources.textFillColorDisabled,
+                                    color: theme.resources.textFillColorDisabled,
                                   ),
                                 ),
                                 Text(
-                                  details
-                                          .productRatings
-                                          ?.first
-                                          .interactiveElements
-                                          ?.join(', ') ??
+                                  details.productRatings?.first.interactiveElements?.join(', ') ??
                                       '',
                                   style: theme.typography.caption!.copyWith(
-                                    color:
-                                        theme.resources.textFillColorDisabled,
+                                    color: theme.resources.textFillColorDisabled,
                                   ),
                                 ),
                               ],
@@ -548,23 +483,16 @@ class _ShareButtonState extends State<_ShareButton> {
         controller: _controller,
         child: AnimatedSwitcher(
           duration: context.theme.fastAnimationDuration,
-          transitionBuilder: (child, animation) =>
-              FadeTransition(opacity: animation, child: child),
+          transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
           child: _finished
               ? const IconButton(
-                  icon: Icon(
-                    msicons.FluentIcons.checkmark_20_regular,
-                    size: 20,
-                  ),
+                  icon: Icon(msicons.FluentIcons.checkmark_20_regular, size: 20),
                   key: ValueKey('checkmark'),
                   onPressed: null,
                 )
               : IconButton(
                   key: const ValueKey('share'),
-                  icon: const Icon(
-                    msicons.FluentIcons.share_20_regular,
-                    size: 20,
-                  ),
+                  icon: const Icon(msicons.FluentIcons.share_20_regular, size: 20),
                   onPressed: () {
                     _controller.showFlyout<void>(
                       autoModeConfiguration: .new(preferredMode: .bottomLeft),
@@ -579,8 +507,7 @@ class _ShareButtonState extends State<_ShareButton> {
                               onPressed: () {
                                 Clipboard.setData(
                                   ClipboardData(
-                                    text:
-                                        'https://apps.microsoft.com/detail/${widget.productId}',
+                                    text: 'https://apps.microsoft.com/detail/${widget.productId}',
                                   ),
                                 );
                                 setState(() => _finished = true);
@@ -606,9 +533,7 @@ class _InstallActionBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final StoreDownloadState state = ref.watch(
-      storeControllerProvider.select((s) => s.download),
-    );
+    final StoreDownloadState state = ref.watch(storeControllerProvider.select((s) => s.download));
     final bool active = state.isForProduct(productId);
 
     final bool isWideScreen = MediaQuery.widthOf(context) >= 550;
@@ -637,11 +562,7 @@ class _InstallActionBar extends ConsumerWidget {
 }
 
 class _InstallPrimaryAction extends ConsumerWidget {
-  const _InstallPrimaryAction({
-    required this.productId,
-    required this.state,
-    required this.onGet,
-  });
+  const _InstallPrimaryAction({required this.productId, required this.state, required this.onGet});
 
   final String productId;
   final StoreDownloadState state;
@@ -655,51 +576,38 @@ class _InstallPrimaryAction extends ConsumerWidget {
         return _InstallProgressCard(
           key: const ValueKey('preparing'),
           progress: 0,
-          title: installing
-              ? t.msstoreInstalling
-              : t.msstorePreparingToDownload,
+          title: installing ? t.msstoreInstalling : t.msstorePreparingToDownload,
           subtitle: installing ? t.msstorePreparingInstaller : message ?? '',
           onCancel: () => ref.read(storeControllerProvider.notifier).cancel(),
         );
       },
-      downloading:
-          (_, progress, completed, total, downloadedBytes, totalBytes) =>
-              _InstallProgressCard(
-                key: const ValueKey('downloading'),
-                progress: _overallProgress(
-                  progress,
-                  downloadedBytes,
-                  totalBytes,
-                ),
-                title: t.msstoreDownloading,
-                subtitle: totalBytes > 0
-                    ? t.msstoreDownloadedBytesProgress(
-                        downloaded: downloadedBytes.formatBytes(),
-                        total: totalBytes.formatBytes(),
-                      )
-                    : t.msstoreDownloadingPackages(
-                        completed: completed,
-                        total: total,
-                      ),
-                onPause: () =>
-                    ref.read(storeControllerProvider.notifier).pause(),
-                onCancel: () =>
-                    ref.read(storeControllerProvider.notifier).cancel(),
-              ),
-      paused: (_, progress, _, _, downloadedBytes, totalBytes) =>
+      downloading: (_, progress, completed, total, downloadedBytes, totalBytes) =>
           _InstallProgressCard(
-            key: const ValueKey('paused'),
+            key: const ValueKey('downloading'),
             progress: _overallProgress(progress, downloadedBytes, totalBytes),
-            title: t.msstorePaused,
+            title: t.msstoreDownloading,
             subtitle: totalBytes > 0
-                ? t.msstorePausedBytesProgress(
+                ? t.msstoreDownloadedBytesProgress(
                     downloaded: downloadedBytes.formatBytes(),
                     total: totalBytes.formatBytes(),
                   )
-                : t.msstorePaused,
-            onResume: () => ref.read(storeControllerProvider.notifier).resume(),
+                : t.msstoreDownloadingPackages(completed: completed, total: total),
+            onPause: () => ref.read(storeControllerProvider.notifier).pause(),
             onCancel: () => ref.read(storeControllerProvider.notifier).cancel(),
           ),
+      paused: (_, progress, _, _, downloadedBytes, totalBytes) => _InstallProgressCard(
+        key: const ValueKey('paused'),
+        progress: _overallProgress(progress, downloadedBytes, totalBytes),
+        title: t.msstorePaused,
+        subtitle: totalBytes > 0
+            ? t.msstorePausedBytesProgress(
+                downloaded: downloadedBytes.formatBytes(),
+                total: totalBytes.formatBytes(),
+              )
+            : t.msstorePaused,
+        onResume: () => ref.read(storeControllerProvider.notifier).resume(),
+        onCancel: () => ref.read(storeControllerProvider.notifier).cancel(),
+      ),
       completed: (_, _, installed) => SizedBox(
         key: ValueKey(installed ? 'installed' : 'downloaded'),
         height: 52,
@@ -707,9 +615,7 @@ class _InstallPrimaryAction extends ConsumerWidget {
         child: FilledButton(
           onPressed: installed
               ? null
-              : () => ref
-                    .read(storeControllerProvider.notifier)
-                    .installCurrentDownload(),
+              : () => ref.read(storeControllerProvider.notifier).installCurrentDownload(),
           child: Align(
             alignment: .centerLeft,
             child: Text(
@@ -727,10 +633,7 @@ class _InstallPrimaryAction extends ConsumerWidget {
           onPressed: onGet,
           child: Align(
             alignment: .centerLeft,
-            child: Text(
-              t.msstoreRetry,
-              style: const TextStyle(fontWeight: .bold),
-            ),
+            child: Text(t.msstoreRetry, style: const TextStyle(fontWeight: .bold)),
           ),
         ),
       ),
@@ -762,10 +665,7 @@ class _InstallPrimaryAction extends ConsumerWidget {
             begin: const Offset(0.02, 0),
             end: .zero,
           ).animate(animation);
-          final Animation<double> scale = Tween<double>(
-            begin: 0.98,
-            end: 1,
-          ).animate(animation);
+          final Animation<double> scale = Tween<double>(begin: 0.98, end: 1).animate(animation);
           return FadeTransition(
             opacity: animation,
             child: SlideTransition(
@@ -805,9 +705,7 @@ class _InstallProgressCard extends StatelessWidget {
     final double clampedProgress = progress.clamp(0, 1).toDouble();
     final Color surfaceColor = Color.alphaBlend(
       theme.accentColor.lightest.withAlpha(theme.brightness == .dark ? 10 : 18),
-      resources.cardBackgroundFillColorDefault.withAlpha(
-        theme.brightness == .dark ? 220 : 238,
-      ),
+      resources.cardBackgroundFillColorDefault.withAlpha(theme.brightness == .dark ? 220 : 238),
     );
 
     return SizedBox(
@@ -820,9 +718,7 @@ class _InstallProgressCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: surfaceColor,
             borderRadius: .circular(6),
-            border: .all(
-              color: resources.cardStrokeColorDefault.withAlpha(120),
-            ),
+            border: .all(color: resources.cardStrokeColorDefault.withAlpha(120)),
           ),
           child: Stack(
             children: [
@@ -877,9 +773,7 @@ class _InstallProgressCard extends StatelessWidget {
                       Tooltip(
                         message: t.msstoreCancel,
                         child: IconButton(
-                          icon: const Icon(
-                            msicons.FluentIcons.dismiss_20_regular,
-                          ),
+                          icon: const Icon(msicons.FluentIcons.dismiss_20_regular),
                           onPressed: onCancel,
                         ),
                       ),
@@ -931,8 +825,7 @@ class _InstallMoreButtonState extends State<_InstallMoreButton> {
               autoModeConfiguration: .new(preferredMode: .bottomLeft),
               barrierColor: Colors.transparent,
               navigatorKey: rootNavigatorKey.currentState,
-              builder: (context) =>
-                  _MoreMenuFlyout(productId: widget.productId),
+              builder: (context) => _MoreMenuFlyout(productId: widget.productId),
             );
           },
         ),
@@ -957,8 +850,7 @@ class _MoreMenuFlyout extends StatelessWidget {
             showDialog(
               context: context,
               dismissWithEsc: false,
-              builder: (context) =>
-                  StorePackagePickerDialog(productId: productId),
+              builder: (context) => StorePackagePickerDialog(productId: productId),
             );
           },
         ),
@@ -967,11 +859,7 @@ class _MoreMenuFlyout extends StatelessWidget {
   }
 }
 
-double _overallProgress(
-  Map<String, double> fileProgress,
-  int downloadedBytes,
-  int totalBytes,
-) {
+double _overallProgress(Map<String, double> fileProgress, int downloadedBytes, int totalBytes) {
   if (totalBytes > 0) return downloadedBytes / totalBytes;
   if (fileProgress.isEmpty) return 0;
   final double totalProgress = fileProgress.values.fold<double>(
@@ -998,11 +886,7 @@ class _HeroIcon extends StatelessWidget {
                 color: color ?? Colors.transparent,
                 borderRadius: .circular(8),
               ),
-              child: AppImage(
-                fetchPadding: 0,
-                baseUrl: iconUrl!,
-                errorWidget: _placeholder(),
-              ),
+              child: AppImage(fetchPadding: 0, baseUrl: iconUrl!, errorWidget: _placeholder()),
             ),
           )
         : _placeholder();
@@ -1049,14 +933,10 @@ class _StickyCard extends StatelessWidget {
                     curve: Curves.easeInOut,
                   );
                 },
-                backgroundColor: context
-                    .theme
-                    .resources
-                    .systemFillColorSolidNeutralBackground,
+                backgroundColor: context.theme.resources.systemFillColorSolidNeutralBackground,
                 image: details.iconUrl,
                 label: details.title ?? t.msstoreUnknown,
-                description:
-                    details.publisherName ?? details.productFamilyName ?? '',
+                description: details.publisherName ?? details.productFamilyName ?? '',
                 action: IgnorePointer(
                   child: FilledButton(onPressed: () {}, child: Text(t.get)),
                 ),
@@ -1148,9 +1028,8 @@ class _ScreenshotCarouselState extends State<_ScreenshotCarousel> {
           child: Image.network(
             url,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => const DecoratedBox(
-              decoration: BoxDecoration(color: Colors.grey),
-            ),
+            errorBuilder: (context, error, stackTrace) =>
+                const DecoratedBox(decoration: BoxDecoration(color: Colors.grey)),
           ),
         );
       }).toList(),
@@ -1223,10 +1102,7 @@ class _AdditionalInfoSection extends StatelessWidget {
       height: 50,
       child: CardListTile(
         contentPadding: .zero,
-        leading: Align(
-          alignment: const .xy(1, -0.8),
-          child: Icon(item.$1, size: 16),
-        ),
+        leading: Align(alignment: const .xy(1, -0.8), child: Icon(item.$1, size: 16)),
         title: item.$2,
         description: item.$3,
         trailing: const SizedBox.shrink(),

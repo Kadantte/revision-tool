@@ -14,14 +14,7 @@ import 'package:win32/win32.dart';
 class Win32TokenHelper {
   static final _advapi32 = DynamicLibrary.open('advapi32.dll');
 
-  static final int Function(
-    int,
-    int,
-    Pointer<NativeType>,
-    int,
-    int,
-    Pointer<IntPtr>,
-  )
+  static final int Function(int, int, Pointer<NativeType>, int, int, Pointer<IntPtr>)
   _duplicateTokenEx = _advapi32
       .lookupFunction<
         Int32 Function(IntPtr, Uint32, Pointer, Int32, Int32, Pointer<IntPtr>),
@@ -29,9 +22,7 @@ class Win32TokenHelper {
       >('DuplicateTokenEx');
 
   static final int Function(int) _impersonateLoggedOnUser = _advapi32
-      .lookupFunction<Int32 Function(IntPtr), int Function(int)>(
-        'ImpersonateLoggedOnUser',
-      );
+      .lookupFunction<Int32 Function(IntPtr), int Function(int)>('ImpersonateLoggedOnUser');
 
   static final int Function() _revertToSelf = _advapi32
       .lookupFunction<Int32 Function(), int Function()>('RevertToSelf');
@@ -43,16 +34,8 @@ class Win32TokenHelper {
   )
   _lookupPrivilegeValue = _advapi32
       .lookupFunction<
-        Int32 Function(
-          Pointer<Utf16> lpSystemName,
-          Pointer<Utf16> lpName,
-          Pointer<LUID> lpLuid,
-        ),
-        int Function(
-          Pointer<Utf16> lpSystemName,
-          Pointer<Utf16> lpName,
-          Pointer<LUID> lpLuid,
-        )
+        Int32 Function(Pointer<Utf16> lpSystemName, Pointer<Utf16> lpName, Pointer<LUID> lpLuid),
+        int Function(Pointer<Utf16> lpSystemName, Pointer<Utf16> lpName, Pointer<LUID> lpLuid)
       >('LookupPrivilegeValueW');
 
   static final int Function(
@@ -247,8 +230,7 @@ class Win32TokenHelper {
 
   /// Queries service status and returns process ID if running.
   static int? getServiceProcessId(int service) {
-    final Pointer<SERVICE_STATUS_PROCESS> statusPtr =
-        calloc<SERVICE_STATUS_PROCESS>();
+    final Pointer<SERVICE_STATUS_PROCESS> statusPtr = calloc<SERVICE_STATUS_PROCESS>();
     final Pointer<DWORD> bytesNeeded = calloc<DWORD>();
 
     try {
@@ -262,9 +244,7 @@ class Win32TokenHelper {
           0) {
         return null;
       }
-      return statusPtr.ref.dwCurrentState == SERVICE_RUNNING
-          ? statusPtr.ref.dwProcessId
-          : null;
+      return statusPtr.ref.dwCurrentState == SERVICE_RUNNING ? statusPtr.ref.dwProcessId : null;
     } finally {
       calloc.free(statusPtr);
       calloc.free(bytesNeeded);
@@ -273,8 +253,7 @@ class Win32TokenHelper {
 
   /// Gets the current state of a service.
   static int getServiceState(int service) {
-    final Pointer<SERVICE_STATUS_PROCESS> statusPtr =
-        calloc<SERVICE_STATUS_PROCESS>();
+    final Pointer<SERVICE_STATUS_PROCESS> statusPtr = calloc<SERVICE_STATUS_PROCESS>();
     final Pointer<DWORD> bytesNeeded = calloc<DWORD>();
 
     try {
@@ -318,9 +297,7 @@ class Win32TokenHelper {
       }
 
       final List<String> parts = output.split(',');
-      return parts.length >= 2
-          ? int.tryParse(parts[1].replaceAll('"', '').trim())
-          : null;
+      return parts.length >= 2 ? int.tryParse(parts[1].replaceAll('"', '').trim()) : null;
     } catch (e) {
       return null;
     }
@@ -330,11 +307,7 @@ class Win32TokenHelper {
   static int? openProcessToken(int processHandle, int desiredAccess) {
     final Pointer<HANDLE> tokenPtr = calloc<HANDLE>();
     try {
-      final int result = OpenProcessToken(
-        processHandle,
-        desiredAccess,
-        tokenPtr,
-      );
+      final int result = OpenProcessToken(processHandle, desiredAccess, tokenPtr);
       if (result == 0) {
         return null;
       }
@@ -370,8 +343,7 @@ class Win32TokenHelper {
   }
 
   /// Impersonates a logged-on user using their token.
-  static bool impersonateLoggedOnUser(int token) =>
-      _impersonateLoggedOnUser(token) != 0;
+  static bool impersonateLoggedOnUser(int token) => _impersonateLoggedOnUser(token) != 0;
 
   /// Reverts the current thread to its original security context.
   static bool revertToSelf() => _revertToSelf() != 0;
@@ -386,8 +358,7 @@ class Win32TokenHelper {
   static int getLastError() => GetLastError();
 
   /// Checks if a handle is valid (non-zero and not INVALID_HANDLE_VALUE).
-  static bool isValidHandle(int handle) =>
-      handle != 0 && handle != INVALID_HANDLE_VALUE;
+  static bool isValidHandle(int handle) => handle != 0 && handle != INVALID_HANDLE_VALUE;
 
   /// Executes a command with the specified token using CreateProcessWithTokenW.
   /// Returns a map with exitCode, stdout, and stderr.
@@ -403,12 +374,10 @@ class Win32TokenHelper {
 
     try {
       final fullCommand = args.isEmpty ? command : '$command ${args.join(' ')}';
-      final commandLine =
-          'cmd.exe /c $fullCommand > "$stdoutFile" 2> "$stderrFile"';
+      final commandLine = 'cmd.exe /c $fullCommand > "$stdoutFile" 2> "$stderrFile"';
       final Pointer<Utf16> commandLinePtr = commandLine.toNativeUtf16();
       final Pointer<STARTUPINFO> startupInfo = calloc<STARTUPINFO>();
-      final Pointer<PROCESS_INFORMATION> processInfo =
-          calloc<PROCESS_INFORMATION>();
+      final Pointer<PROCESS_INFORMATION> processInfo = calloc<PROCESS_INFORMATION>();
 
       try {
         startupInfo.ref
@@ -428,9 +397,7 @@ class Win32TokenHelper {
               processInfo,
             ) ==
             0) {
-          throw Exception(
-            'CreateProcessWithTokenW failed (Error: ${GetLastError()})',
-          );
+          throw Exception('CreateProcessWithTokenW failed (Error: ${GetLastError()})');
         }
 
         WaitForSingleObject(processInfo.ref.hProcess, INFINITE);

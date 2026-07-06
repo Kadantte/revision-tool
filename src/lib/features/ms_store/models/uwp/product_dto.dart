@@ -14,8 +14,7 @@ sealed class ProductDto with _$ProductDto {
     @JsonKey(name: 'Payload') Payload? payload,
   }) = _ProductDto;
 
-  factory ProductDto.fromJson(Map<String, Object?> json) =>
-      _$ProductDtoFromJson(json);
+  factory ProductDto.fromJson(Map<String, Object?> json) => _$ProductDtoFromJson(json);
 }
 
 @freezed
@@ -27,13 +26,11 @@ sealed class Payload with _$Payload {
     @JsonKey(name: 'Skus') List<Skus>? skus,
     @JsonKey(name: 'Platforms') List<String>? platforms,
     @JsonKey(name: 'PermissionsRequired') List<String>? permissionsRequired,
-    @JsonKey(name: 'PackageAndDeviceCapabilities')
-    List<String>? packageAndDeviceCapabilities,
+    @JsonKey(name: 'PackageAndDeviceCapabilities') List<String>? packageAndDeviceCapabilities,
     @JsonKey(name: 'ContainsDownloadPackage') bool? containsDownloadPackage,
   }) = _Payload;
 
-  factory Payload.fromJson(Map<String, Object?> json) =>
-      _$PayloadFromJson(json);
+  factory Payload.fromJson(Map<String, Object?> json) => _$PayloadFromJson(json);
 }
 
 enum SkuType {
@@ -56,9 +53,7 @@ sealed class Skus with _$Skus {
     @JsonKey(name: 'SkuType') SkuType? skuType,
     @JsonKey(name: 'Price') double? price,
     @JsonKey(name: 'DisplayPrice') String? displayPrice,
-    @JsonKey(name: 'FulfillmentData')
-    @FulfillmentDataConverter()
-    FulfillmentData? fulfillmentData,
+    @JsonKey(name: 'FulfillmentData') @FulfillmentDataConverter() FulfillmentData? fulfillmentData,
   }) = _Skus;
 
   factory Skus.fromJson(Map<String, Object?> json) => _$SkusFromJson(json);
@@ -74,12 +69,10 @@ sealed class FulfillmentData with _$FulfillmentData {
     @JsonKey(name: 'SkuId') String? skuId,
   }) = _FulfillmentData;
 
-  factory FulfillmentData.fromJson(Map<String, Object?> json) =>
-      _$FulfillmentDataFromJson(json);
+  factory FulfillmentData.fromJson(Map<String, Object?> json) => _$FulfillmentDataFromJson(json);
 }
 
-class FulfillmentDataConverter
-    implements JsonConverter<FulfillmentData, String> {
+class FulfillmentDataConverter implements JsonConverter<FulfillmentData, String> {
   const FulfillmentDataConverter();
 
   @override

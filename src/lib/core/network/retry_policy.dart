@@ -3,10 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 final class RetryPolicy {
-  const RetryPolicy({
-    this.maxRetries = 2,
-    this.initialDelay = const Duration(seconds: 1),
-  });
+  const RetryPolicy({this.maxRetries = 2, this.initialDelay = const Duration(seconds: 1)});
 
   final int maxRetries;
   final Duration initialDelay;
@@ -44,12 +41,8 @@ final class RetryInterceptor extends Interceptor {
   final RetryPolicy _policy;
 
   @override
-  Future<void> onError(
-    DioException err,
-    ErrorInterceptorHandler handler,
-  ) async {
-    if (err.requestOptions.extra['skipRetry'] == true ||
-        !_policy.shouldRetry(err)) {
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (err.requestOptions.extra['skipRetry'] == true || !_policy.shouldRetry(err)) {
       return handler.next(err);
     }
 

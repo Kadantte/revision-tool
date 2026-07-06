@@ -85,8 +85,7 @@ abstract class WinRegistryService {
   static bool _validate() {
     final RegistryKey key = Registry.openPath(
       RegistryHive.localMachine,
-      path:
-          r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\Packages',
+      path: r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\Packages',
     );
 
     try {
@@ -154,9 +153,7 @@ abstract class WinRegistryService {
     }
   }
 
-  static Future<void> _unhidePageVisibilitySettingsSingle(
-    String pageName,
-  ) async {
+  static Future<void> _unhidePageVisibilitySettingsSingle(String pageName) async {
     final String? currentValue = readString(
       RegistryHive.localMachine,
       _settingsPageVisibilityPath,
@@ -204,19 +201,14 @@ abstract class WinRegistryService {
       path: r'SYSTEM\ControlSet001\Services',
     );
     try {
-      return key.subkeyNames
-          .where((final String e) => e.startsWith(subkey))
-          .toList();
+      return key.subkeyNames.where((String e) => e.startsWith(subkey)).toList();
     } finally {
       key.close();
     }
   }
 
-  static String? get themeModeReg => readString(
-    RegistryHive.localMachine,
-    r'SOFTWARE\Revision\Revision Tool',
-    'ThemeMode',
-  );
+  static String? get themeModeReg =>
+      readString(RegistryHive.localMachine, r'SOFTWARE\Revision\Revision Tool', 'ThemeMode');
 
   static bool get themeTransparencyEffect =>
       readInt(
@@ -252,11 +244,7 @@ abstract class WinRegistryService {
     }
   }
 
-  static List<String>? getStringArrayValue(
-    RegistryHive hive,
-    String path,
-    String value,
-  ) {
+  static List<String>? getStringArrayValue(RegistryHive hive, String path, String value) {
     try {
       final RegistryKey key = Registry.openPath(hive, path: path);
       try {
@@ -292,13 +280,7 @@ abstract class WinRegistryService {
   }) async {
     if (useTrustedInstaller) {
       return TrustedInstallerServiceImpl().executeWithTrustedInstaller(
-        () async => writeRegistryValue<T>(
-          key,
-          path,
-          name,
-          value,
-          retryCount: retryCount,
-        ),
+        () async => writeRegistryValue<T>(key, path, name, value, retryCount: retryCount),
       );
     }
 
@@ -341,9 +323,7 @@ abstract class WinRegistryService {
           } finally {
             subKey.close();
           }
-          logger.i(
-            '$tag(writeRegistryValue): $defaultUser\\$path\\$name = $value',
-          );
+          logger.i('$tag(writeRegistryValue): $defaultUser\\$path\\$name = $value');
         } finally {
           reg.close();
         }
@@ -363,13 +343,7 @@ abstract class WinRegistryService {
           }
 
           await TrustedInstallerServiceImpl().executeWithTrustedInstaller(
-            () async => writeRegistryValue<T>(
-              key,
-              path,
-              name,
-              value,
-              retryCount: retryCount + 1,
-            ),
+            () async => writeRegistryValue<T>(key, path, name, value, retryCount: retryCount + 1),
           );
           return;
         } catch (tiError) {
@@ -381,17 +355,9 @@ abstract class WinRegistryService {
           rethrow;
         }
       }
-      logger.e(
-        '$tag(writeRegistryValue): $path\\$name',
-        error: e,
-        stackTrace: StackTrace.current,
-      );
+      logger.e('$tag(writeRegistryValue): $path\\$name', error: e, stackTrace: StackTrace.current);
     } catch (e) {
-      logger.e(
-        '$tag(writeRegistryValue): $path\\$name',
-        error: e,
-        stackTrace: StackTrace.current,
-      );
+      logger.e('$tag(writeRegistryValue): $path\\$name', error: e, stackTrace: StackTrace.current);
     } finally {
       if (shouldClose) {
         key.close();
@@ -428,15 +394,12 @@ abstract class WinRegistryService {
         );
         try {
           if (retryCount > 0) {
-            logger.e(
-              '$tag(deleteValue): Retry limit reached for TrustedInstaller: $path\\$name',
-            );
+            logger.e('$tag(deleteValue): Retry limit reached for TrustedInstaller: $path\\$name');
             rethrow;
           }
 
           await TrustedInstallerServiceImpl().executeWithTrustedInstaller(
-            () async =>
-                deleteValue(key, path, name, retryCount: retryCount + 1),
+            () async => deleteValue(key, path, name, retryCount: retryCount + 1),
           );
           return;
         } catch (tiError) {
@@ -448,17 +411,9 @@ abstract class WinRegistryService {
           rethrow;
         }
       }
-      logger.e(
-        '$tag(deleteValue): $path\\$name',
-        error: e,
-        stackTrace: StackTrace.current,
-      );
+      logger.e('$tag(deleteValue): $path\\$name', error: e, stackTrace: StackTrace.current);
     } catch (e) {
-      logger.e(
-        '$tag(deleteValue): $path\\$name',
-        error: e,
-        stackTrace: StackTrace.current,
-      );
+      logger.e('$tag(deleteValue): $path\\$name', error: e, stackTrace: StackTrace.current);
     }
   }
 
@@ -485,9 +440,7 @@ abstract class WinRegistryService {
         );
         try {
           if (retryCount > 0) {
-            logger.e(
-              '$tag(deleteKey): Retry limit reached for TrustedInstaller: $path',
-            );
+            logger.e('$tag(deleteKey): Retry limit reached for TrustedInstaller: $path');
             rethrow;
           }
 
@@ -504,17 +457,9 @@ abstract class WinRegistryService {
           rethrow;
         }
       }
-      logger.e(
-        '$tag(deleteKey): $path',
-        error: e,
-        stackTrace: StackTrace.current,
-      );
+      logger.e('$tag(deleteKey): $path', error: e, stackTrace: StackTrace.current);
     } catch (e) {
-      logger.e(
-        '$tag(deleteKey): $path',
-        error: e,
-        stackTrace: StackTrace.current,
-      );
+      logger.e('$tag(deleteKey): $path', error: e, stackTrace: StackTrace.current);
     }
   }
 
@@ -524,11 +469,7 @@ abstract class WinRegistryService {
       subKey.close();
       logger.i('$tag(createKey): $path');
     } catch (e) {
-      logger.e(
-        '$tag(createKey): $path',
-        error: e,
-        stackTrace: StackTrace.current,
-      );
+      logger.e('$tag(createKey): $path', error: e, stackTrace: StackTrace.current);
     }
   }
 }

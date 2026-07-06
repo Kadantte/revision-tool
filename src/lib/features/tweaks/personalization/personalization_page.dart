@@ -34,18 +34,13 @@ class _InputPersonalizationCard extends ConsumerWidget {
     return CardHighlight(
       icon: msicons.FluentIcons.keyboard_20_regular,
       label: t.tweaksPersonalizationInkingAndTypingPersonalization,
-      description:
-          t.tweaksPersonalizationInkingAndTypingPersonalizationDescription,
+      description: t.tweaksPersonalizationInkingAndTypingPersonalizationDescription,
       action: CardToggleSwitch(
         value: status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(personalizationServiceProvider)
-                    .enableInputPersonalization()
-              : await ref
-                    .read(personalizationServiceProvider)
-                    .disableInputPersonalization();
+              ? await ref.read(personalizationServiceProvider).enableInputPersonalization()
+              : await ref.read(personalizationServiceProvider).disableInputPersonalization();
           ref.invalidate(inputPersonalizationStatusProvider);
         },
       ),

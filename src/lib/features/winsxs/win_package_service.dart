@@ -18,55 +18,37 @@ import '../ms_store/store_service.dart';
 import '../tweaks/security/security_service.dart';
 import 'winsxs_exceptions.dart';
 
-final ProviderFamily<WinPackageService, WinPackageType>
-winPackageServiceProvider = Provider.family<WinPackageService, WinPackageType>((
-  ref,
-  type,
-) {
-  final ApiClient api = ref.watch(apiClientProvider);
-  return switch (type) {
-    .systemComponentsRemoval => SystemPackagesRemovalService(api: api),
-    .oneDriveRemoval => OneDriveRemovalService(api: api),
-    .defenderRemoval => DefenderRemovalService(
-      security: ref.watch(securityServiceProvider),
-      api: api,
-    ),
-    .aiRemoval => AiRemovalService(
-      store: ref.watch(storeServiceProvider),
-      api: api,
-    ),
-    .xboxRemoval => XboxRemovalService(
-      store: ref.watch(storeServiceProvider),
-      api: api,
-    ),
-  };
-});
+final ProviderFamily<WinPackageService, WinPackageType> winPackageServiceProvider =
+    Provider.family<WinPackageService, WinPackageType>((ref, type) {
+      final ApiClient api = ref.watch(apiClientProvider);
+      return switch (type) {
+        .systemComponentsRemoval => SystemPackagesRemovalService(api: api),
+        .oneDriveRemoval => OneDriveRemovalService(api: api),
+        .defenderRemoval => DefenderRemovalService(
+          security: ref.watch(securityServiceProvider),
+          api: api,
+        ),
+        .aiRemoval => AiRemovalService(store: ref.watch(storeServiceProvider), api: api),
+        .xboxRemoval => XboxRemovalService(store: ref.watch(storeServiceProvider), api: api),
+      };
+    });
 
 enum WinPackageType {
   systemComponentsRemoval(
     packageName: 'Revision-ReviOS-SystemPackages-Removal',
     cliKey: 'system-components-removal',
   ),
-  defenderRemoval(
-    packageName: 'Revision-ReviOS-Defender-Removal',
-    cliKey: 'defender-removal',
-  ),
+  defenderRemoval(packageName: 'Revision-ReviOS-Defender-Removal', cliKey: 'defender-removal'),
   aiRemoval(packageName: 'Revision-ReviOS-AI-Removal', cliKey: 'ai-removal'),
-  oneDriveRemoval(
-    packageName: 'Revision-ReviOS-OneDrive-Removal',
-    cliKey: 'onedrive-removal',
-  ),
-  xboxRemoval(
-    packageName: 'Revision-ReviOS-Xbox-Removal',
-    cliKey: 'xbox-removal',
-  );
+  oneDriveRemoval(packageName: 'Revision-ReviOS-OneDrive-Removal', cliKey: 'onedrive-removal'),
+  xboxRemoval(packageName: 'Revision-ReviOS-Xbox-Removal', cliKey: 'xbox-removal');
 
   const WinPackageType({required this.packageName, required this.cliKey});
 
   final String packageName;
   final String cliKey;
 
-  static WinPackageType byCliKey(final String key) {
+  static WinPackageType byCliKey(String key) {
     return WinPackageType.values.firstWhere(
       (e) => e.cliKey == key,
       orElse: () => throw ArgumentError('Invalid CLI key: $key'),
@@ -80,29 +62,18 @@ abstract base class WinPackageService {
   final WinPackageType type;
   final ApiClient _api;
 
-  static final String cabPath = p.join(
-    Directory.systemTemp.path,
-    'Revision-Tool',
-    'CAB',
-  );
+  static final String cabPath = p.join(Directory.systemTemp.path, 'Revision-Tool', 'CAB');
 
-  static final String bundledPackagesPath = p.join(
-    directoryExe,
-    'packages',
-    'winsxs',
-  );
+  static final String bundledPackagesPath = p.join(directoryExe, 'packages', 'winsxs');
 
   static const cbsPackagesRegPath =
       r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\Packages\';
 
-  static bool checkPackageInstalled(final WinPackageType packageType) {
-    final String? key =
-        Registry.openPath(
-          RegistryHive.localMachine,
-          path: cbsPackagesRegPath,
-        ).subkeyNames.lastWhereOrNull(
-          (final element) => element.startsWith(packageType.packageName),
-        );
+  static bool checkPackageInstalled(WinPackageType packageType) {
+    final String? key = Registry.openPath(
+      RegistryHive.localMachine,
+      path: cbsPackagesRegPath,
+    ).subkeyNames.lastWhereOrNull((e) => e.startsWith(packageType.packageName));
 
     if (key == null) {
       return false;
@@ -121,17 +92,14 @@ abstract base class WinPackageService {
     );
 
     // installation codes - https://forums.ivanti.com/s/article/Understand-Patch-installation-failure-codes?language=en_US
-    return (currentState != 5 || currentState != 4294967264) &&
-        lastError == null;
+    return (currentState != 5 || currentState != 4294967264) && lastError == null;
   }
 
-  static String? getBundledPackagePath(final WinPackageType packageType) {
+  static String? getBundledPackagePath(WinPackageType packageType) {
     try {
       final bundledDir = Directory(bundledPackagesPath);
       if (!bundledDir.existsSync()) {
-        logger.w(
-          'Bundled packages directory does not exist: $bundledPackagesPath',
-        );
+        logger.w('Bundled packages directory does not exist: $bundledPackagesPath');
         return null;
       }
 
@@ -169,9 +137,7 @@ abstract base class WinPackageService {
       Directory(downloadPath).createSync(recursive: true);
 
       final Result<Response<dynamic>> releaseResult = await _api.get<dynamic>(
-        NetworkEndpoints.githubLatestRelease(
-          GitHubRepositoryEndpoint.cabPackages,
-        ),
+        NetworkEndpoints.githubLatestRelease(GitHubRepositoryEndpoint.cabPackages),
       );
       final Response<dynamic> releaseResponse = releaseResult.when(
         success: (response) => response,
@@ -179,14 +145,10 @@ abstract base class WinPackageService {
       );
 
       final releaseData = releaseResponse.data as Map<String, dynamic>;
-      final assets = List<Map<String, dynamic>>.from(
-        releaseData['assets'] as List<dynamic>,
-      );
+      final assets = List<Map<String, dynamic>>.from(releaseData['assets'] as List<dynamic>);
       var name = '';
 
-      final Map<String, dynamic>? asset = assets.firstWhereOrNull((
-        final Map<String, dynamic> e,
-      ) {
+      final Map<String, dynamic>? asset = assets.firstWhereOrNull((Map<String, dynamic> e) {
         final n = e['name'] as String?;
         return n != null &&
             n.startsWith('${type.packageName}31bf3856ad364e35') &&
@@ -210,14 +172,9 @@ abstract base class WinPackageService {
         Uri.parse(downloadUrl),
         filePath,
       );
-      downloadResult.when(
-        success: (_) {},
-        failure: (exception) => throw exception,
-      );
+      downloadResult.when(success: (_) {}, failure: (exception) => throw exception);
       if (!File(filePath).existsSync()) {
-        throw WinSxSPackageDownloadException(
-          'Failed to download package: $name',
-        );
+        throw WinSxSPackageDownloadException('Failed to download package: $name');
       }
 
       logger.i('Successfully downloaded package from GitHub: $filePath');
@@ -250,14 +207,10 @@ abstract base class WinPackageService {
   Future<void> install() async {
     logger.i('winsxs: Downloading package=${type.packageName}');
     final String packagePath = await download();
-    logger.i(
-      'winsxs: Installing package=${type.packageName}, path=$packagePath',
-    );
+    logger.i('winsxs: Installing package=${type.packageName}, path=$packagePath');
 
     if (!File(packagePath).existsSync()) {
-      throw WinSxSPackageFileNotFoundException(
-        'Package file does not exist: $packagePath',
-      );
+      throw WinSxSPackageFileNotFoundException('Package file does not exist: $packagePath');
     }
 
     final String certValue = (await runPSCommand(
@@ -265,9 +218,7 @@ abstract base class WinPackageService {
     )).stdout.toString().trim();
 
     if (certValue.isEmpty || certValue != '1.3.6.1.4.1.311.10.3.6') {
-      throw InvalidWinSxSPackageSignatureException(
-        'Invalid signature: $packagePath',
-      );
+      throw InvalidWinSxSPackageSignatureException('Invalid signature: $packagePath');
     }
 
     WinRegistryService.createKey(
@@ -288,13 +239,11 @@ abstract base class WinPackageService {
 }
 
 final class SystemPackagesRemovalService extends WinPackageService {
-  const SystemPackagesRemovalService({required super.api})
-    : super(type: .systemComponentsRemoval);
+  const SystemPackagesRemovalService({required super.api}) : super(type: .systemComponentsRemoval);
 }
 
 final class OneDriveRemovalService extends WinPackageService {
-  const OneDriveRemovalService({required super.api})
-    : super(type: .oneDriveRemoval);
+  const OneDriveRemovalService({required super.api}) : super(type: .oneDriveRemoval);
 }
 
 /// [install] and [uninstall] methods are overridden to call [SecurityService] methods instead of the base class methods, to ensure that Defender is properly disabled/enabled.
@@ -321,8 +270,7 @@ final class DefenderRemovalService extends WinPackageService {
 }
 
 final class AiRemovalService extends WinPackageService {
-  const AiRemovalService({required this._store, required super.api})
-    : super(type: .aiRemoval);
+  const AiRemovalService({required this._store, required super.api}) : super(type: .aiRemoval);
 
   static const _copilotStoreId = '9nht9rb2f4hd';
 
@@ -331,15 +279,9 @@ final class AiRemovalService extends WinPackageService {
   @override
   Future<void> install() async {
     await WinRegistryService.hidePageVisibilitySettings('aicomponents');
-    await WinRegistryService.hidePageVisibilitySettings(
-      'privacy-systemaimodels',
-    );
-    await runPSCommand(
-      'Disable-WindowsOptionalFeature -Online -FeatureName Recall -NoRestart',
-    );
-    await runPSCommand(
-      'Get-AppxPackage -AllUsers Microsoft.Copilot* | Remove-AppxPackage',
-    );
+    await WinRegistryService.hidePageVisibilitySettings('privacy-systemaimodels');
+    await runPSCommand('Disable-WindowsOptionalFeature -Online -FeatureName Recall -NoRestart');
+    await runPSCommand('Get-AppxPackage -AllUsers Microsoft.Copilot* | Remove-AppxPackage');
 
     await super.install();
   }
@@ -347,22 +289,17 @@ final class AiRemovalService extends WinPackageService {
   @override
   Future<void> uninstall() async {
     await WinRegistryService.unhidePageVisibilitySettings('aicomponents');
-    await WinRegistryService.unhidePageVisibilitySettings(
-      'privacy-systemaimodels',
-    );
+    await WinRegistryService.unhidePageVisibilitySettings('privacy-systemaimodels');
 
     await super.uninstall();
 
-    await runPSCommand(
-      'Enable-WindowsOptionalFeature -Online -FeatureName Recall -NoRestart',
-    );
+    await runPSCommand('Enable-WindowsOptionalFeature -Online -FeatureName Recall -NoRestart');
     await _installStorePackages(store: _store, ids: {_copilotStoreId});
   }
 }
 
 final class XboxRemovalService extends WinPackageService {
-  const XboxRemovalService({required this._store, required super.api})
-    : super(type: .xboxRemoval);
+  const XboxRemovalService({required this._store, required super.api}) : super(type: .xboxRemoval);
 
   static const _callableUiManifestPath =
       r'C:\Windows\SystemApps\Microsoft.XboxGameCallableUI_cw5n1h2txyewy\AppxManifest.xml';
@@ -421,10 +358,7 @@ Future<void> _installStorePackages({
   final StorePackagesByProductId packagesByProductId = await store
       .getPackages(productIds: ids, ring: ring, arch: arch)
       .then(
-        (result) => result.when(
-          success: (value) => value,
-          failure: (exception) => throw exception,
-        ),
+        (result) => result.when(success: (value) => value, failure: (exception) => throw exception),
       );
   final Set<StorePackageFileDownload> downloads = await store
       .download(
@@ -434,18 +368,12 @@ Future<void> _installStorePackages({
         onProgress: (_) {},
       )
       .then(
-        (result) => result.when(
-          success: (value) => value,
-          failure: (exception) => throw exception,
-        ),
+        (result) => result.when(success: (value) => value, failure: (exception) => throw exception),
       );
   final Map<String, ProcessResult> installResults = await store
       .install(downloads: downloads)
       .then(
-        (result) => result.when(
-          success: (value) => value,
-          failure: (exception) => throw exception,
-        ),
+        (result) => result.when(success: (value) => value, failure: (exception) => throw exception),
       );
   final List<ProcessResult> failed = installResults.values
       .where((result) => result.exitCode != 0)

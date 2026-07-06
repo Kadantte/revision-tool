@@ -20,8 +20,7 @@ class PageHeaderBreadcrumbs extends StatelessWidget {
 
     return PageHeader(
       title: BreadcrumbBar(
-        chevronIconBuilder: (context, index) =>
-            _chevronIconBuilder(context, index),
+        chevronIconBuilder: (context, index) => _chevronIconBuilder(context, index),
         items: AppRoutes.buildBreadcrumbs(currentLocation, context),
         onItemPressed: (item) => context.push(item.value),
         chevronIconSize: 15,
@@ -36,9 +35,7 @@ class PageHeaderBreadcrumbs extends StatelessWidget {
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
       child: Icon(
-        textDirection == TextDirection.ltr
-            ? WindowsIcons.chevron_right
-            : WindowsIcons.chevron_left,
+        textDirection == TextDirection.ltr ? WindowsIcons.chevron_right : WindowsIcons.chevron_left,
         color: theme.resources.textFillColorSecondary,
       ),
     );

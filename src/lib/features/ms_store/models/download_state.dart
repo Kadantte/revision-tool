@@ -8,10 +8,8 @@ part 'download_state.freezed.dart';
 sealed class StoreDownloadState with _$StoreDownloadState {
   const factory StoreDownloadState.idle() = _Idle;
 
-  const factory StoreDownloadState.preparing({
-    required String productId,
-    String? message,
-  }) = _Preparing;
+  const factory StoreDownloadState.preparing({required String productId, String? message}) =
+      _Preparing;
 
   const factory StoreDownloadState.downloading({
     required String productId,
@@ -37,10 +35,8 @@ sealed class StoreDownloadState with _$StoreDownloadState {
     required bool installed,
   }) = _Completed;
 
-  const factory StoreDownloadState.error({
-    required String productId,
-    required String message,
-  }) = _Error;
+  const factory StoreDownloadState.error({required String productId, required String message}) =
+      _Error;
 }
 
 extension StoreDownloadStateX on StoreDownloadState {
@@ -55,11 +51,8 @@ extension StoreDownloadStateX on StoreDownloadState {
     );
   }
 
-  bool get isTerminal => maybeWhen(
-    completed: (_, _, _) => true,
-    error: (_, _) => true,
-    orElse: () => false,
-  );
+  bool get isTerminal =>
+      maybeWhen(completed: (_, _, _) => true, error: (_, _) => true, orElse: () => false);
 
   Map<String, ProcessResult>? get installResults =>
       maybeWhen(completed: (_, r, _) => r, orElse: () => null);

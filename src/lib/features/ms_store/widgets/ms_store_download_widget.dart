@@ -27,17 +27,13 @@ final class StorePackagePickerDialog extends ConsumerStatefulWidget {
   final StoreArch arch;
 
   @override
-  ConsumerState<StorePackagePickerDialog> createState() =>
-      _StorePackagePickerDialogState();
+  ConsumerState<StorePackagePickerDialog> createState() => _StorePackagePickerDialogState();
 }
 
 enum _PickerPhase { selecting, running }
 
-final NotifierProvider<_PackagePickerSelection, Set<String>>
-_packagePickerSelectionProvider =
-    NotifierProvider.autoDispose<_PackagePickerSelection, Set<String>>(
-      _PackagePickerSelection.new,
-    );
+final NotifierProvider<_PackagePickerSelection, Set<String>> _packagePickerSelectionProvider =
+    NotifierProvider.autoDispose<_PackagePickerSelection, Set<String>>(_PackagePickerSelection.new);
 
 final class _PackagePickerSelection extends Notifier<Set<String>> {
   @override
@@ -52,8 +48,7 @@ final class _PackagePickerSelection extends Notifier<Set<String>> {
   }
 }
 
-final class _StorePackagePickerDialogState
-    extends ConsumerState<StorePackagePickerDialog> {
+final class _StorePackagePickerDialogState extends ConsumerState<StorePackagePickerDialog> {
   late StoreRing ring;
   late StoreArch arch;
   Future<StorePackagesByProductId>? packagesFuture;
@@ -70,21 +65,13 @@ final class _StorePackagePickerDialogState
     super.initState();
     ring = widget.ring;
     arch = widget.arch;
-    ref.listenManual(
-      storeControllerProvider.select((s) => s.download),
-      _onDownloadStateChanged,
-    );
+    ref.listenManual(storeControllerProvider.select((s) => s.download), _onDownloadStateChanged);
     scheduleMicrotask(_reloadPackages);
   }
 
-  void _onDownloadStateChanged(
-    StoreDownloadState? previous,
-    StoreDownloadState next,
-  ) {
+  void _onDownloadStateChanged(StoreDownloadState? previous, StoreDownloadState next) {
     if (phase != .running || !next.isTerminal || !mounted) return;
-    final StoreController controller = ref.read(
-      storeControllerProvider.notifier,
-    );
+    final StoreController controller = ref.read(storeControllerProvider.notifier);
     final bool completedDownloadOnly = next.maybeWhen(
       completed: (_, _, installed) => !installed,
       orElse: () => false,
@@ -114,10 +101,8 @@ final class _StorePackagePickerDialogState
         .read(storeServiceProvider)
         .getPackages(productIds: {widget.productId}, ring: ring, arch: arch)
         .then(
-          (result) => result.when(
-            success: (value) => value,
-            failure: (exception) => throw exception,
-          ),
+          (result) =>
+              result.when(success: (value) => value, failure: (exception) => throw exception),
         );
     packagesFuture = future;
     await future
@@ -130,9 +115,7 @@ final class _StorePackagePickerDialogState
           setState(() {
             loading = false;
           });
-          ref
-              .read(_packagePickerSelectionProvider.notifier)
-              .setAll(packages.map((p) => p.id));
+          ref.read(_packagePickerSelectionProvider.notifier).setAll(packages.map((p) => p.id));
         })
         .catchError((Object error) {
           if (!mounted || packagesFuture != future) return;
@@ -145,9 +128,7 @@ final class _StorePackagePickerDialogState
 
   void _start({required bool install}) {
     final Set<String> selectedIds = ref.read(_packagePickerSelectionProvider);
-    final Set<PackageInfo> selected = packages
-        .where((p) => selectedIds.contains(p.id))
-        .toSet();
+    final Set<PackageInfo> selected = packages.where((p) => selectedIds.contains(p.id)).toSet();
     setState(() {
       phase = .running;
       downloadError = null;
@@ -168,8 +149,7 @@ final class _StorePackagePickerDialogState
   }
 
   void _close() {
-    if (phase == .running &&
-        !ref.read(storeControllerProvider).download.isTerminal) {
+    if (phase == .running && !ref.read(storeControllerProvider).download.isTerminal) {
       ref.read(storeControllerProvider.notifier).cancel();
     }
     context.pop();
@@ -250,9 +230,7 @@ final class _PickerContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final String? liveError = running
-        ? ref.watch(
-            storeControllerProvider.select((s) => s.download.errorMessage),
-          )
+        ? ref.watch(storeControllerProvider.select((s) => s.download.errorMessage))
         : null;
     final String? errorMessage = liveError ?? downloadError;
 
@@ -295,11 +273,7 @@ final class _PickerContent extends ConsumerWidget {
         ),
         if (errorMessage != null) ...[
           const SizedBox(height: 12),
-          InfoBar(
-            severity: .error,
-            title: Text(t.msstoreError),
-            content: Text(errorMessage),
-          ),
+          InfoBar(severity: .error, title: Text(t.msstoreError), content: Text(errorMessage)),
         ],
         const SizedBox(height: 12),
         Flexible(
@@ -354,11 +328,7 @@ final class _PackageListTile extends ConsumerWidget {
           )
         : 0.0;
     final ProcessResult? result = showProgress
-        ? ref.watch(
-            storeControllerProvider.select(
-              (s) => s.download.installResults?[package.id],
-            ),
-          )
+        ? ref.watch(storeControllerProvider.select((s) => s.download.installResults?[package.id]))
         : null;
 
     final Widget subtitle = showProgress
@@ -367,15 +337,11 @@ final class _PackageListTile extends ConsumerWidget {
               : Text(t.msstoreExitCode(code: result.exitCode)))
         : Text(
             [
-              if (package.isDependency)
-                t.msstoreDependency
-              else
-                t.msstorePackage,
+              if (package.isDependency) t.msstoreDependency else t.msstorePackage,
               package.fileModel?.fileType?.toUpperCase() ?? 'APPX',
-              ...[package.fileModel?.size]
-                  .whereType<int>()
-                  .where((s) => s > 0)
-                  .map((s) => s.formatBytes()),
+              ...[
+                package.fileModel?.size,
+              ].whereType<int>().where((s) => s > 0).map((s) => s.formatBytes()),
             ].join(' · '),
           );
 
@@ -383,9 +349,7 @@ final class _PackageListTile extends ConsumerWidget {
         ? (result == null
               ? Text('${(progress * 100).toStringAsFixed(0)}%')
               : Icon(
-                  result.exitCode == 0
-                      ? FluentIcons.completed
-                      : FluentIcons.error,
+                  result.exitCode == 0 ? FluentIcons.completed : FluentIcons.error,
                   color: result.exitCode == 0 ? Colors.green : Colors.red,
                 ))
         : Text(package.arch);
@@ -399,9 +363,8 @@ final class _PackageListTile extends ConsumerWidget {
         trailing: trailing,
         onSelectionChange: running
             ? null
-            : (value) => ref
-                  .read(_packagePickerSelectionProvider.notifier)
-                  .toggle(package.id, value),
+            : (value) =>
+                  ref.read(_packagePickerSelectionProvider.notifier).toggle(package.id, value),
       ),
     );
   }
@@ -416,14 +379,8 @@ final class _PickerCloseButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool activeRunning =
-        running &&
-        !ref.watch(
-          storeControllerProvider.select((s) => s.download.isTerminal),
-        );
-    return Button(
-      onPressed: onPressed,
-      child: Text(activeRunning ? t.msstoreCancel : t.close),
-    );
+        running && !ref.watch(storeControllerProvider.select((s) => s.download.isTerminal));
+    return Button(onPressed: onPressed, child: Text(activeRunning ? t.msstoreCancel : t.close));
   }
 }
 
@@ -446,13 +403,10 @@ final class _PickerDownloadButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool canOpenExplorer =
-        !install && !running && openInExplorerPath != null;
+    final bool canOpenExplorer = !install && !running && openInExplorerPath != null;
     if (canOpenExplorer) {
       return Button(
-        onPressed: () async => Process.run('explorer.exe', [
-          openInExplorerPath!,
-        ], runInShell: true),
+        onPressed: () async => Process.run('explorer.exe', [openInExplorerPath!], runInShell: true),
         child: Text(t.msstoreOpenInExplorer),
       );
     }
@@ -460,11 +414,8 @@ final class _PickerDownloadButton extends ConsumerWidget {
     final bool hasSelection = ref.watch(
       _packagePickerSelectionProvider.select((s) => s.isNotEmpty),
     );
-    final bool enabled =
-        !running && hasSelection && !loading && loadError == null;
-    final child = Text(
-      install ? t.msstoreDownloadAndInstall : t.msstoreDownloadOnly,
-    );
+    final bool enabled = !running && hasSelection && !loading && loadError == null;
+    final child = Text(install ? t.msstoreDownloadAndInstall : t.msstoreDownloadOnly);
     if (install) {
       return FilledButton(onPressed: enabled ? onPressed : null, child: child);
     }

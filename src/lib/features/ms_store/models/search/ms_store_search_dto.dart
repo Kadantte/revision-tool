@@ -14,6 +14,5 @@ sealed class MsStoreSearchDto with _$MsStoreSearchDto {
     List<SearchProduct>? productsList,
   }) = _MsStoreSearchDto;
 
-  factory MsStoreSearchDto.fromJson(Map<String, Object?> json) =>
-      _$MsStoreSearchDtoFromJson(json);
+  factory MsStoreSearchDto.fromJson(Map<String, Object?> json) => _$MsStoreSearchDtoFromJson(json);
 }

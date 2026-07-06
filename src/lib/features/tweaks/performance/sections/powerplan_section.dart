@@ -22,9 +22,7 @@ class PowerplanSection extends ConsumerWidget {
         onChanged: (value) async {
           value
               ? await ref.read(performanceServiceProvider).enableReviPowerPlan()
-              : await ref
-                    .read(performanceServiceProvider)
-                    .disableReviPowerPlan();
+              : await ref.read(performanceServiceProvider).disableReviPowerPlan();
           ref.invalidate(reviPowerPlanStatusProvider);
           ref.invalidate(reviPowerPlanC6StatesStatusProvider);
         },
@@ -39,12 +37,8 @@ class PowerplanSection extends ConsumerWidget {
             value: ref.watch(reviPowerPlanC6StatesStatusProvider),
             onChanged: (value) async {
               value
-                  ? await ref
-                        .read(performanceServiceProvider)
-                        .disableReviPowerPlanC6States()
-                  : await ref
-                        .read(performanceServiceProvider)
-                        .enableReviPowerPlanC6States();
+                  ? await ref.read(performanceServiceProvider).disableReviPowerPlanC6States()
+                  : await ref.read(performanceServiceProvider).enableReviPowerPlanC6States();
               ref.invalidate(reviPowerPlanC6StatesStatusProvider);
             },
           ),

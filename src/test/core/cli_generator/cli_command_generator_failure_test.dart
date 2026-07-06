@@ -43,19 +43,12 @@ abstract class InvalidCliService {
 
           expect(result.exitCode, isNonZero);
           final output = '${result.stdout}\n${result.stderr}';
-          expect(
-            output,
-            contains(
-              '@CliEnumSubCommand requires a non-empty string "status".',
-            ),
-          );
+          expect(output, contains('@CliEnumSubCommand requires a non-empty string "status".'));
         } finally {
           if (fixtureFile.existsSync()) {
             await fixtureFile.delete();
           }
-          final generatedFile = File(
-            '${testDir.path}/_tmp_invalid_cli_service.g.dart',
-          );
+          final generatedFile = File('${testDir.path}/_tmp_invalid_cli_service.g.dart');
           if (generatedFile.existsSync()) {
             await generatedFile.delete();
           }

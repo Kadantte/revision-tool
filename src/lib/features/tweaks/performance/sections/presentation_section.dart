@@ -17,11 +17,7 @@ class PresentationSection extends ConsumerWidget {
       icon: msicons.FluentIcons.window_shield_24_regular,
       label: t.tweaksPerformancePresentation,
       descriptionLink: 'https://wiki.special-k.info/en/SwapChain',
-      children: const [
-        _FullscreenOptimizationCard(),
-        _WindowedOptimizationCard(),
-        _MPOCard(),
-      ],
+      children: const [_FullscreenOptimizationCard(), _WindowedOptimizationCard(), _MPOCard()],
     );
   }
 }
@@ -40,12 +36,8 @@ class _FullscreenOptimizationCard extends ConsumerWidget {
         value: status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(performanceServiceProvider)
-                    .enableFullscreenOptimization()
-              : await ref
-                    .read(performanceServiceProvider)
-                    .disableFullscreenOptimization();
+              ? await ref.read(performanceServiceProvider).enableFullscreenOptimization()
+              : await ref.read(performanceServiceProvider).disableFullscreenOptimization();
           ref.invalidate(fullscreenOptimizationStatusProvider);
         },
       ),
@@ -67,12 +59,8 @@ class _WindowedOptimizationCard extends ConsumerWidget {
         value: !!WinRegistryService.isW11 && status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(performanceServiceProvider)
-                    .enableWindowedOptimization()
-              : await ref
-                    .read(performanceServiceProvider)
-                    .disableWindowedOptimization();
+              ? await ref.read(performanceServiceProvider).enableWindowedOptimization()
+              : await ref.read(performanceServiceProvider).disableWindowedOptimization();
           ref.invalidate(windowedOptimizationStatusProvider);
         },
       ),

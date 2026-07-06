@@ -96,10 +96,7 @@ class _MSStoreProductCardState extends State<MSStoreProductCard> {
             widget.product.description ?? '',
             maxLines: 2,
             overflow: .ellipsis,
-            style: TextStyle(
-              color: resources.textFillColorSecondary,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: resources.textFillColorSecondary, fontSize: 12),
             textAlign: .start,
           ),
         ),
@@ -142,10 +139,7 @@ class _MSStoreProductCardState extends State<MSStoreProductCard> {
                 decoration: BoxDecoration(
                   borderRadius: _cardRadius,
                   color: context.theme.cardColor,
-                  border: .all(
-                    color: resources.cardStrokeColorDefault,
-                    width: _cardBorder,
-                  ),
+                  border: .all(color: resources.cardStrokeColorDefault, width: _cardBorder),
                 ),
                 child: ClipRRect(
                   clipBehavior: .hardEdge,
@@ -155,10 +149,7 @@ class _MSStoreProductCardState extends State<MSStoreProductCard> {
                       color: context.theme.brightness == .light
                           ? Colors.white
                           : const Color(0xFF2A2E39),
-                      border: .all(
-                        color: resources.cardStrokeColorDefault,
-                        width: _cardBorder,
-                      ),
+                      border: .all(color: resources.cardStrokeColorDefault, width: _cardBorder),
                     ),
                     child: Padding(
                       padding: const .all(_innerPadding),
@@ -194,10 +185,7 @@ class _MSStoreProductCardState extends State<MSStoreProductCard> {
                 decoration: BoxDecoration(
                   borderRadius: _cardRadius,
                   color: context.theme.cardColor,
-                  border: .all(
-                    color: resources.cardStrokeColorDefault,
-                    width: _cardBorder,
-                  ),
+                  border: .all(color: resources.cardStrokeColorDefault, width: _cardBorder),
                 ),
                 child: ClipRRect(
                   clipBehavior: .hardEdge,
@@ -227,20 +215,13 @@ class _MSStoreProductCardState extends State<MSStoreProductCard> {
   Widget _buildLeadingIcon(BuildContext context) {
     final String? iconUrl = widget.product.iconUrl;
     if (iconUrl == null || iconUrl.isEmpty) {
-      return const Icon(
-        msicons.FluentIcons.store_microsoft_24_regular,
-        size: _iconXY - 6,
-      );
+      return const Icon(msicons.FluentIcons.store_microsoft_24_regular, size: _iconXY - 6);
     }
 
     return SizedBox(
       width: _iconXY,
       height: _iconXY,
-      child: AppImage(
-        fetchPadding: 0,
-        baseUrl: iconUrl,
-        borderRadius: const .all(.circular(4.0)),
-      ),
+      child: AppImage(fetchPadding: 0, baseUrl: iconUrl, borderRadius: const .all(.circular(4.0))),
     );
   }
 }
@@ -271,9 +252,7 @@ class _HoverGetButton extends StatelessWidget {
           : FilledButton(
               key: const ValueKey('price-button'),
               style: ButtonStyle(
-                backgroundColor: .all(
-                  resources.cardBackgroundFillColorSecondary,
-                ),
+                backgroundColor: .all(resources.cardBackgroundFillColorSecondary),
                 foregroundColor: .all(resources.textFillColorSecondary),
               ),
               onPressed: null,
@@ -304,16 +283,9 @@ class _Poster extends StatelessWidget {
                 preview.backgroundColor != null &&
                     preview.backgroundColor!.isNotEmpty &&
                     preview.backgroundColor!.startsWith('#')
-                ? Color(
-                    int.parse(
-                      preview.backgroundColor!.replaceFirst('#', '0xFF'),
-                    ),
-                  )
+                ? Color(int.parse(preview.backgroundColor!.replaceFirst('#', '0xFF')))
                 : resources.cardBackgroundFillColorSecondary,
-            border: .all(
-              color: resources.cardBackgroundFillColorSecondary,
-              width: 1.5,
-            ),
+            border: .all(color: resources.cardBackgroundFillColorSecondary, width: 1.5),
           ),
           child: AppImage(
             baseUrl: preview.url!,

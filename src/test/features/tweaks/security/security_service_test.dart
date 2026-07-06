@@ -1,3 +1,5 @@
+// ignore_for_file: unreachable_from_main
+
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -19,10 +21,7 @@ final class FakeWinPackageService extends WinPackageService {
 }
 
 void main() {
-  const skipIntegration = bool.fromEnvironment(
-    'SKIP_INTEGRATION',
-    defaultValue: true,
-  );
+  const skipIntegration = bool.fromEnvironment('SKIP_INTEGRATION', defaultValue: true);
 
   group(
     'SecurityService (Real Implementation)',
@@ -108,10 +107,7 @@ void main() {
 
       group('CPU Mitigations', () {
         test('isMitigationEnabled accepts Meltdown/Spectre mitigation', () {
-          expect(
-            service.isMitigationEnabled(Mitigation.meltdownSpectre),
-            isA<bool>(),
-          );
+          expect(service.isMitigationEnabled(Mitigation.meltdownSpectre), isA<bool>());
         });
 
         test('isMitigationEnabled accepts Downfall mitigation', () {
@@ -119,31 +115,19 @@ void main() {
         });
 
         test('enableMitigation completes for Meltdown/Spectre', () async {
-          await expectLater(
-            service.enableMitigation(Mitigation.meltdownSpectre),
-            completes,
-          );
+          await expectLater(service.enableMitigation(Mitigation.meltdownSpectre), completes);
         });
 
         test('enableMitigation completes for Downfall', () async {
-          await expectLater(
-            service.enableMitigation(Mitigation.downfall),
-            completes,
-          );
+          await expectLater(service.enableMitigation(Mitigation.downfall), completes);
         });
 
         test('disableMitigation completes for Meltdown/Spectre', () async {
-          await expectLater(
-            service.disableMitigation(Mitigation.meltdownSpectre),
-            completes,
-          );
+          await expectLater(service.disableMitigation(Mitigation.meltdownSpectre), completes);
         });
 
         test('disableMitigation completes for Downfall', () async {
-          await expectLater(
-            service.disableMitigation(Mitigation.downfall),
-            completes,
-          );
+          await expectLater(service.disableMitigation(Mitigation.downfall), completes);
         });
       });
 
@@ -177,10 +161,7 @@ void main() {
           expect(service.statusUAC, isA<bool>());
           expect(service.statusVbs, isA<bool>());
           expect(service.statusMemoryIntegrity, isA<bool>());
-          expect(
-            service.isMitigationEnabled(Mitigation.meltdownSpectre),
-            isA<bool>(),
-          );
+          expect(service.isMitigationEnabled(Mitigation.meltdownSpectre), isA<bool>());
           expect(service.isMitigationEnabled(Mitigation.downfall), isA<bool>());
         });
 
@@ -194,14 +175,8 @@ void main() {
           expect(service.disableVbs(), isA<Future<void>>());
           expect(service.enableMemoryIntegrity(), isA<Future<void>>());
           expect(service.disableMemoryIntegrity(), isA<Future<void>>());
-          expect(
-            service.enableMitigation(Mitigation.meltdownSpectre),
-            isA<Future<void>>(),
-          );
-          expect(
-            service.disableMitigation(Mitigation.meltdownSpectre),
-            isA<Future<void>>(),
-          );
+          expect(service.enableMitigation(Mitigation.meltdownSpectre), isA<Future<void>>());
+          expect(service.disableMitigation(Mitigation.meltdownSpectre), isA<Future<void>>());
         });
       });
 
@@ -249,27 +224,21 @@ void main() {
       });
 
       test('statusDefenderProtectionRealtime can be mocked', () {
-        when(
-          () => mockService.statusDefenderProtectionRealtime,
-        ).thenReturn(false);
+        when(() => mockService.statusDefenderProtectionRealtime).thenReturn(false);
         expect(mockService.statusDefenderProtectionRealtime, isFalse);
       });
     });
 
     group('Windows Defender Actions', () {
       test('enableDefender can be called without system changes', () async {
-        when(
-          () => mockService.enableDefender(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableDefender()).thenAnswer((_) async => Future.value());
 
         await mockService.enableDefender();
         verify(() => mockService.enableDefender()).called(1);
       });
 
       test('disableDefender can be called without system changes', () async {
-        when(
-          () => mockService.disableDefender(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableDefender()).thenAnswer((_) async => Future.value());
 
         await mockService.disableDefender();
         verify(() => mockService.disableDefender()).called(1);
@@ -277,12 +246,9 @@ void main() {
 
       test('openDefenderThreatSettings returns mocked ProcessResult', () async {
         final mockResult = ProcessResult(0, 0, '', '');
-        when(
-          () => mockService.openDefenderThreatSettings(),
-        ).thenAnswer((_) async => mockResult);
+        when(() => mockService.openDefenderThreatSettings()).thenAnswer((_) async => mockResult);
 
-        final ProcessResult result = await mockService
-            .openDefenderThreatSettings();
+        final ProcessResult result = await mockService.openDefenderThreatSettings();
         expect(result, equals(mockResult));
         verify(() => mockService.openDefenderThreatSettings()).called(1);
       });
@@ -295,18 +261,14 @@ void main() {
       });
 
       test('enableUAC can be called without system changes', () async {
-        when(
-          () => mockService.enableUAC(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableUAC()).thenAnswer((_) async => Future.value());
 
         await mockService.enableUAC();
         verify(() => mockService.enableUAC()).called(1);
       });
 
       test('disableUAC can be called without system changes', () async {
-        when(
-          () => mockService.disableUAC(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableUAC()).thenAnswer((_) async => Future.value());
 
         await mockService.disableUAC();
         verify(() => mockService.disableUAC()).called(1);
@@ -327,61 +289,40 @@ void main() {
       });
 
       test('enableVbs can be called without system changes', () async {
-        when(
-          () => mockService.enableVbs(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableVbs()).thenAnswer((_) async => Future.value());
 
         await mockService.enableVbs();
         verify(() => mockService.enableVbs()).called(1);
       });
 
       test('disableVbs can be called without system changes', () async {
-        when(
-          () => mockService.disableVbs(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableVbs()).thenAnswer((_) async => Future.value());
 
         await mockService.disableVbs();
         verify(() => mockService.disableVbs()).called(1);
       });
 
-      test(
-        'enableMemoryIntegrity can be called without system changes',
-        () async {
-          when(
-            () => mockService.enableMemoryIntegrity(),
-          ).thenAnswer((_) async => Future.value());
+      test('enableMemoryIntegrity can be called without system changes', () async {
+        when(() => mockService.enableMemoryIntegrity()).thenAnswer((_) async => Future.value());
 
-          await mockService.enableMemoryIntegrity();
-          verify(() => mockService.enableMemoryIntegrity()).called(1);
-        },
-      );
+        await mockService.enableMemoryIntegrity();
+        verify(() => mockService.enableMemoryIntegrity()).called(1);
+      });
 
-      test(
-        'disableMemoryIntegrity can be called without system changes',
-        () async {
-          when(
-            () => mockService.disableMemoryIntegrity(),
-          ).thenAnswer((_) async => Future.value());
+      test('disableMemoryIntegrity can be called without system changes', () async {
+        when(() => mockService.disableMemoryIntegrity()).thenAnswer((_) async => Future.value());
 
-          await mockService.disableMemoryIntegrity();
-          verify(() => mockService.disableMemoryIntegrity()).called(1);
-        },
-      );
+        await mockService.disableMemoryIntegrity();
+        verify(() => mockService.disableMemoryIntegrity()).called(1);
+      });
     });
 
     group('CPU Mitigations', () {
       test('isMitigationEnabled can be mocked', () {
-        when(
-          () => mockService.isMitigationEnabled(Mitigation.meltdownSpectre),
-        ).thenReturn(true);
-        expect(
-          mockService.isMitigationEnabled(Mitigation.meltdownSpectre),
-          isTrue,
-        );
+        when(() => mockService.isMitigationEnabled(Mitigation.meltdownSpectre)).thenReturn(true);
+        expect(mockService.isMitigationEnabled(Mitigation.meltdownSpectre), isTrue);
 
-        when(
-          () => mockService.isMitigationEnabled(Mitigation.downfall),
-        ).thenReturn(false);
+        when(() => mockService.isMitigationEnabled(Mitigation.downfall)).thenReturn(false);
         expect(mockService.isMitigationEnabled(Mitigation.downfall), isFalse);
       });
 
@@ -391,9 +332,7 @@ void main() {
         ).thenAnswer((_) async => Future.value());
 
         await mockService.enableMitigation(Mitigation.meltdownSpectre);
-        verify(
-          () => mockService.enableMitigation(Mitigation.meltdownSpectre),
-        ).called(1);
+        verify(() => mockService.enableMitigation(Mitigation.meltdownSpectre)).called(1);
       });
 
       test('disableMitigation can be called without system changes', () async {
@@ -402,18 +341,14 @@ void main() {
         ).thenAnswer((_) async => Future.value());
 
         await mockService.disableMitigation(Mitigation.downfall);
-        verify(
-          () => mockService.disableMitigation(Mitigation.downfall),
-        ).called(1);
+        verify(() => mockService.disableMitigation(Mitigation.downfall)).called(1);
       });
     });
 
     group('Call Order Verification', () {
       test('can verify method call order', () async {
         when(() => mockService.statusDefender).thenReturn(false);
-        when(
-          () => mockService.enableUAC(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableUAC()).thenAnswer((_) async => Future.value());
         when(() => mockService.statusUAC).thenReturn(true);
 
         // Execute in specific order
@@ -432,9 +367,7 @@ void main() {
       });
 
       test('can verify a method was never called', () {
-        when(
-          () => mockService.enableDefender(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableDefender()).thenAnswer((_) async => Future.value());
 
         // Don't call disableDefender
         verifyNever(() => mockService.disableDefender());

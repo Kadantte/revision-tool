@@ -2,8 +2,10 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart' as msicons;
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import '../../i18n/generated/strings.g.dart';
+// ignore: depend_on_referenced_packages
 import 'package:vector_graphics/vector_graphics.dart';
+
+import '../../i18n/generated/strings.g.dart';
 
 enum RouteSection { main, footer, search }
 
@@ -21,9 +23,7 @@ enum RouteMeta {
     path: '/tweaks',
     section: RouteSection.main,
     icon: SvgPicture(
-      AssetBytesLoader(
-        'assets/icon/pane/ic_revi_fluent_wrench_24_color.svg.vec',
-      ),
+      AssetBytesLoader('assets/icon/pane/ic_revi_fluent_wrench_24_color.svg.vec'),
       width: 20,
       height: 20,
     ),
@@ -32,9 +32,7 @@ enum RouteMeta {
     path: '/msstore',
     section: RouteSection.main,
     icon: SvgPicture(
-      AssetBytesLoader(
-        'assets/icon/pane/ic_revi_fluent_ms_store_48_color.svg.vec',
-      ),
+      AssetBytesLoader('assets/icon/pane/ic_revi_fluent_ms_store_48_color.svg.vec'),
       width: 24,
       height: 24,
     ),
@@ -74,11 +72,7 @@ enum RouteMeta {
     icon: msicons.FluentIcons.arrow_download_24_regular,
   );
 
-  const RouteMeta({
-    required this.path,
-    required this.section,
-    required this.icon,
-  });
+  const RouteMeta({required this.path, required this.section, required this.icon});
 
   final String path;
   final RouteSection section;
@@ -98,15 +92,12 @@ enum RouteMeta {
     };
   }
 
-  static final Map<String, RouteMeta> _pathLookup = {
-    for (final r in values) r.path: r,
-  };
+  static final Map<String, RouteMeta> _pathLookup = {for (final r in values) r.path: r};
 
   static RouteMeta? fromPath(String path, {bool allowPrefix = false}) {
     if (!allowPrefix) return _pathLookup[path];
     for (final RouteMeta route in _navigationRoutes) {
-      if (path == route.path ||
-          (route.path != '/' && path.startsWith('${route.path}/'))) {
+      if (path == route.path || (route.path != '/' && path.startsWith('${route.path}/'))) {
         return route;
       }
     }
@@ -119,15 +110,9 @@ class AppRoutes {
 
   static const List<RouteMeta> navigationRoutes = _navigationRoutes;
 
-  static final List<NavigationPaneItem> mainPaneItems = _buildPaneItems(
-    _mainNavigationRoutes,
-  );
-  static final List<NavigationPaneItem> footerPaneItems = _buildPaneItems(
-    _footerNavigationRoutes,
-  );
-  static final List<NavigationPaneItem> searchableItems = _buildPaneItems(
-    _searchableRoutes,
-  );
+  static final List<NavigationPaneItem> mainPaneItems = _buildPaneItems(_mainNavigationRoutes);
+  static final List<NavigationPaneItem> footerPaneItems = _buildPaneItems(_footerNavigationRoutes);
+  static final List<NavigationPaneItem> searchableItems = _buildPaneItems(_searchableRoutes);
 
   static String getRouteName(String path, BuildContext context) {
     final RouteMeta? meta = RouteMeta.fromPath(path);
@@ -139,18 +124,10 @@ class AppRoutes {
   }
 
   static int? getPaneIndexFromRoute(RouteMeta? route) =>
-      route != null && route.section != RouteSection.search
-      ? route.index
-      : null;
+      route != null && route.section != RouteSection.search ? route.index : null;
 
-  static List<BreadcrumbItem<String>> buildBreadcrumbs(
-    String location,
-    BuildContext context,
-  ) {
-    final List<String> segments = location
-        .split('/')
-        .where((s) => s.isNotEmpty)
-        .toList();
+  static List<BreadcrumbItem<String>> buildBreadcrumbs(String location, BuildContext context) {
+    final List<String> segments = location.split('/').where((s) => s.isNotEmpty).toList();
     final FluentThemeData theme = FluentTheme.of(context);
 
     var currentPath = '';
@@ -203,11 +180,7 @@ class AppRoutes {
   }
 }
 
-const List<RouteMeta> _mainNavigationRoutes = [
-  RouteMeta.home,
-  RouteMeta.tweaks,
-  RouteMeta.msStore,
-];
+const List<RouteMeta> _mainNavigationRoutes = [RouteMeta.home, RouteMeta.tweaks, RouteMeta.msStore];
 
 const List<RouteMeta> _footerNavigationRoutes = [RouteMeta.settings];
 
@@ -219,10 +192,7 @@ const List<RouteMeta> _searchableRoutes = [
   RouteMeta.tweaksUpdates,
 ];
 
-const List<RouteMeta> _navigationRoutes = [
-  ..._mainNavigationRoutes,
-  ..._footerNavigationRoutes,
-];
+const List<RouteMeta> _navigationRoutes = [..._mainNavigationRoutes, ..._footerNavigationRoutes];
 
 List<NavigationPaneItem> _buildPaneItems(List<RouteMeta> routes) {
   return routes

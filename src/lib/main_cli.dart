@@ -19,8 +19,7 @@ Future<void> main(List<String> args) async {
   }
 
   if (args.isEmpty) {
-    final guiPath =
-        "${mainPath.substring(0, mainPath.lastIndexOf(r"\"))}\\revitoolw.exe";
+    final guiPath = "${mainPath.substring(0, mainPath.lastIndexOf(r"\"))}\\revitoolw.exe";
     if (File(guiPath).existsSync()) {
       await Process.start('revitoolw', []);
       exit(0);
@@ -38,12 +37,8 @@ Future<void> main(List<String> args) async {
           'revitool',
           "Revision Tool CLI v${const String.fromEnvironment('APP_VERSION', defaultValue: '1.0.0')}",
         )
-        ..addCommand(
-          MSStoreCommand(service: container.read(storeServiceProvider)),
-        )
-        ..addCommand(
-          WinRegistryServiceCliCommand(const WinRegistryCliService()),
-        )
+        ..addCommand(MSStoreCommand(service: container.read(storeServiceProvider)))
+        ..addCommand(WinRegistryServiceCliCommand(const WinRegistryCliService()))
         ..addCommand(TweaksCommand(container: container))
         ..addCommand(WindowsPackageCommand(container: container));
   await runner.run(args);

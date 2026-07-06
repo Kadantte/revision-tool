@@ -13,8 +13,7 @@ part 'updates_service.g.dart';
 
 @CliCommand(
   name: 'updates',
-  description:
-      'Updates related tweaks, such as Windows Updates, KGL, and certificates.',
+  description: 'Updates related tweaks, such as Windows Updates, KGL, and certificates.',
 )
 abstract class UpdatesService {
   @CliAction(name: 'certificates', run: 'updateCertificates')
@@ -66,13 +65,10 @@ class UpdatesServiceImpl implements UpdatesService {
 
   @override
   Future<void> updateKGL() async {
-    const api =
-        'https://settings.data.microsoft.com/settings/v3.0/xbox/knowngamelist';
+    const api = 'https://settings.data.microsoft.com/settings/v3.0/xbox/knowngamelist';
     try {
       final apiClient = ApiClient();
-      final Result<Response<dynamic>> result = await apiClient.get(
-        Uri.parse(api),
-      );
+      final Result<Response<dynamic>> result = await apiClient.get(Uri.parse(api));
       final Response<dynamic> json = result.when(
         success: (response) => response,
         failure: (exception) => throw exception,

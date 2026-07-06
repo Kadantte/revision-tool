@@ -12,9 +12,7 @@ class CliCommandGenerator extends GeneratorForAnnotation<CliCommand> {
   static const _cliValueChecker = TypeChecker.typeNamed(CliValue);
   static const _cliActionChecker = TypeChecker.typeNamed(CliAction);
   static const _cliEnumChecker = TypeChecker.typeNamed(CliEnumSubCommand);
-  static final RegExp _dartIdentifierPattern = RegExp(
-    r'^[A-Za-z_][A-Za-z0-9_]*$',
-  );
+  static final RegExp _dartIdentifierPattern = RegExp(r'^[A-Za-z_][A-Za-z0-9_]*$');
   static final RegExp _leadingDigitPattern = RegExp(r'^[0-9]');
   static final RegExp _genericCharsPattern = RegExp(r'[<>, ]');
 
@@ -34,9 +32,7 @@ class CliCommandGenerator extends GeneratorForAnnotation<CliCommand> {
     final String serviceClassName = element.name ?? 'GeneratedService';
     final rootClassName = '${serviceClassName}CliCommand';
     final String commandName = annotation.read('name').stringValue;
-    final String commandDescription = annotation
-        .read('description')
-        .stringValue;
+    final String commandDescription = annotation.read('description').stringValue;
 
     final groupClassNames = <String>[];
     final specs = <Spec>[];
@@ -101,13 +97,10 @@ class CliCommandGenerator extends GeneratorForAnnotation<CliCommand> {
               element: member,
             );
           }
-          final List<FormalParameterElement> requiredParams = runMethod
-              .formalParameters
+          final List<FormalParameterElement> requiredParams = runMethod.formalParameters
               .where((p) => p.isRequiredPositional)
               .toList(growable: false);
-          if (runMethod.formalParameters.any(
-                (p) => p.isOptionalPositional || p.isNamed,
-              ) ||
+          if (runMethod.formalParameters.any((p) => p.isOptionalPositional || p.isNamed) ||
               requiredParams.length > 1) {
             throw InvalidGenerationSourceError(
               '@CliAction(name: "${meta.name}") run method must declare zero or one required positional parameter only.',
@@ -115,8 +108,9 @@ class CliCommandGenerator extends GeneratorForAnnotation<CliCommand> {
             );
           }
           if (requiredParams.length == 1) {
-            final String paramType = requiredParams.single.type
-                .getDisplayString(withNullability: false);
+            final String paramType = requiredParams.single.type.getDisplayString(
+              withNullability: false,
+            );
             if (!_isSupportedValueType(paramType)) {
               throw InvalidGenerationSourceError(
                 '@CliAction(name: "${meta.name}") parameter type "$paramType" is unsupported. Supported types: int, double, bool, String.',
@@ -130,11 +124,7 @@ class CliCommandGenerator extends GeneratorForAnnotation<CliCommand> {
               element: member,
             );
           }
-          final _GeneratedLeaf leaf = _buildActionLeaf(
-            serviceClassName,
-            runMethod,
-            meta,
-          );
+          final _GeneratedLeaf leaf = _buildActionLeaf(serviceClassName, runMethod, meta);
           groupClassNames.add(leaf.className);
           specs.add(leaf.spec);
 
@@ -160,15 +150,9 @@ class CliCommandGenerator extends GeneratorForAnnotation<CliCommand> {
               element: member,
             );
           }
-          final String enumType = method.formalParameters.single.type
-              .getDisplayString();
+          final String enumType = method.formalParameters.single.type.getDisplayString();
           enumTypes.add(enumType);
-          final _GeneratedGroup group = _buildEnumGroup(
-            serviceClassName,
-            element,
-            method,
-            meta,
-          );
+          final _GeneratedGroup group = _buildEnumGroup(serviceClassName, element, method, meta);
           groupClassNames.add(group.className);
           specs.addAll(group.specs);
       }
@@ -184,9 +168,7 @@ class CliCommandGenerator extends GeneratorForAnnotation<CliCommand> {
     );
     final Class baseClass = _buildServiceBaseClass(serviceClassName);
 
-    final List<Method> helperMethods = enumTypes
-        .map(_buildParseHelper)
-        .toList(growable: false);
+    final List<Method> helperMethods = enumTypes.map(_buildParseHelper).toList(growable: false);
 
     final emitter = DartEmitter(useNullSafetySyntax: true);
     final output = StringBuffer();
@@ -209,8 +191,7 @@ class CliCommandGenerator extends GeneratorForAnnotation<CliCommand> {
     GetterElement statusGetter,
     _CliMetaToggle meta,
   ) {
-    final bool supportsForce =
-        meta.enableForceMethod != null && meta.disableForceMethod != null;
+    final bool supportsForce = meta.enableForceMethod != null && meta.disableForceMethod != null;
 
     if ((meta.enableForceMethod == null) != (meta.disableForceMethod == null)) {
       throw InvalidGenerationSourceError(
@@ -276,9 +257,7 @@ $disableActionCode
         isAsync: true,
         runBodyCode: _buildTryCatchCode(
           tryBody: enableTryBody,
-          exceptionMessageLiteral: _quoteLiteral(
-            'Failed to enable ${meta.name}',
-          ),
+          exceptionMessageLiteral: _quoteLiteral('Failed to enable ${meta.name}'),
         ),
       ),
       _buildLeafClass(
@@ -291,9 +270,7 @@ $disableActionCode
         isAsync: true,
         runBodyCode: _buildTryCatchCode(
           tryBody: disableTryBody,
-          exceptionMessageLiteral: _quoteLiteral(
-            'Failed to disable ${meta.name}',
-          ),
+          exceptionMessageLiteral: _quoteLiteral('Failed to disable ${meta.name}'),
         ),
       ),
       _buildLeafClass(
@@ -308,9 +285,7 @@ $disableActionCode
   final bool status = _service.${meta.status};
   logger.i('$escapedMetaName: \${status ? "enabled" : "disabled"}');
 ''',
-          exceptionMessageLiteral: _quoteLiteral(
-            'Failed to get ${meta.name} status',
-          ),
+          exceptionMessageLiteral: _quoteLiteral('Failed to get ${meta.name} status'),
         ),
       ),
     ];
@@ -335,9 +310,7 @@ $disableActionCode
       );
     }
 
-    final String valueType = statusGetter.returnType.getDisplayString(
-      withNullability: false,
-    );
+    final String valueType = statusGetter.returnType.getDisplayString(withNullability: false);
 
     final String display = _pascal(meta.name);
     final groupClassName = '${display}Command';
@@ -357,9 +330,7 @@ $disableActionCode
   final $valueType value = _service.${meta.status};
   logger.i('$escaped: \$value');
 ''',
-        exceptionMessageLiteral: _quoteLiteral(
-          'Failed to get ${meta.name} status',
-        ),
+        exceptionMessageLiteral: _quoteLiteral('Failed to get ${meta.name} status'),
       ),
     );
 
@@ -398,10 +369,7 @@ argParser.addOption(
       subcommandClassNames: [statusLeafName, setLeafName],
     );
 
-    return (
-      className: groupClassName,
-      specs: [groupClass, statusLeafClass, setLeafClass],
-    );
+    return (className: groupClassName, specs: [groupClass, statusLeafClass, setLeafClass]);
   }
 
   _GeneratedLeaf _buildActionLeaf(
@@ -412,8 +380,7 @@ argParser.addOption(
     final String display = _pascal(meta.name);
     final className = '_Action${display}Command';
     final String runMethodName = _memberName(runMethod);
-    final List<FormalParameterElement> requiredParams = runMethod
-        .formalParameters
+    final List<FormalParameterElement> requiredParams = runMethod.formalParameters
         .where((p) => p.isRequiredPositional)
         .toList(growable: false);
     final bool hasParam = requiredParams.isNotEmpty;
@@ -464,8 +431,7 @@ argParser.addOption(
     MethodElement status,
     _CliMetaEnum meta,
   ) {
-    final String enumType = status.formalParameters.single.type
-        .getDisplayString();
+    final String enumType = status.formalParameters.single.type.getDisplayString();
     final String? explicitEnableName = meta.enableMethodName;
     final String? explicitDisableName = meta.disableMethodName;
     if (explicitEnableName == null || explicitDisableName == null) {
@@ -474,12 +440,8 @@ argParser.addOption(
         element: status,
       );
     }
-    final MethodElement? enableMethod = serviceElement.getMethod(
-      explicitEnableName,
-    );
-    final MethodElement? disableMethod = serviceElement.getMethod(
-      explicitDisableName,
-    );
+    final MethodElement? enableMethod = serviceElement.getMethod(explicitEnableName);
+    final MethodElement? disableMethod = serviceElement.getMethod(explicitDisableName);
     if (enableMethod == null || disableMethod == null) {
       throw InvalidGenerationSourceError(
         '@CliEnumSubCommand(name: "${meta.name}") references unknown methods: enable=$explicitEnableName, disable=$explicitDisableName.',
@@ -631,10 +593,7 @@ argParser.addOption(
       subcommandClassNames: [statusLeafName, setLeafName],
     );
 
-    return (
-      className: groupClassName,
-      specs: [groupClass, statusLeafClass, setLeafClass],
-    );
+    return (className: groupClassName, specs: [groupClass, statusLeafClass, setLeafClass]);
   }
 
   Class _buildContainerClass({
@@ -668,15 +627,8 @@ argParser.addOption(
         )
         ..methods.addAll([
           _buildGetterMethod('name', 'String', 'return $nameLiteral;'),
-          _buildGetterMethod(
-            'description',
-            'String',
-            'return $descriptionLiteral;',
-          ),
-          _buildRunMethod(
-            returnType: 'void',
-            bodyCode: const Code('printUsage();'),
-          ),
+          _buildGetterMethod('description', 'String', 'return $descriptionLiteral;'),
+          _buildRunMethod(returnType: 'void', bodyCode: const Code('printUsage();')),
         ]),
     );
   }
@@ -711,8 +663,7 @@ argParser.addOption(
     );
   }
 
-  String _serviceBaseClassName(String serviceClassName) =>
-      '_${serviceClassName}CommandBase';
+  String _serviceBaseClassName(String serviceClassName) => '_${serviceClassName}CommandBase';
 
   _GroupLeafNames _groupLeafNames(String display) => (
     groupClass: '${display}Command',
@@ -732,16 +683,9 @@ argParser.addOption(
       serviceClassName: serviceClassName,
       nameLiteral: _quoteLiteral(groupName),
       descriptionLiteral: _quoteLiteral('$groupName command group'),
-      subcommandClassNames: [
-        names.enableLeaf,
-        names.disableLeaf,
-        names.statusLeaf,
-      ],
+      subcommandClassNames: [names.enableLeaf, names.disableLeaf, names.statusLeaf],
     );
-    return (
-      className: names.groupClass,
-      specs: [groupClassSpec, ...leafClasses],
-    );
+    return (className: names.groupClass, specs: [groupClassSpec, ...leafClasses]);
   }
 
   Class _buildLeafClass({
@@ -755,8 +699,7 @@ argParser.addOption(
     bool isAsync = false,
     required Code runBodyCode,
   }) {
-    final String resolvedCommandNameLiteral =
-        commandNameLiteral ?? _quoteLiteral(commandName!);
+    final String resolvedCommandNameLiteral = commandNameLiteral ?? _quoteLiteral(commandName!);
     return Class(
       (b) => b
         ..name = className
@@ -775,21 +718,9 @@ argParser.addOption(
           ),
         )
         ..methods.addAll([
-          _buildGetterMethod(
-            'name',
-            'String',
-            'return $resolvedCommandNameLiteral;',
-          ),
-          _buildGetterMethod(
-            'description',
-            'String',
-            'return $descriptionLiteral;',
-          ),
-          _buildRunMethod(
-            returnType: returnType,
-            bodyCode: runBodyCode,
-            isAsync: isAsync,
-          ),
+          _buildGetterMethod('name', 'String', 'return $resolvedCommandNameLiteral;'),
+          _buildGetterMethod('description', 'String', 'return $descriptionLiteral;'),
+          _buildRunMethod(returnType: returnType, bodyCode: runBodyCode, isAsync: isAsync),
         ]),
     );
   }
@@ -896,12 +827,7 @@ $tryBody
       final reader = ConstantReader(toggle);
       return _CliMetaToggle(
         reader.read('name').stringValue,
-        _readIdentifierString(
-          reader,
-          'status',
-          annotationName: 'CliToggle',
-          member: member,
-        ),
+        _readIdentifierString(reader, 'status', annotationName: 'CliToggle', member: member),
         enableMethod: _readIdentifierString(
           reader,
           'enable',
@@ -924,12 +850,7 @@ $tryBody
       final reader = ConstantReader(value);
       return _CliMetaValue(
         reader.read('name').stringValue,
-        _readIdentifierString(
-          reader,
-          'status',
-          annotationName: 'CliValue',
-          member: member,
-        ),
+        _readIdentifierString(reader, 'status', annotationName: 'CliValue', member: member),
         setMethod: reader.readOptionalString('set'),
       );
     }
@@ -939,12 +860,7 @@ $tryBody
       final reader = ConstantReader(action);
       return _CliMetaAction(
         reader.read('name').stringValue,
-        _readIdentifierString(
-          reader,
-          'run',
-          annotationName: 'CliAction',
-          member: member,
-        ),
+        _readIdentifierString(reader, 'run', annotationName: 'CliAction', member: member),
       );
     }
 
@@ -1008,9 +924,7 @@ $tryBody
   }
 
   String? _validateOptionalIdentifier(String? value, String field) =>
-      value == null || value.isEmpty
-      ? null
-      : _requireValidIdentifier(value, field);
+      value == null || value.isEmpty ? null : _requireValidIdentifier(value, field);
 
   bool _isValidToggleReturnType(DartType returnType) {
     if (returnType.getDisplayString(withNullability: false) == 'void') {
@@ -1018,23 +932,16 @@ $tryBody
     }
     if (returnType.isDartAsyncFuture && returnType is InterfaceType) {
       return returnType.typeArguments.isNotEmpty &&
-          returnType.typeArguments.first.getDisplayString(
-                withNullability: false,
-              ) ==
-              'void';
+          returnType.typeArguments.first.getDisplayString(withNullability: false) == 'void';
     }
     if (returnType.isDartAsyncFutureOr && returnType is InterfaceType) {
       return returnType.typeArguments.isNotEmpty &&
-          returnType.typeArguments.first.getDisplayString(
-                withNullability: false,
-              ) ==
-              'void';
+          returnType.typeArguments.first.getDisplayString(withNullability: false) == 'void';
     }
     return false;
   }
 
-  String _sanitizeEnumTypeName(String enumType) =>
-      enumType.replaceAll(_genericCharsPattern, '');
+  String _sanitizeEnumTypeName(String enumType) => enumType.replaceAll(_genericCharsPattern, '');
 
   void _validateEnumMemberSignature({
     required MethodElement function,
@@ -1046,16 +953,13 @@ $tryBody
         .where((p) => p.isRequiredPositional)
         .toList(growable: false);
     if (required.length != 1 ||
-        function.formalParameters.any(
-          (p) => p.isOptionalPositional || p.isNamed,
-        )) {
+        function.formalParameters.any((p) => p.isOptionalPositional || p.isNamed)) {
       throw InvalidGenerationSourceError(
         '@CliEnumSubCommand $field must accept exactly one required positional enum parameter.',
         element: member,
       );
     }
-    if (required.single.type.getDisplayString(withNullability: false) !=
-        enumType) {
+    if (required.single.type.getDisplayString(withNullability: false) != enumType) {
       throw InvalidGenerationSourceError(
         '@CliEnumSubCommand $field parameter must be $enumType, but found ${required.single.type.getDisplayString()}.',
         element: member,
@@ -1075,8 +979,7 @@ $tryBody
   }
 
   String _memberName(Element e) => _requireValidIdentifier(e.displayName, '');
-  String _requireValidIdentifier(String v, [String? context]) =>
-      _dartIdentifierPattern.hasMatch(v)
+  String _requireValidIdentifier(String v, [String? context]) => _dartIdentifierPattern.hasMatch(v)
       ? v
       : (throw InvalidGenerationSourceError('Invalid identifier: $v'));
 
@@ -1084,8 +987,7 @@ $tryBody
     return value.escapeForSingleQuotedString();
   }
 
-  String _quoteLiteral(String value) =>
-      "'${_escapeForSingleQuotedString(value)}'";
+  String _quoteLiteral(String value) => "'${_escapeForSingleQuotedString(value)}'";
 }
 
 extension _ConstantReaderX on ConstantReader {
@@ -1093,17 +995,14 @@ extension _ConstantReaderX on ConstantReader {
     final ConstantReader? valueReader = peek(field);
     if (valueReader == null || valueReader.isNull) return null;
     if (valueReader.isString) return valueReader.stringValue;
-    throw InvalidGenerationSourceError(
-      '@CliEnumSubCommand $field must be a string method name.',
-    );
+    throw InvalidGenerationSourceError('@CliEnumSubCommand $field must be a string method name.');
   }
 
   Map<String, String> readOptionalStringMap(String field) {
     final ConstantReader? valueReader = peek(field);
     if (valueReader == null || valueReader.isNull) return const {};
     final result = <String, String>{};
-    for (final MapEntry<DartObject?, DartObject?> entry
-        in valueReader.mapValue.entries) {
+    for (final MapEntry<DartObject?, DartObject?> entry in valueReader.mapValue.entries) {
       final String? key = entry.key?.toStringValue();
       final String? value = entry.value?.toStringValue();
       if (key == null || value == null) continue;
@@ -1119,9 +1018,7 @@ extension _CliStringX on String {
       RegExp(r'[^A-Za-z0-9]+'),
     ).where((w) => w.isNotEmpty).toList(growable: false);
     if (words.isEmpty) return 'Generated';
-    final String candidate = words
-        .map((w) => w[0].toUpperCase() + w.substring(1))
-        .join();
+    final String candidate = words.map((w) => w[0].toUpperCase() + w.substring(1)).join();
     return CliCommandGenerator._leadingDigitPattern.hasMatch(candidate)
         ? 'Cli$candidate'
         : candidate;

@@ -47,12 +47,7 @@ abstract class SecurityService {
   Future<void> enableDefenderCLI();
   Future<void> disableDefenderCLI();
 
-  @CliToggle(
-    name: 'uac',
-    status: 'statusUAC',
-    enable: 'enableUAC',
-    disable: 'disableUAC',
-  )
+  @CliToggle(name: 'uac', status: 'statusUAC', enable: 'enableUAC', disable: 'disableUAC')
   bool get statusUAC;
   Future<void> enableUAC();
   Future<void> disableUAC();
@@ -68,12 +63,7 @@ abstract class SecurityService {
   Future<void> enableMitigation(Mitigation mitigation);
   Future<void> disableMitigation(Mitigation mitigation);
 
-  @CliToggle(
-    name: 'vbs',
-    status: 'statusVbs',
-    enable: 'enableVbs',
-    disable: 'disableVbs',
-  )
+  @CliToggle(name: 'vbs', status: 'statusVbs', enable: 'enableVbs', disable: 'disableVbs')
   bool get statusVbs;
   Future<void> enableVbs();
   Future<void> disableVbs();
@@ -98,9 +88,7 @@ class SecurityServiceImpl implements SecurityService {
 
   @override
   bool get statusDefender {
-    if (WinPackageService.checkPackageInstalled(
-      WinPackageType.defenderRemoval,
-    )) {
+    if (WinPackageService.checkPackageInstalled(WinPackageType.defenderRemoval)) {
       return false;
     }
 
@@ -127,9 +115,7 @@ class SecurityServiceImpl implements SecurityService {
 
   @override
   bool get statusDefenderProtections {
-    return (statusDefenderProtectionTamper ||
-            statusDefenderProtectionRealtime) &&
-        statusDefender;
+    return (statusDefenderProtectionTamper || statusDefenderProtectionRealtime) && statusDefender;
   }
 
   @override
@@ -164,9 +150,7 @@ class SecurityServiceImpl implements SecurityService {
 
   @override
   Future<ProcessResult> openDefenderThreatSettings() async {
-    return Process.run('start', [
-      'windowsdefender://threatsettings',
-    ], runInShell: true);
+    return Process.run('start', ['windowsdefender://threatsettings'], runInShell: true);
   }
 
   @override
@@ -200,14 +184,9 @@ class SecurityServiceImpl implements SecurityService {
         ),
       ]);
 
-      await DefenderRemovalService(
-        security: this,
-        api: ApiClient(),
-      ).uninstallPackage();
+      await DefenderRemovalService(security: this, api: ApiClient()).uninstallPackage();
 
-      await runPSCommand(
-        r'& $env:SystemRoot\System32\gpupdate.exe /Target:Computer /Force',
-      );
+      await runPSCommand(r'& $env:SystemRoot\System32\gpupdate.exe /Target:Computer /Force');
 
       await Future.wait([
         WinRegistryService.writeRegistryValue(
@@ -268,8 +247,9 @@ class SecurityServiceImpl implements SecurityService {
         ),
       );
 
-      final Iterable<String> webthreatdefsvcList =
-          WinRegistryService.getUserServices('webthreatdefusersvc');
+      final Iterable<String> webthreatdefsvcList = WinRegistryService.getUserServices(
+        'webthreatdefusersvc',
+      );
 
       await Future.wait(
         webthreatdefsvcList.map(
@@ -296,8 +276,7 @@ class SecurityServiceImpl implements SecurityService {
       ]);
 
       const smartscreenPath = r'C:\Windows\System32\smartscreen.exe';
-      if (!File(smartscreenPath).existsSync() &&
-          File('$smartscreenPath.revi').existsSync()) {
+      if (!File(smartscreenPath).existsSync() && File('$smartscreenPath.revi').existsSync()) {
         await TrustedInstallerServiceImpl().executeCommand('ren', [
           '$smartscreenPath.revi',
           'smartscreen.exe',
@@ -411,9 +390,7 @@ class SecurityServiceImpl implements SecurityService {
             1,
           ),
         ]);
-        await runPSCommand(
-          r'& $env:SystemRoot\System32\gpupdate.exe /Target:Computer /Force',
-        );
+        await runPSCommand(r'& $env:SystemRoot\System32\gpupdate.exe /Target:Computer /Force');
         if (File(_mpCmdRunString).existsSync()) {
           await runPSCommand(
             'Start-Process -FilePath "$_mpCmdRunString" -ArgumentList "-RemoveDefinitions -All" -NoNewWindow -Wait',
@@ -455,10 +432,7 @@ class SecurityServiceImpl implements SecurityService {
         'RevisionEnableDefenderCMD',
       );
 
-      await DefenderRemovalService(
-        security: this,
-        api: ApiClient(),
-      ).installPackage();
+      await DefenderRemovalService(security: this, api: ApiClient()).installPackage();
     } on Exception catch (e) {
       throw DefenderOperationException('Failed to disable Windows Defender', e);
     }
@@ -479,9 +453,7 @@ class SecurityServiceImpl implements SecurityService {
       logger.i('security: Windows Defender is already disabled');
       return;
     }
-    logger.i(
-      'security: Checking if Virus and Threat Protections are enabled...',
-    );
+    logger.i('security: Checking if Virus and Threat Protections are enabled...');
     var count = 0;
     while (statusDefenderProtections) {
       if (count > 10) {
@@ -491,9 +463,7 @@ class SecurityServiceImpl implements SecurityService {
       }
 
       if (!statusDefenderProtectionTamper) {
-        await runPSCommand(
-          r'Set-MpPreference -DisableRealtimeMonitoring $true',
-        );
+        await runPSCommand(r'Set-MpPreference -DisableRealtimeMonitoring $true');
         break;
       }
 
@@ -788,9 +758,7 @@ class SecurityServiceImpl implements SecurityService {
   @override
   Future<void> disableVbs() async {
     await Future.wait([
-      runPSCommand(
-        'Invoke-Command -ScriptBlock { bcdedit /set vsmlaunchtype off }',
-      ),
+      runPSCommand('Invoke-Command -ScriptBlock { bcdedit /set vsmlaunchtype off }'),
       WinRegistryService.writeRegistryValue(
         Registry.localMachine,
         r'SOFTWARE\Policies\Microsoft\Windows\DeviceGuard',
@@ -927,16 +895,12 @@ bool uacStatus(Ref ref) {
 
 @riverpod
 bool meltdownSpectreStatus(Ref ref) {
-  return ref
-      .watch(securityServiceProvider)
-      .isMitigationEnabled(Mitigation.meltdownSpectre);
+  return ref.watch(securityServiceProvider).isMitigationEnabled(Mitigation.meltdownSpectre);
 }
 
 @riverpod
 bool downfallStatus(Ref ref) {
-  return ref
-      .watch(securityServiceProvider)
-      .isMitigationEnabled(Mitigation.downfall);
+  return ref.watch(securityServiceProvider).isMitigationEnabled(Mitigation.downfall);
 }
 
 @riverpod

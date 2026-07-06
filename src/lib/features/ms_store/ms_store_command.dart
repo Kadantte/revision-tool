@@ -11,10 +11,7 @@ import 'store_service.dart';
 
 class MSStoreCommand extends Command<void> {
   MSStoreCommand({required this._service}) {
-    argParser.addMultiOption(
-      'id',
-      help: 'The ID of the app to download, e.g. 9WZDNCRFJ3TJ',
-    );
+    argParser.addMultiOption('id', help: 'The ID of the app to download, e.g. 9WZDNCRFJ3TJ');
     argParser.addOption(
       'ring',
       abbr: 'r',
@@ -22,11 +19,7 @@ class MSStoreCommand extends Command<void> {
       allowed: StoreRing.values.map((e) => e.value).toList(),
       help: 'Channel',
     );
-    argParser.addOption(
-      'download',
-      help: 'Download to specified path.',
-      defaultsTo: '',
-    );
+    argParser.addOption('download', help: 'Download to specified path.', defaultsTo: '');
     argParser.addOption(
       'arch',
       abbr: 'a',
@@ -41,8 +34,7 @@ class MSStoreCommand extends Command<void> {
   String get tag => 'MS Store';
 
   @override
-  String get description =>
-      '[$name] Downloads and optionally installs free apps from MS Store';
+  String get description => '[$name] Downloads and optionally installs free apps from MS Store';
 
   @override
   String get name => 'msstore-apps';
@@ -60,17 +52,13 @@ class MSStoreCommand extends Command<void> {
     final StorePackagesByProductId packagesByProductId = await _service
         .getPackages(productIds: ids.toSet(), ring: ring, arch: arch)
         .then(
-          (result) => result.when(
-            success: (value) => value,
-            failure: (exception) => throw exception,
-          ),
+          (result) =>
+              result.when(success: (value) => value, failure: (exception) => throw exception),
         );
 
     final Set<StorePackageFileDownload> downloads = await _service
         .download(
-          downloadPath: download != null && download.isNotEmpty
-              ? download
-              : null,
+          downloadPath: download != null && download.isNotEmpty ? download : null,
           ring: ring,
           packagesByProductId: packagesByProductId,
           cancelToken: CancelToken(),
@@ -82,10 +70,8 @@ class MSStoreCommand extends Command<void> {
           },
         )
         .then(
-          (result) => result.when(
-            success: (value) => value,
-            failure: (exception) => throw exception,
-          ),
+          (result) =>
+              result.when(success: (value) => value, failure: (exception) => throw exception),
         );
 
     if (download != null && download.isNotEmpty) {
@@ -100,15 +86,11 @@ class MSStoreCommand extends Command<void> {
     final Map<String, ProcessResult> installResults = await _service
         .install(downloads: downloads)
         .then(
-          (result) => result.when(
-            success: (value) => value,
-            failure: (exception) => throw exception,
-          ),
+          (result) =>
+              result.when(success: (value) => value, failure: (exception) => throw exception),
         );
 
-    final List<ProcessResult> failed = installResults.values
-        .where((r) => r.exitCode != 0)
-        .toList();
+    final List<ProcessResult> failed = installResults.values.where((r) => r.exitCode != 0).toList();
     if (failed.isNotEmpty) {
       for (final r in failed) {
         logger.e('$name: Install failed (${r.exitCode}): ${r.stderr}');

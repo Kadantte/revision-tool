@@ -5,10 +5,7 @@ import 'package:revitool/features/tweaks/updates/updates_service.dart';
 class MockUpdatesService extends Mock implements UpdatesService {}
 
 void main() {
-  const skipIntegration = bool.fromEnvironment(
-    'SKIP_INTEGRATION',
-    defaultValue: true,
-  );
+  const skipIntegration = bool.fromEnvironment('SKIP_INTEGRATION', defaultValue: true);
 
   group(
     'WinUpdatesService - Real Implementation',
@@ -79,14 +76,8 @@ void main() {
           const service1 = UpdatesServiceImpl();
           const service2 = UpdatesServiceImpl();
 
-          expect(
-            service1.statusPauseUpdatesWU,
-            equals(service2.statusPauseUpdatesWU),
-          );
-          expect(
-            service1.statusVisibilityWU,
-            equals(service2.statusVisibilityWU),
-          );
+          expect(service1.statusPauseUpdatesWU, equals(service2.statusPauseUpdatesWU));
+          expect(service1.statusVisibilityWU, equals(service2.statusVisibilityWU));
           expect(service1.statusDriversWU, equals(service2.statusDriversWU));
         });
       });
@@ -144,29 +135,19 @@ void main() {
         verify(() => mockService.statusPauseUpdatesWU).called(1);
       });
 
-      test(
-        'enablePauseUpdatesWU can be called without system changes',
-        () async {
-          when(
-            () => mockService.enablePauseUpdatesWU(),
-          ).thenAnswer((_) async => Future.value());
+      test('enablePauseUpdatesWU can be called without system changes', () async {
+        when(() => mockService.enablePauseUpdatesWU()).thenAnswer((_) async => Future.value());
 
-          await mockService.enablePauseUpdatesWU();
-          verify(() => mockService.enablePauseUpdatesWU()).called(1);
-        },
-      );
+        await mockService.enablePauseUpdatesWU();
+        verify(() => mockService.enablePauseUpdatesWU()).called(1);
+      });
 
-      test(
-        'disablePauseUpdatesWU can be called without system changes',
-        () async {
-          when(
-            () => mockService.disablePauseUpdatesWU(),
-          ).thenAnswer((_) async => Future.value());
+      test('disablePauseUpdatesWU can be called without system changes', () async {
+        when(() => mockService.disablePauseUpdatesWU()).thenAnswer((_) async => Future.value());
 
-          await mockService.disablePauseUpdatesWU();
-          verify(() => mockService.disablePauseUpdatesWU()).called(1);
-        },
-      );
+        await mockService.disablePauseUpdatesWU();
+        verify(() => mockService.disablePauseUpdatesWU()).called(1);
+      });
     });
 
     group('Visibility', () {
@@ -176,25 +157,18 @@ void main() {
       });
 
       test('enableVisibilityWU can be called without system changes', () async {
-        when(
-          () => mockService.enableVisibilityWU(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableVisibilityWU()).thenAnswer((_) async => Future.value());
 
         await mockService.enableVisibilityWU();
         verify(() => mockService.enableVisibilityWU()).called(1);
       });
 
-      test(
-        'disableVisibilityWU can be called without system changes',
-        () async {
-          when(
-            () => mockService.disableVisibilityWU(),
-          ).thenAnswer((_) async => Future.value());
+      test('disableVisibilityWU can be called without system changes', () async {
+        when(() => mockService.disableVisibilityWU()).thenAnswer((_) async => Future.value());
 
-          await mockService.disableVisibilityWU();
-          verify(() => mockService.disableVisibilityWU()).called(1);
-        },
-      );
+        await mockService.disableVisibilityWU();
+        verify(() => mockService.disableVisibilityWU()).called(1);
+      });
     });
 
     group('Drivers', () {
@@ -204,18 +178,14 @@ void main() {
       });
 
       test('enableDriversWU can be called without system changes', () async {
-        when(
-          () => mockService.enableDriversWU(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableDriversWU()).thenAnswer((_) async => Future.value());
 
         await mockService.enableDriversWU();
         verify(() => mockService.enableDriversWU()).called(1);
       });
 
       test('disableDriversWU can be called without system changes', () async {
-        when(
-          () => mockService.disableDriversWU(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableDriversWU()).thenAnswer((_) async => Future.value());
 
         await mockService.disableDriversWU();
         verify(() => mockService.disableDriversWU()).called(1);
@@ -225,9 +195,7 @@ void main() {
     group('Call Order Verification', () {
       test('can verify method call order', () async {
         when(() => mockService.statusPauseUpdatesWU).thenReturn(true);
-        when(
-          () => mockService.disableVisibilityWU(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableVisibilityWU()).thenAnswer((_) async => Future.value());
         when(() => mockService.statusDriversWU).thenReturn(false);
 
         final bool pauseStatus = mockService.statusPauseUpdatesWU;
@@ -245,9 +213,7 @@ void main() {
       });
 
       test('can verify a method was never called', () {
-        when(
-          () => mockService.enablePauseUpdatesWU(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enablePauseUpdatesWU()).thenAnswer((_) async => Future.value());
 
         verifyNever(() => mockService.disablePauseUpdatesWU());
       });
@@ -266,9 +232,7 @@ void main() {
     group('State Transitions', () {
       test('can simulate enable/disable cycle for pause updates', () async {
         when(() => mockService.statusPauseUpdatesWU).thenReturn(false);
-        when(
-          () => mockService.enablePauseUpdatesWU(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enablePauseUpdatesWU()).thenAnswer((_) async => Future.value());
 
         expect(mockService.statusPauseUpdatesWU, isFalse);
         await mockService.enablePauseUpdatesWU();
@@ -279,9 +243,7 @@ void main() {
 
       test('can simulate enable/disable cycle for visibility', () async {
         when(() => mockService.statusVisibilityWU).thenReturn(true);
-        when(
-          () => mockService.disableVisibilityWU(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableVisibilityWU()).thenAnswer((_) async => Future.value());
 
         expect(mockService.statusVisibilityWU, isTrue);
         await mockService.disableVisibilityWU();
@@ -292,9 +254,7 @@ void main() {
 
       test('can simulate enable/disable cycle for drivers', () async {
         when(() => mockService.statusDriversWU).thenReturn(false);
-        when(
-          () => mockService.enableDriversWU(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableDriversWU()).thenAnswer((_) async => Future.value());
 
         expect(mockService.statusDriversWU, isFalse);
         await mockService.enableDriversWU();

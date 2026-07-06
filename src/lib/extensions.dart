@@ -24,9 +24,7 @@ extension WidgetListSpacing on List<Widget> {
       spacedChildren.add(this[i]);
       if (i < length - 1) {
         spacedChildren.add(
-          direction == Axis.vertical
-              ? SizedBox(height: spacing)
-              : SizedBox(width: spacing),
+          direction == Axis.vertical ? SizedBox(height: spacing) : SizedBox(width: spacing),
         );
       }
     }

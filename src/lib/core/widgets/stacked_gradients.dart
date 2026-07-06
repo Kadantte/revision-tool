@@ -5,14 +5,12 @@ class StackedGradient extends StatelessWidget {
   final List<Gradient> _gradients;
 
   @override
-  Widget build(final BuildContext context) {
+  Widget build(BuildContext context) {
     if (_gradients.isEmpty) return const SizedBox.shrink();
 
     return DecoratedBox(
       decoration: BoxDecoration(gradient: _gradients.first),
-      child: _gradients.length > 1
-          ? StackedGradient(_gradients.sublist(1))
-          : null,
+      child: _gradients.length > 1 ? StackedGradient(_gradients.sublist(1)) : null,
     );
   }
 }

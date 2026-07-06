@@ -117,8 +117,7 @@ class _PipsPagerState extends State<PipsPager> {
     if (_index < widget.children.length - 1) _animateTo(_index + 1);
   }
 
-  bool _shouldShowPipsScrollable() =>
-      widget.children.length > widget.maxVisiblePips;
+  bool _shouldShowPipsScrollable() => widget.children.length > widget.maxVisiblePips;
 
   void _scrollPipsToCenter() {
     if (!_shouldShowPipsScrollable()) return;
@@ -174,9 +173,7 @@ class _PipsPagerState extends State<PipsPager> {
                   ),
                 ),
 
-                if (widget.previousButtonVisibility != .collapsed &&
-                    count > 1 &&
-                    !atStart)
+                if (widget.previousButtonVisibility != .collapsed && count > 1 && !atStart)
                   Positioned(
                     left: 8,
                     top: 0,
@@ -191,9 +188,7 @@ class _PipsPagerState extends State<PipsPager> {
                       ),
                     ),
                   ),
-                if (widget.nextButtonVisibility != .collapsed &&
-                    count > 1 &&
-                    !atEnd)
+                if (widget.nextButtonVisibility != .collapsed && count > 1 && !atEnd)
                   Positioned(
                     right: 8,
                     top: 0,
@@ -240,8 +235,9 @@ class _PipsPagerState extends State<PipsPager> {
                 height: isActive ? 6 : 4,
                 margin: const .symmetric(horizontal: 3),
                 decoration: BoxDecoration(
-                  color: context.theme.resources.textFillColorSecondary
-                      .withOpacity(widget.enabled ? .3 : .2),
+                  color: context.theme.resources.textFillColorSecondary.withOpacity(
+                    widget.enabled ? .3 : .2,
+                  ),
                   borderRadius: .circular(4),
                 ),
               ),
@@ -270,8 +266,7 @@ class _NavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool shouldShow =
-        visibility == .visible ||
-        (visibility == .visibleOnPointerOver && parentHovered);
+        visibility == .visible || (visibility == .visibleOnPointerOver && parentHovered);
     final opacity = shouldShow ? 1.0 : 0.0;
 
     return AnimatedOpacity(

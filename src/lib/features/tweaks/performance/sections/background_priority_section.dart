@@ -21,9 +21,7 @@ class BackgroundManagementSection extends StatelessWidget {
       children: [
         const _BackgroundAppsCard(),
         const _CtfmonInputCard(),
-        if (WinRegistryService.isW11 || kDebugMode) ...[
-          const _BackgroundWindowMessageRateCard(),
-        ],
+        if (WinRegistryService.isW11 || kDebugMode) ...[const _BackgroundWindowMessageRateCard()],
       ],
     );
   }
@@ -43,12 +41,8 @@ class _BackgroundAppsCard extends ConsumerWidget {
         value: status,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(performanceServiceProvider)
-                    .enableBackgroundApps()
-              : await ref
-                    .read(performanceServiceProvider)
-                    .disableBackgroundApps();
+              ? await ref.read(performanceServiceProvider).enableBackgroundApps()
+              : await ref.read(performanceServiceProvider).disableBackgroundApps();
           ref.invalidate(backgroundAppsStatusProvider);
         },
       ),
@@ -85,9 +79,7 @@ class _BackgroundWindowMessageRateCard extends ConsumerWidget {
   const _BackgroundWindowMessageRateCard();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int status = ref.watch(
-      backgroundWindowMessageRateLimitStatusProvider,
-    );
+    final int status = ref.watch(backgroundWindowMessageRateLimitStatusProvider);
 
     return CardListTile(
       // icon: msicons.FluentIcons.group_20_regular,
@@ -100,9 +92,7 @@ class _BackgroundWindowMessageRateCard extends ConsumerWidget {
           if (value == null) return;
 
           try {
-            await ref
-                .read(performanceServiceProvider)
-                .setBackgroundWindowMessageRateLimit(value);
+            await ref.read(performanceServiceProvider).setBackgroundWindowMessageRateLimit(value);
           } catch (e) {
             if (!context.mounted) return;
             await showDialog(
@@ -110,12 +100,7 @@ class _BackgroundWindowMessageRateCard extends ConsumerWidget {
               builder: (context) => ContentDialog(
                 title: Text(t.tweaksPerformanceBWMR),
                 content: Text(e.toString()),
-                actions: [
-                  FilledButton(
-                    child: Text(t.close),
-                    onPressed: () => context.pop(),
-                  ),
-                ],
+                actions: [FilledButton(child: Text(t.close), onPressed: () => context.pop())],
               ),
             );
           }

@@ -241,9 +241,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
       await WinRegistryService.unhidePageVisibilitySettings(page);
     }
 
-    final Iterable<String> wpnServices = WinRegistryService.getUserServices(
-      'Wpn',
-    );
+    final Iterable<String> wpnServices = WinRegistryService.getUserServices('Wpn');
     await Future.wait(
       wpnServices.map(
         (service) => WinRegistryService.writeRegistryValue(
@@ -360,9 +358,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
       ),
     ]);
 
-    final Iterable<String> wpnServices = WinRegistryService.getUserServices(
-      'Wpn',
-    );
+    final Iterable<String> wpnServices = WinRegistryService.getUserServices('Wpn');
     await Future.wait(
       wpnServices.map(
         (service) => WinRegistryService.writeRegistryValue(

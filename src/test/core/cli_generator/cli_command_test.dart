@@ -16,10 +16,7 @@ void main() {
       final command = TestServiceCliCommand(service);
       final Command<void>? mode = command.subcommands['mode'];
       expect(mode, isNotNull);
-      expect(
-        mode!.subcommands.keys,
-        containsAll(['enable', 'disable', 'status']),
-      );
+      expect(mode!.subcommands.keys, containsAll(['enable', 'disable', 'status']));
     });
 
     test('runs enum status with valid target', () async {

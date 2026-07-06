@@ -39,9 +39,7 @@ class _MeltdownSpectreCard extends ConsumerWidget {
         requiresRestart: true,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(securityServiceProvider)
-                    .enableMitigation(Mitigation.meltdownSpectre)
+              ? await ref.read(securityServiceProvider).enableMitigation(Mitigation.meltdownSpectre)
               : await ref
                     .read(securityServiceProvider)
                     .disableMitigation(Mitigation.meltdownSpectre);
@@ -68,12 +66,8 @@ class _DownfallCard extends ConsumerWidget {
         requiresRestart: true,
         onChanged: (value) async {
           value
-              ? await ref
-                    .read(securityServiceProvider)
-                    .enableMitigation(Mitigation.downfall)
-              : await ref
-                    .read(securityServiceProvider)
-                    .disableMitigation(Mitigation.downfall);
+              ? await ref.read(securityServiceProvider).enableMitigation(Mitigation.downfall)
+              : await ref.read(securityServiceProvider).disableMitigation(Mitigation.downfall);
           ref.invalidate(downfallStatusProvider);
         },
       ),

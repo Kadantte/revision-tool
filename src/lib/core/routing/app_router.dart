@@ -55,52 +55,47 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: 'security',
                 name: 'security',
-                pageBuilder: (context, state) =>
-                    AppRoutes.buildPageWithHorizontalTransition(
-                      barrierColor: context.theme.scaffoldBackgroundColor,
-                      state: state,
-                      child: const SecurityPage(),
-                    ),
+                pageBuilder: (context, state) => AppRoutes.buildPageWithHorizontalTransition(
+                  barrierColor: context.theme.scaffoldBackgroundColor,
+                  state: state,
+                  child: const SecurityPage(),
+                ),
               ),
               GoRoute(
                 path: 'performance',
                 name: 'performance',
-                pageBuilder: (context, state) =>
-                    AppRoutes.buildPageWithHorizontalTransition(
-                      barrierColor: context.theme.scaffoldBackgroundColor,
-                      state: state,
-                      child: const PerformancePage(),
-                    ),
+                pageBuilder: (context, state) => AppRoutes.buildPageWithHorizontalTransition(
+                  barrierColor: context.theme.scaffoldBackgroundColor,
+                  state: state,
+                  child: const PerformancePage(),
+                ),
               ),
               GoRoute(
                 path: 'personalization',
                 name: 'personalization',
-                pageBuilder: (context, state) =>
-                    AppRoutes.buildPageWithHorizontalTransition(
-                      barrierColor: context.theme.scaffoldBackgroundColor,
-                      state: state,
-                      child: const PersonalizationPage(),
-                    ),
+                pageBuilder: (context, state) => AppRoutes.buildPageWithHorizontalTransition(
+                  barrierColor: context.theme.scaffoldBackgroundColor,
+                  state: state,
+                  child: const PersonalizationPage(),
+                ),
               ),
               GoRoute(
                 path: 'utilities',
                 name: 'utilities',
-                pageBuilder: (context, state) =>
-                    AppRoutes.buildPageWithHorizontalTransition(
-                      barrierColor: context.theme.scaffoldBackgroundColor,
-                      state: state,
-                      child: const UtilitiesPage(),
-                    ),
+                pageBuilder: (context, state) => AppRoutes.buildPageWithHorizontalTransition(
+                  barrierColor: context.theme.scaffoldBackgroundColor,
+                  state: state,
+                  child: const UtilitiesPage(),
+                ),
               ),
               GoRoute(
                 path: 'updates',
                 name: 'updates',
-                pageBuilder: (context, state) =>
-                    AppRoutes.buildPageWithHorizontalTransition(
-                      barrierColor: context.theme.scaffoldBackgroundColor,
-                      state: state,
-                      child: const UpdatesPage(),
-                    ),
+                pageBuilder: (context, state) => AppRoutes.buildPageWithHorizontalTransition(
+                  barrierColor: context.theme.scaffoldBackgroundColor,
+                  state: state,
+                  child: const UpdatesPage(),
+                ),
               ),
             ],
           ),
@@ -134,10 +129,7 @@ GoRouter appRouter(Ref ref) {
           ),
         ],
       ),
-      GoRoute(
-        path: AppRoutes.unsupported,
-        builder: (context, state) => const UnsupportedWidget(),
-      ),
+      GoRoute(path: AppRoutes.unsupported, builder: (context, state) => const UnsupportedWidget()),
     ],
   );
 

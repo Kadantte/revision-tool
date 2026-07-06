@@ -3,9 +3,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:win32_registry/win32_registry.dart';
 
-import '../../core/services/win_registry_service.dart';
 import '../../utils.dart';
 import 'performance/performance_service.dart';
 import 'personalization/personalization_service.dart';
@@ -18,12 +16,8 @@ class TweaksCommand extends Command<void> {
     addSubcommand(TweaksPatchesCommand());
     // Code-generated:
     addSubcommand(PerformanceServiceCliCommand(const PerformanceServiceImpl()));
-    addSubcommand(
-      PersonalizationServiceCliCommand(const PersonalizationServiceImpl()),
-    );
-    addSubcommand(
-      SecurityServiceCliCommand(_container.read(securityServiceProvider)),
-    );
+    addSubcommand(PersonalizationServiceCliCommand(const PersonalizationServiceImpl()));
+    addSubcommand(SecurityServiceCliCommand(_container.read(securityServiceProvider)));
     addSubcommand(UpdatesServiceCliCommand(const UpdatesServiceImpl()));
     addSubcommand(UtilitiesServiceCliCommand(const UtilitiesServiceImpl()));
   }

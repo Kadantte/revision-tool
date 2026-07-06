@@ -7,7 +7,7 @@ class KGLModel {
     required this.versionCheckTimeout,
   });
 
-  factory KGLModel.fromJson(final Map<String, dynamic> json) {
+  factory KGLModel.fromJson(Map<String, dynamic> json) {
     return KGLModel(
       uri: json['URI'] as String,
       hash: json['HASH'] as String,

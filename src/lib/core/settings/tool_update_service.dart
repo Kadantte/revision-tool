@@ -21,8 +21,7 @@ class ToolUpdateService {
   );
   static final _options = Options(
     headers: {
-      'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; rv:107.0) Gecko/20100101 Firefox/107.0',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; rv:107.0) Gecko/20100101 Firefox/107.0',
       'content-type': 'application/json;charset=utf-8',
       'accept': 'application/json',
     },
@@ -40,22 +39,14 @@ class ToolUpdateService {
       _data.clear();
     }
 
-    final Response<dynamic> response = await _dio.get(
-      _githubAPI,
-      options: _options,
-    );
+    final Response<dynamic> response = await _dio.get(_githubAPI, options: _options);
 
-    final responseJson = Map<String, dynamic>.from(
-      response.data as Map<String, dynamic>,
-    );
+    final responseJson = Map<String, dynamic>.from(response.data as Map<String, dynamic>);
     _data.addAll(responseJson);
   }
 
   int get getCurrentVersion {
-    const appVersion = String.fromEnvironment(
-      'APP_VERSION',
-      defaultValue: '1.0.0',
-    );
+    const appVersion = String.fromEnvironment('APP_VERSION', defaultValue: '1.0.0');
 
     return int.parse(appVersion.replaceAll('.', ''));
   }
@@ -70,9 +61,7 @@ class ToolUpdateService {
 
   Future<void> downloadNewVersion() async {
     final path = '${_tempDir.path}\\RevisionTool-Setup.exe';
-    final assetList = List<Map<String, dynamic>>.from(
-      _data['assets'] as List<dynamic>,
-    );
+    final assetList = List<Map<String, dynamic>>.from(_data['assets'] as List<dynamic>);
     final Response<dynamic> download = await _dio.download(
       assetList.first['browser_download_url'] as String,
       path,

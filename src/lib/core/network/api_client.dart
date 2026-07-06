@@ -102,8 +102,7 @@ class ApiClient {
         return Result<Response<dynamic>>.success(response);
       } on DioException catch (e) {
         final AppException exception = _mapException(e);
-        final bool canRetry =
-            attempt < retryPolicy.maxRetries && retryPolicy.shouldRetry(e);
+        final bool canRetry = attempt < retryPolicy.maxRetries && retryPolicy.shouldRetry(e);
 
         if (!canRetry) {
           logger.e(
@@ -119,9 +118,7 @@ class ApiClient {
       }
     }
 
-    return const Result<Response<dynamic>>.failure(
-      UnexpectedNetworkException(),
-    );
+    return const Result<Response<dynamic>>.failure(UnexpectedNetworkException());
   }
 
   Future<Result<Response<T>>> _request<T>({
@@ -174,8 +171,7 @@ class ApiClient {
   static HttpClient _createDefaultHttpClient() {
     // Important for LTSC 2021.
     return HttpClient()
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 
   static Future<void> _deletePartialFile(String downloadPath) async {

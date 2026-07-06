@@ -50,19 +50,11 @@ class AppImage extends StatelessWidget {
           gaplessPlayback: true,
           fit: fit,
           alignment: alignment,
-          loadingBuilder: (context, child, loadingProgress) =>
-              loadingProgress == null
+          loadingBuilder: (context, child, loadingProgress) => loadingProgress == null
               ? child
-              : loadingWidget ??
-                    Container(
-                      color: placeholderColor ?? Colors.grey.withAlpha(50),
-                    ),
+              : loadingWidget ?? Container(color: placeholderColor ?? Colors.grey.withAlpha(50)),
           errorBuilder: (context, error, stackTrace) {
-            developer.log(
-              'Failed to load image: $baseUrl',
-              error: error,
-              stackTrace: stackTrace,
-            );
+            developer.log('Failed to load image: $baseUrl', error: error, stackTrace: stackTrace);
             return errorWidget ?? const SizedBox.shrink();
           },
         );
@@ -70,11 +62,7 @@ class AppImage extends StatelessWidget {
     );
 
     if (borderRadius != null) {
-      image = ClipRRect(
-        borderRadius: borderRadius!,
-        clipBehavior: clipBehavior,
-        child: image,
-      );
+      image = ClipRRect(borderRadius: borderRadius!, clipBehavior: clipBehavior, child: image);
     }
 
     return image;

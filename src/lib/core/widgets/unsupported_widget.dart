@@ -11,10 +11,7 @@ class UnsupportedWidget extends StatelessWidget {
         title: const Text('Error'),
         content: const Text('Unsupported build detected'),
         actions: [
-          Button(
-            child: const Text('OK'),
-            onPressed: () async => WindowPlus.instance.close(),
-          ),
+          Button(child: const Text('OK'), onPressed: () async => WindowPlus.instance.close()),
         ],
       ),
     );

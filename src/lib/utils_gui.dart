@@ -14,12 +14,7 @@ final settingsExperimentalStatus = Provider<bool>((ref) {
       1;
 });
 
-const kScaffoldPagePadding = EdgeInsets.only(
-  left: 24.5,
-  right: 24.5,
-  bottom: 40.5,
-  top: 3.7,
-);
+const kScaffoldPagePadding = EdgeInsets.only(left: 24.5, right: 24.5, bottom: 40.5, top: 3.7);
 
 Future<void> launchURL(String url) async {
   if (url.isEmpty) throw ArgumentError('URL cannot be empty');

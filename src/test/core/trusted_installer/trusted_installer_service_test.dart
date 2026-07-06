@@ -4,15 +4,10 @@ import 'package:revitool/core/trusted_installer/trusted_installer_exception.dart
 import 'package:revitool/core/trusted_installer/trusted_installer_service.dart';
 
 /// Mock implementation of TrustedInstallerService for testing
-class MockTrustedInstallerService extends Mock
-    implements TrustedInstallerService {}
+class MockTrustedInstallerService extends Mock implements TrustedInstallerService {}
 
 class FakeCommandResult extends Fake implements CommandResult {
-  FakeCommandResult({
-    required this.exitCode,
-    required this.output,
-    required this.error,
-  });
+  FakeCommandResult({required this.exitCode, required this.output, required this.error});
   @override
   final int exitCode;
   @override
@@ -37,36 +32,28 @@ void main() {
       ).thenAnswer((_) async => expectedResult);
 
       // Act
-      final String result = await mockService
-          .executeWithTrustedInstaller<String>(() async {
-            return expectedResult;
-          });
+      final String result = await mockService.executeWithTrustedInstaller<String>(() async {
+        return expectedResult;
+      });
 
       // Assert
       expect(result, expectedResult);
-      verify(
-        () => mockService.executeWithTrustedInstaller<String>(any()),
-      ).called(1);
+      verify(() => mockService.executeWithTrustedInstaller<String>(any())).called(1);
     });
 
-    test(
-      'executeWithTrustedInstaller handles exceptions from callback',
-      () async {
-        // Arrange
-        final exception = Exception('Test exception');
-        when(
-          () => mockService.executeWithTrustedInstaller<void>(any()),
-        ).thenThrow(exception);
+    test('executeWithTrustedInstaller handles exceptions from callback', () async {
+      // Arrange
+      final exception = Exception('Test exception');
+      when(() => mockService.executeWithTrustedInstaller<void>(any())).thenThrow(exception);
 
-        // Act & Assert
-        expect(
-          () => mockService.executeWithTrustedInstaller<void>(() async {
-            throw exception;
-          }),
-          throwsA(exception),
-        );
-      },
-    );
+      // Act & Assert
+      expect(
+        () => mockService.executeWithTrustedInstaller<void>(() async {
+          throw exception;
+        }),
+        throwsA(exception),
+      );
+    });
 
     test('isTrustedInstallerAvailable returns boolean', () {
       // Arrange
@@ -83,13 +70,9 @@ void main() {
 
     test('executeWithTrustedInstaller can return different types', () async {
       // Test with int
-      when(
-        () => mockService.executeWithTrustedInstaller<int>(any()),
-      ).thenAnswer((_) async => 42);
+      when(() => mockService.executeWithTrustedInstaller<int>(any())).thenAnswer((_) async => 42);
 
-      final int intResult = await mockService.executeWithTrustedInstaller<int>(
-        () async => 42,
-      );
+      final int intResult = await mockService.executeWithTrustedInstaller<int>(() async => 42);
       expect(intResult, 42);
 
       // Test with bool
@@ -97,8 +80,7 @@ void main() {
         () => mockService.executeWithTrustedInstaller<bool>(any()),
       ).thenAnswer((_) async => true);
 
-      final bool boolResult = await mockService
-          .executeWithTrustedInstaller<bool>(() async => true);
+      final bool boolResult = await mockService.executeWithTrustedInstaller<bool>(() async => true);
       expect(boolResult, true);
 
       // Test with List
@@ -106,28 +88,19 @@ void main() {
         () => mockService.executeWithTrustedInstaller<List<String>>(any()),
       ).thenAnswer((_) async => ['a', 'b', 'c']);
 
-      final List<String> listResult = await mockService
-          .executeWithTrustedInstaller<List<String>>(
-            () async => ['a', 'b', 'c'],
-          );
+      final List<String> listResult = await mockService.executeWithTrustedInstaller<List<String>>(
+        () async => ['a', 'b', 'c'],
+      );
       expect(listResult, ['a', 'b', 'c']);
     });
 
     test('executeCommand returns CommandResult', () async {
       // Arrange
-      final expectedResult = FakeCommandResult(
-        exitCode: 0,
-        output: 'command output',
-        error: '',
-      );
-      when(
-        () => mockService.executeCommand(any(), any()),
-      ).thenAnswer((_) async => expectedResult);
+      final expectedResult = FakeCommandResult(exitCode: 0, output: 'command output', error: '');
+      when(() => mockService.executeCommand(any(), any())).thenAnswer((_) async => expectedResult);
 
       // Act
-      final CommandResult result = await mockService.executeCommand('whoami', [
-        '/all',
-      ]);
+      final CommandResult result = await mockService.executeCommand('whoami', ['/all']);
 
       // Assert
       expect(result.exitCode, 0);
@@ -138,20 +111,11 @@ void main() {
 
     test('executeCommand handles command failures', () async {
       // Arrange
-      final expectedResult = FakeCommandResult(
-        exitCode: 1,
-        output: '',
-        error: 'command failed',
-      );
-      when(
-        () => mockService.executeCommand(any(), any()),
-      ).thenAnswer((_) async => expectedResult);
+      final expectedResult = FakeCommandResult(exitCode: 1, output: '', error: 'command failed');
+      when(() => mockService.executeCommand(any(), any())).thenAnswer((_) async => expectedResult);
 
       // Act
-      final CommandResult result = await mockService.executeCommand(
-        'invalid',
-        [],
-      );
+      final CommandResult result = await mockService.executeCommand('invalid', []);
 
       // Assert
       expect(result.exitCode, 1);
@@ -161,32 +125,23 @@ void main() {
 
     test('multiple sequential calls work correctly', () async {
       // Arrange
-      when(
-        () => mockService.executeWithTrustedInstaller<int>(any()),
-      ).thenAnswer((invocation) async {
-        final callback =
-            invocation.positionalArguments[0] as Future<int> Function();
+      when(() => mockService.executeWithTrustedInstaller<int>(any())).thenAnswer((
+        invocation,
+      ) async {
+        final callback = invocation.positionalArguments[0] as Future<int> Function();
         return callback();
       });
 
       // Act
-      final int result1 = await mockService.executeWithTrustedInstaller<int>(
-        () async => 1,
-      );
-      final int result2 = await mockService.executeWithTrustedInstaller<int>(
-        () async => 2,
-      );
-      final int result3 = await mockService.executeWithTrustedInstaller<int>(
-        () async => 3,
-      );
+      final int result1 = await mockService.executeWithTrustedInstaller<int>(() async => 1);
+      final int result2 = await mockService.executeWithTrustedInstaller<int>(() async => 2);
+      final int result3 = await mockService.executeWithTrustedInstaller<int>(() async => 3);
 
       // Assert
       expect(result1, 1);
       expect(result2, 2);
       expect(result3, 3);
-      verify(
-        () => mockService.executeWithTrustedInstaller<int>(any()),
-      ).called(3);
+      verify(() => mockService.executeWithTrustedInstaller<int>(any())).called(3);
     });
   });
 
@@ -231,11 +186,9 @@ void main() {
       const testValue = 'test result';
 
       try {
-        final String result = await service.executeWithTrustedInstaller<String>(
-          () async {
-            return testValue;
-          },
-        );
+        final String result = await service.executeWithTrustedInstaller<String>(() async {
+          return testValue;
+        });
 
         expect(result, testValue);
       } on TrustedInstallerException catch (e) {
@@ -274,15 +227,9 @@ void main() {
 
     test('multiple calls can be made sequentially', () async {
       try {
-        final int result1 = await service.executeWithTrustedInstaller<int>(
-          () async => 1,
-        );
-        final int result2 = await service.executeWithTrustedInstaller<int>(
-          () async => 2,
-        );
-        final int result3 = await service.executeWithTrustedInstaller<int>(
-          () async => 3,
-        );
+        final int result1 = await service.executeWithTrustedInstaller<int>(() async => 1);
+        final int result2 = await service.executeWithTrustedInstaller<int>(() async => 2);
+        final int result3 = await service.executeWithTrustedInstaller<int>(() async => 3);
 
         expect(result1, 1);
         expect(result2, 2);
@@ -294,11 +241,7 @@ void main() {
     });
 
     test('CommandResult contains proper values', () {
-      const result = CommandResult(
-        exitCode: 0,
-        output: 'test output',
-        error: 'test error',
-      );
+      const result = CommandResult(exitCode: 0, output: 'test output', error: 'test error');
 
       expect(result.exitCode, 0);
       expect(result.output, 'test output');
@@ -324,9 +267,7 @@ void main() {
 
     test('executeCommand returns proper output', () async {
       try {
-        final CommandResult result = await service.executeCommand('echo', [
-          'test',
-        ]);
+        final CommandResult result = await service.executeCommand('echo', ['test']);
 
         expect(result.exitCode, 0);
         expect(result.output, contains('test'));
@@ -360,10 +301,7 @@ void main() {
     });
 
     test('executeCommand method exists and is callable', () {
-      expect(
-        service.executeCommand,
-        isA<Future<CommandResult> Function(String, List<String>)>(),
-      );
+      expect(service.executeCommand, isA<Future<CommandResult> Function(String, List<String>)>());
     });
 
     test('CommandResult class is accessible', () {

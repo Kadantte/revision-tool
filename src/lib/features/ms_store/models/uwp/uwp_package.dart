@@ -5,8 +5,7 @@ part 'uwp_package.g.dart';
 
 @freezed
 sealed class UwpPackageResponse with _$UwpPackageResponse {
-  const factory UwpPackageResponse({required Set<UpdateModel> updates}) =
-      _UwpPackageResponse;
+  const factory UwpPackageResponse({required Set<UpdateModel> updates}) = _UwpPackageResponse;
 
   factory UwpPackageResponse.fromJson(Map<String, Object?> json) =>
       _$UwpPackageResponseFromJson(json);
@@ -14,14 +13,10 @@ sealed class UwpPackageResponse with _$UwpPackageResponse {
 
 @freezed
 sealed class UpdateModel with _$UpdateModel {
-  const factory UpdateModel({
-    required final String id,
-    required final ElementXml xml,
-    String? arch,
-  }) = _UpdateModel;
+  const factory UpdateModel({required String id, required ElementXml xml, String? arch}) =
+      _UpdateModel;
 
-  factory UpdateModel.fromJson(Map<String, Object?> json) =>
-      _$UpdateModelFromJson(json);
+  factory UpdateModel.fromJson(Map<String, Object?> json) => _$UpdateModelFromJson(json);
 }
 
 @freezed
@@ -33,19 +28,15 @@ sealed class ElementXml with _$ElementXml {
     required Set<FileModel> fileModel,
   }) = _ElementXml;
 
-  factory ElementXml.fromJson(Map<String, Object?> json) =>
-      _$ElementXmlFromJson(json);
+  factory ElementXml.fromJson(Map<String, Object?> json) => _$ElementXmlFromJson(json);
 }
 
 @freezed
 sealed class UpdateIdentity with _$UpdateIdentity {
-  const factory UpdateIdentity({
-    required String id,
-    required String revisionNumber,
-  }) = _UpdateIdentity;
+  const factory UpdateIdentity({required String id, required String revisionNumber}) =
+      _UpdateIdentity;
 
-  factory UpdateIdentity.fromJson(Map<String, Object?> json) =>
-      _$UpdateIdentityFromJson(json);
+  factory UpdateIdentity.fromJson(Map<String, Object?> json) => _$UpdateIdentityFromJson(json);
 }
 
 @freezed
@@ -75,13 +66,11 @@ sealed class FileModel with _$FileModel {
     DateTime? modifiedDate,
   }) = _FileModel;
 
-  factory FileModel.fromJson(Map<String, Object?> json) =>
-      _$FileModelFromJson(json);
+  factory FileModel.fromJson(Map<String, Object?> json) => _$FileModelFromJson(json);
 }
 
 extension FileModelDigestX on FileModel {
   String? get verificationDigest => additionalDigest ?? digest;
 
-  String? get verificationDigestAlgorithm =>
-      additionalDigestAlgorithm ?? digestAlgorithm;
+  String? get verificationDigestAlgorithm => additionalDigestAlgorithm ?? digestAlgorithm;
 }

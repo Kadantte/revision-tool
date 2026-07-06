@@ -27,9 +27,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
       displayMode: PaneDisplayMode.auto,
       indicator: NavigationIndicators.sticky,
       windowEffect: WinRegistryService.themeTransparencyEffect
-          ? (WinRegistryService.isW11
-                ? WindowEffect.mica
-                : WindowEffect.disabled)
+          ? (WinRegistryService.isW11 ? WindowEffect.mica : WindowEffect.disabled)
           : WindowEffect.disabled,
       textDirection: TextDirection.ltr,
       locale: appLocale.flutterLocale,
@@ -105,12 +103,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
   }
 
   Color? cardLightHoverBottomBorderColor() {
-    final Color color = const Color.fromARGB(
-      255,
-      0,
-      0,
-      0,
-    ).withValues(alpha: 0.11);
+    final Color color = const Color.fromARGB(255, 0, 0, 0).withValues(alpha: 0.11);
     if (state.windowEffect != WindowEffect.disabled) {
       return effectColor(color, modifyColors: true);
     }
@@ -126,9 +119,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
         backgroundColor: effectColor(const Color.fromARGB(255, 32, 32, 32)),
         overlayBackgroundColor: const .fromARGB(255, 32, 32, 32),
       ),
-      scaffoldBackgroundColor: effectColor(
-        const Color.fromARGB(255, 32, 32, 32),
-      ),
+      scaffoldBackgroundColor: effectColor(const Color.fromARGB(255, 32, 32, 32)),
       visualDensity: VisualDensity.standard,
       focusTheme: FocusThemeData(glowFactor: isLargeScreen ? 2.0 : 0.0),
       resources: ResourceDictionary.dark(
@@ -139,12 +130,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
         )!,
         cardBackgroundFillColorDefault: effectColor(
           const Color(0xFF2B2B2B),
-          micaBackgroundColor: const Color.fromARGB(
-            255,
-            255,
-            255,
-            255,
-          ).withValues(alpha: 0.05),
+          micaBackgroundColor: const Color.fromARGB(255, 255, 255, 255).withValues(alpha: 0.05),
         )!,
         cardBackgroundFillColorSecondary: effectColor(
           const Color.fromARGB(255, 255, 255, 255).withValues(alpha: 0.03),
@@ -164,9 +150,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
         backgroundColor: effectColor(null),
         overlayBackgroundColor: const Color.fromRGBO(243, 243, 243, 100),
       ),
-      scaffoldBackgroundColor: effectColor(
-        const Color.fromRGBO(243, 243, 243, 100),
-      ),
+      scaffoldBackgroundColor: effectColor(const Color.fromRGBO(243, 243, 243, 100)),
       focusTheme: FocusThemeData(glowFactor: isLargeScreen ? 2.0 : 0.0),
       resources: ResourceDictionary.light(
         cardStrokeColorDefault: effectColor(
@@ -179,12 +163,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
           micaBackgroundColor: const Color.fromARGB(255, 251, 251, 251),
         )!,
         cardBackgroundFillColorSecondary: effectColor(
-          const Color.fromARGB(
-            255,
-            0,
-            0,
-            0,
-          ).withValues(alpha: 0.02), // hover color
+          const Color.fromARGB(255, 0, 0, 0).withValues(alpha: 0.02), // hover color
           modifyColors: true,
         )!,
       ),

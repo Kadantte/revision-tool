@@ -59,10 +59,7 @@ class _DefenderCard extends ConsumerWidget {
                   builder: (context) => ContentDialog(
                     content: Text(t.restartDialog),
                     actions: [
-                      Button(
-                        child: Text(t.okButton),
-                        onPressed: () => Navigator.pop(context),
-                      ),
+                      Button(child: Text(t.okButton), onPressed: () => Navigator.pop(context)),
                     ],
                   ),
                 );
@@ -74,10 +71,7 @@ class _DefenderCard extends ConsumerWidget {
                   builder: (context) => ContentDialog(
                     content: Text(e.toString()),
                     actions: [
-                      Button(
-                        child: Text(t.okButton),
-                        onPressed: () => Navigator.pop(context),
-                      ),
+                      Button(child: Text(t.okButton), onPressed: () => Navigator.pop(context)),
                     ],
                   ),
                 );
@@ -89,9 +83,7 @@ class _DefenderCard extends ConsumerWidget {
             child: Button(
               onPressed: () async {
                 Future<void>.delayed(const Duration(seconds: 1), () async {
-                  await ref
-                      .read(securityServiceProvider)
-                      .openDefenderThreatSettings();
+                  await ref.read(securityServiceProvider).openDefenderThreatSettings();
                 });
 
                 await showDialog(
@@ -105,14 +97,10 @@ class _DefenderCard extends ConsumerWidget {
                           child: Text(t.okButton),
                           onPressed: () async {
                             ref.invalidate(defenderProtectionsStatusProvider);
-                            final bool updatedStatus = ref.read(
-                              defenderProtectionsStatusProvider,
-                            );
+                            final bool updatedStatus = ref.read(defenderProtectionsStatusProvider);
 
                             if (updatedStatus) {
-                              await ref
-                                  .read(securityServiceProvider)
-                                  .openDefenderThreatSettings();
+                              await ref.read(securityServiceProvider).openDefenderThreatSettings();
                             } else {
                               context.pop();
                             }

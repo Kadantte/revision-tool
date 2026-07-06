@@ -22,8 +22,7 @@ class PackageFileService {
 
   final ApiClient _api;
 
-  static final String _storeFolder =
-      '${Directory.systemTemp.path}\\Revision-Tool\\MSStore';
+  static final String _storeFolder = '${Directory.systemTemp.path}\\Revision-Tool\\MSStore';
 
   String downloadPath(String downloadId, StoreRing ring) {
     return '$_storeFolder\\$downloadId\\${ring.value}';
@@ -96,9 +95,7 @@ class PackageFileService {
         return false;
     }
 
-    final bool isHexDigest = RegExp(
-      r'^([0-9a-fA-F]{40}|[0-9a-fA-F]{64})$',
-    ).hasMatch(expected);
+    final bool isHexDigest = RegExp(r'^([0-9a-fA-F]{40}|[0-9a-fA-F]{64})$').hasMatch(expected);
     if (isHexDigest) {
       // Win32 Store API hashes are already decoded SHA256 hex strings.
       return actualDigest.toString().toLowerCase() == expected.toLowerCase();

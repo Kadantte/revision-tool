@@ -97,14 +97,8 @@ class _HomePageContent extends StatelessWidget {
           mainAxisAlignment: .center,
           crossAxisAlignment: .start,
           children: [
-            Text(
-              t.homeWelcome,
-              style: const TextStyle(fontSize: 16, color: Color(0xB7FFFFFF)),
-            ),
-            const Text(
-              'Revision Tool',
-              style: TextStyle(fontSize: 28, color: Color(0xFFffffff)),
-            ),
+            Text(t.homeWelcome, style: const TextStyle(fontSize: 16, color: Color(0xB7FFFFFF))),
+            const Text('Revision Tool', style: TextStyle(fontSize: 28, color: Color(0xFFffffff))),
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Text(
@@ -118,9 +112,8 @@ class _HomePageContent extends StatelessWidget {
                 width: 175,
                 child: Button(
                   child: Text(t.homeReviLink),
-                  onPressed: () async => run(
-                    'rundll32 url.dll,FileProtocolHandler https://revi.cc',
-                  ),
+                  onPressed: () async =>
+                      run('rundll32 url.dll,FileProtocolHandler https://revi.cc'),
                 ),
               ),
             ),
@@ -130,9 +123,8 @@ class _HomePageContent extends StatelessWidget {
                 width: 175,
                 child: FilledButton(
                   child: Text(t.homeReviFAQLink),
-                  onPressed: () async => run(
-                    'rundll32 url.dll,FileProtocolHandler https://revi.cc/docs',
-                  ),
+                  onPressed: () async =>
+                      run('rundll32 url.dll,FileProtocolHandler https://revi.cc/docs'),
                 ),
               ),
             ),

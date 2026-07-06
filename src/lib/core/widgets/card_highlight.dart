@@ -41,10 +41,7 @@ class CardHighlight extends StatelessWidget {
     this.onPressed,
     this.initiallyExpanded = false,
     this.backgroundColor,
-  }) : assert(
-         icon == null || image == null,
-         'Cannot provide both icon and image',
-       );
+  }) : assert(icon == null || image == null, 'Cannot provide both icon and image');
 
   final IconData? icon;
   final String label;
@@ -152,9 +149,7 @@ class _ExpandableCardState extends ConsumerState<_ExpandableCard> {
     final isLight = theme.brightness == .light;
     final Color defaultBorderColor = resources.cardStrokeColorDefault;
     final Color hoverBottomBorderColor = isLight
-        ? ref
-              .read(appSettingsProvider.notifier)
-              .cardLightHoverBottomBorderColor()!
+        ? ref.read(appSettingsProvider.notifier).cardLightHoverBottomBorderColor()!
         : defaultBorderColor;
 
     return MouseRegion(
@@ -181,19 +176,12 @@ class _ExpandableCardState extends ConsumerState<_ExpandableCard> {
               child: Expander(
                 initiallyExpanded: widget.initiallyExpanded,
                 enabled: widget.children != null,
-                icon: widget.children != null
-                    ? null
-                    : RepaintBoundary(child: widget.action),
-                trailing: widget.children != null
-                    ? RepaintBoundary(child: widget.action)
-                    : null,
+                icon: widget.children != null ? null : RepaintBoundary(child: widget.action),
+                trailing: widget.children != null ? RepaintBoundary(child: widget.action) : null,
                 leading: widget.leadingWidget,
                 headerShape: (open) => RoundedRectangleBorder(
                   borderRadius: open
-                      ? const .only(
-                          topLeft: Radius.circular(5.0),
-                          topRight: Radius.circular(5.0),
-                        )
+                      ? const .only(topLeft: Radius.circular(5.0), topRight: Radius.circular(5.0))
                       : _cardBorderRadius,
                 ),
                 headerBackgroundColor: .resolveWith((states) {
@@ -207,10 +195,7 @@ class _ExpandableCardState extends ConsumerState<_ExpandableCard> {
                 },
                 contentShape: (open) => RoundedRectangleBorder(
                   borderRadius: open
-                      ? const .only(
-                          bottomLeft: .circular(5.0),
-                          bottomRight: .circular(5.0),
-                        )
+                      ? const .only(bottomLeft: .circular(5.0), bottomRight: .circular(5.0))
                       : _cardBorderRadius,
                 ),
                 contentBackgroundColor: Colors.transparent,
@@ -228,30 +213,20 @@ class _ExpandableCardState extends ConsumerState<_ExpandableCard> {
                     ? DecoratedBox(
                         decoration: BoxDecoration(
                           border: Border(
-                            top: BorderSide(
-                              color: hoverBottomBorderColor,
-                              width: 1.5,
-                            ),
+                            top: BorderSide(color: hoverBottomBorderColor, width: 1.5),
                           ),
                         ),
                         child: Column(
                           crossAxisAlignment: .start,
                           mainAxisSize: .min,
                           children: [
-                            for (
-                              int index = 0;
-                              index < widget.children!.length;
-                              index++
-                            )
+                            for (int index = 0; index < widget.children!.length; index++)
                               DecoratedBox(
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: index == widget.children!.length - 1
                                         ? .none
-                                        : BorderSide(
-                                            color: defaultBorderColor,
-                                            width: 2,
-                                          ),
+                                        : BorderSide(color: defaultBorderColor, width: 2),
                                   ),
                                 ),
                                 child: widget.children![index],
@@ -338,16 +313,9 @@ class _ClickableCardChevron extends StatelessWidget {
                   title: label,
                   description: description,
                   descriptionLink: descriptionLink,
-                  trailing: action != null
-                      ? RepaintBoundary(child: action)
-                      : null,
+                  trailing: action != null ? RepaintBoundary(child: action) : null,
                   extraTrailingPadding: false,
-                  contentPadding: const .only(
-                    left: 17.0,
-                    top: 16.75,
-                    bottom: 16.75,
-                    right: 17.0,
-                  ),
+                  contentPadding: const .only(left: 17.0, top: 16.75, bottom: 16.75, right: 17.0),
                 ),
               ),
             ),
@@ -401,9 +369,7 @@ class CardListTile extends StatelessWidget {
                       TextSpan(
                         text: '${t.moreAbout} ${title.toLowerCase()}',
                         style: TextStyle(
-                          color: isLight
-                              ? theme.accentColor.darkest
-                              : theme.accentColor.lightest,
+                          color: isLight ? theme.accentColor.darkest : theme.accentColor.lightest,
                           fontWeight: .w500,
                         ),
                         recognizer: TapGestureRecognizer()
@@ -423,9 +389,7 @@ class CardListTile extends StatelessWidget {
           left: contentPadding.resolve(.ltr).left + (leading != null ? 0 : 40),
           top: contentPadding.resolve(.ltr).top,
           bottom: contentPadding.resolve(.ltr).bottom,
-          right:
-              contentPadding.resolve(.ltr).right +
-              (extraTrailingPadding ? 28 : 0),
+          right: contentPadding.resolve(.ltr).right + (extraTrailingPadding ? 28 : 0),
         ),
         child: Row(
           spacing: 16.0,
@@ -464,9 +428,7 @@ class CardToggleSwitch extends StatelessWidget {
       children: [
         Text(
           value ? t.onStatus : t.offStatus,
-          style: enabled
-              ? null
-              : TextStyle(color: context.theme.resources.textFillColorDisabled),
+          style: enabled ? null : TextStyle(color: context.theme.resources.textFillColorDisabled),
         ),
         const SizedBox(width: 10.0),
         ToggleSwitch(
@@ -510,37 +472,22 @@ class CardStatusText extends StatelessWidget {
 }
 
 /// Shows a restart dialog to inform the user that a restart is required.
-void showRestartDialog(
-  final BuildContext context, {
-  String title = '',
-  String content = '',
-}) {
+void showRestartDialog(BuildContext context, {String title = '', String content = ''}) {
   showDialog(
     context: context,
     builder: (context) => ContentDialog(
       title: title.isEmpty ? null : Text(title),
       content: Text(content.isEmpty ? t.restartDialog : content),
-      actions: [
-        Button(child: Text(t.okButton), onPressed: () => context.pop()),
-      ],
+      actions: [Button(child: Text(t.okButton), onPressed: () => context.pop())],
     ),
   );
 }
 
 // ignore: unused_element
 const _fluentHighlightTheme = {
-  'root': TextStyle(
-    backgroundColor: Color(0x00ffffff),
-    color: Color(0xffdddddd),
-  ),
-  'keyword': TextStyle(
-    color: Color.fromARGB(255, 255, 255, 255),
-    fontWeight: FontWeight.bold,
-  ),
-  'selector-tag': TextStyle(
-    color: Color(0xffffffff),
-    fontWeight: FontWeight.bold,
-  ),
+  'root': TextStyle(backgroundColor: Color(0x00ffffff), color: Color(0xffdddddd)),
+  'keyword': TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
+  'selector-tag': TextStyle(color: Color(0xffffffff), fontWeight: FontWeight.bold),
   'literal': TextStyle(color: Color(0xffffffff), fontWeight: FontWeight.bold),
   'section': TextStyle(color: Color(0xffffffff), fontWeight: FontWeight.bold),
   'link': TextStyle(color: Color(0xffffffff)),

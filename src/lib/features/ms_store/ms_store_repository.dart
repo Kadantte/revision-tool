@@ -67,9 +67,7 @@ abstract base class StoreRepository {
             subscription: subscription,
           ),
         )
-        .then(
-          (result) => result.when(success: (r) => r, failure: (e) => throw e),
-        );
+        .then((result) => result.when(success: (r) => r, failure: (e) => throw e));
 
     if (response.statusCode != 200) {
       throw HttpStatusException(
@@ -79,13 +77,8 @@ abstract base class StoreRepository {
       );
     }
 
-    final responseData = MsStoreSearchDto.fromJson(
-      response.data as Map<String, dynamic>,
-    );
-    return [
-      ...(responseData.highlightedList ?? []),
-      ...(responseData.productsList ?? []),
-    ];
+    final responseData = MsStoreSearchDto.fromJson(response.data as Map<String, dynamic>);
+    return [...(responseData.highlightedList ?? []), ...(responseData.productsList ?? [])];
   }
 
   Future<ProductDetails> getProductDetails(
@@ -99,11 +92,7 @@ abstract base class StoreRepository {
 
     final Response<dynamic> response = await _api
         .get<void>(
-          MSStoreEndpoints.productDetails(
-            productId: productId,
-            market: market,
-            locale: locale,
-          ),
+          MSStoreEndpoints.productDetails(productId: productId, market: market, locale: locale),
         )
         .then((result) {
           return result.when(success: (r) => r, failure: (e) => throw e);
@@ -117,18 +106,13 @@ abstract base class StoreRepository {
       );
     }
 
-    final details = ProductDetails.fromJson(
-      response.data as Map<String, dynamic>,
-    );
+    final details = ProductDetails.fromJson(response.data as Map<String, dynamic>);
 
     _cache.putDetails(cacheKey, details);
     return details;
   }
 
-  Future<Set<PackageInfo>> getPackages({
-    required String productId,
-    required StoreRing ring,
-  });
+  Future<Set<PackageInfo>> getPackages({required String productId, required StoreRing ring});
 
   Future<String> getPackageDownloadUrl({
     required PackageInfo package,
@@ -137,18 +121,12 @@ abstract base class StoreRepository {
     // Win32 packages from the .productDetails endpoint sometimes contain the download URL, so return it if available
     if (package.uri.isNotEmpty) return package.uri;
 
-    throw UnimplementedError(
-      'getPackageDownloadUrl must be implemented by subclasses',
-    );
+    throw UnimplementedError('getPackageDownloadUrl must be implemented by subclasses');
   }
 }
 
 final class UwpStoreRepository extends StoreRepository {
-  const UwpStoreRepository({
-    required super.api,
-    required super.cache,
-    required this._xmlParser,
-  });
+  const UwpStoreRepository({required super.api, required super.cache, required this._xmlParser});
 
   final UwpXmlParser _xmlParser;
 
@@ -156,8 +134,7 @@ final class UwpStoreRepository extends StoreRepository {
 
   static final _soapOptions = Options(
     headers: const {
-      'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; rv:107.0) Gecko/20100101 Firefox/107.0',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; rv:107.0) Gecko/20100101 Firefox/107.0',
       'Accept': '*/*',
       'Content-Type': 'application/soap+xml',
     },
@@ -211,16 +188,13 @@ final class UwpStoreRepository extends StoreRepository {
         .firstWhere((id) => id != null, orElse: () => null);
     if (categoryId == null || expiryUtc == null) {
       throw UnexpectedNetworkException(
-        cause: Exception(
-          'Product $productId is not a UWP app or missing fulfillment data',
-        ),
+        cause: Exception('Product $productId is not a UWP app or missing fulfillment data'),
       );
     }
 
-    final String pkgBody = (await _xmlParser.getTemplate('wu'))
-        .replaceAll('{1}', _cookie!)
-        .replaceAll('{2}', categoryId)
-        .replaceAll('{3}', ring.value);
+    final String pkgBody = (await _xmlParser.getTemplate(
+      'wu',
+    )).replaceAll('{1}', _cookie!).replaceAll('{2}', categoryId).replaceAll('{3}', ring.value);
     final Result<Response<dynamic>> pkgResult = await _api.post(
       MSStoreEndpoints.fe3Delivery(),
       data: pkgBody,
@@ -241,10 +215,7 @@ final class UwpStoreRepository extends StoreRepository {
         .replaceAll('&lt;', '<')
         .replaceAll('&gt;', '>');
 
-    final UwpPackageResponse uwpRes = await compute(
-      UwpXmlParser.parsePackageListXml,
-      xmlString,
-    );
+    final UwpPackageResponse uwpRes = await compute(UwpXmlParser.parsePackageListXml, xmlString);
 
     final Set<PackageInfo> packages = uwpRes.updates
         .expand(
@@ -254,9 +225,7 @@ final class UwpStoreRepository extends StoreRepository {
               isDependency: u.xml.extendedProperties?.isAppxFramework ?? false,
               uri: '',
               arch: u.arch ?? 'neutral',
-              fileModel: f.copyWith(
-                fileName: u.xml.packageMoniker ?? f.fileName ?? '',
-              ),
+              fileModel: f.copyWith(fileName: u.xml.packageMoniker ?? f.fileName ?? ''),
               updateIdentity: u.xml.updateIdentity,
             ),
           ),
@@ -282,14 +251,8 @@ final class UwpStoreRepository extends StoreRepository {
         .replaceAll('{3}', ring.value);
 
     final Response<dynamic> response = await _api
-        .post<void>(
-          MSStoreEndpoints.fe3Delivery(secured: true),
-          data: body,
-          options: _soapOptions,
-        )
-        .then(
-          (result) => result.when(success: (r) => r, failure: (e) => throw e),
-        );
+        .post<void>(MSStoreEndpoints.fe3Delivery(secured: true), data: body, options: _soapOptions)
+        .then((result) => result.when(success: (r) => r, failure: (e) => throw e));
 
     if (response.statusCode != 200) {
       throw HttpStatusException(
@@ -299,10 +262,7 @@ final class UwpStoreRepository extends StoreRepository {
       );
     }
 
-    return _xmlParser.parseDownloadUrl(
-      response.data.toString(),
-      package.fileModel?.digest,
-    );
+    return _xmlParser.parseDownloadUrl(response.data.toString(), package.fileModel?.digest);
   }
 
   Future<String> _getCookie(String cookieTemplate) async {
@@ -317,10 +277,7 @@ final class UwpStoreRepository extends StoreRepository {
     final String response = result.when(
       success: (r) {
         if (r.statusCode == 200) return r.data.toString();
-        throw HttpStatusException(
-          r.statusCode ?? 500,
-          'Failed to get a cookie',
-        );
+        throw HttpStatusException(r.statusCode ?? 500, 'Failed to get a cookie');
       },
       failure: (e) => throw e,
     );
@@ -336,21 +293,14 @@ final class UwpStoreRepository extends StoreRepository {
 }
 
 final class Win32StoreRepository extends StoreRepository {
-  const Win32StoreRepository({
-    required super.api,
-    required super.cache,
-    required this._xmlParser,
-  });
+  const Win32StoreRepository({required super.api, required super.cache, required this._xmlParser});
 
   final UwpXmlParser _xmlParser;
 
   /// ProductDetails for Win32 apps usually contains download metadata.
   /// If it is empty, fetching falls back to the Manifest API.
   @override
-  Future<Set<PackageInfo>> getPackages({
-    required String productId,
-    required StoreRing ring,
-  }) async {
+  Future<Set<PackageInfo>> getPackages({required String productId, required StoreRing ring}) async {
     final String cacheKey = _packageKey(productId, ring);
     final Set<PackageInfo>? cached = _cache.getPackages(cacheKey);
     if (cached != null) return cached;
@@ -398,12 +348,8 @@ final class Win32StoreRepository extends StoreRepository {
   /// Fallback method to get packages for Win32 apps by fetching and parsing the package manifest, since the product details endpoint doesn't guarantee the presence of installer data for Win32 apps
   Future<Set<PackageInfo>> _getPackagesFromManifest(String productId) async {
     final Response<dynamic> manifestRes = await _api
-        .get<dynamic>(
-          MSStoreEndpoints.packageManifest(productId: productId, market: 'US'),
-        )
-        .then(
-          (result) => result.when(success: (r) => r, failure: (e) => throw e),
-        );
+        .get<dynamic>(MSStoreEndpoints.packageManifest(productId: productId, market: 'US'))
+        .then((result) => result.when(success: (r) => r, failure: (e) => throw e));
 
     if (manifestRes.statusCode != 200) {
       throw HttpStatusException(
@@ -412,9 +358,7 @@ final class Win32StoreRepository extends StoreRepository {
         responseBody: manifestRes.data,
       );
     }
-    final manifest = Win32ManifestDto.fromJson(
-      manifestRes.data as Map<String, dynamic>,
-    );
+    final manifest = Win32ManifestDto.fromJson(manifestRes.data as Map<String, dynamic>);
     final seen = <String>{};
     return (manifest.data?.versions ?? [])
         .expand((v) => v.installers ?? const <Installers>[])
@@ -422,9 +366,8 @@ final class Win32StoreRepository extends StoreRepository {
           final String? url = i.installerUrl;
           if (url == null || seen.contains(url)) return const <PackageInfo>[];
 
-          final String fileType =
-              (i.installerType ?? url.substring(url.lastIndexOf('.') + 1))
-                  .toLowerCase();
+          final String fileType = (i.installerType ?? url.substring(url.lastIndexOf('.') + 1))
+              .toLowerCase();
           if (!{'exe', 'msi'}.contains(fileType)) return const <PackageInfo>[];
 
           seen.add(url);

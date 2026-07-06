@@ -5,10 +5,7 @@ import 'package:revitool/features/tweaks/utilities/utilities_service.dart';
 class MockUtilitiesService extends Mock implements UtilitiesService {}
 
 void main() {
-  const skipIntegration = bool.fromEnvironment(
-    'SKIP_INTEGRATION',
-    defaultValue: true,
-  );
+  const skipIntegration = bool.fromEnvironment('SKIP_INTEGRATION', defaultValue: true);
 
   group(
     'UtilitiesService - Real Implementation',
@@ -107,18 +104,9 @@ void main() {
           const service1 = UtilitiesServiceImpl();
           const service2 = UtilitiesServiceImpl();
 
-          expect(
-            service1.statusHibernation,
-            equals(service2.statusHibernation),
-          );
-          expect(
-            service1.statusFastStartup,
-            equals(service2.statusFastStartup),
-          );
-          expect(
-            service1.statusTMMonitoring,
-            equals(service2.statusTMMonitoring),
-          );
+          expect(service1.statusHibernation, equals(service2.statusHibernation));
+          expect(service1.statusFastStartup, equals(service2.statusFastStartup));
+          expect(service1.statusTMMonitoring, equals(service2.statusTMMonitoring));
         });
       });
 
@@ -177,18 +165,14 @@ void main() {
       });
 
       test('enableHibernation can be called without system changes', () async {
-        when(
-          () => mockService.enableHibernation(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableHibernation()).thenAnswer((_) async => Future.value());
 
         await mockService.enableHibernation();
         verify(() => mockService.enableHibernation()).called(1);
       });
 
       test('disableHibernation can be called without system changes', () async {
-        when(
-          () => mockService.disableHibernation(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableHibernation()).thenAnswer((_) async => Future.value());
 
         await mockService.disableHibernation();
         verify(() => mockService.disableHibernation()).called(1);
@@ -202,18 +186,14 @@ void main() {
       });
 
       test('enableFastStartup can be called without system changes', () async {
-        when(
-          () => mockService.enableFastStartup(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableFastStartup()).thenAnswer((_) async => Future.value());
 
         await mockService.enableFastStartup();
         verify(() => mockService.enableFastStartup()).called(1);
       });
 
       test('disableFastStartup can be called without system changes', () async {
-        when(
-          () => mockService.disableFastStartup(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.disableFastStartup()).thenAnswer((_) async => Future.value());
 
         await mockService.disableFastStartup();
         verify(() => mockService.disableFastStartup()).called(1);
@@ -232,29 +212,19 @@ void main() {
         expect(mockService.statusModernStandby, isFalse);
       });
 
-      test(
-        'enableModernStandby can be called without system changes',
-        () async {
-          when(
-            () => mockService.enableModernStandby(),
-          ).thenAnswer((_) async {});
+      test('enableModernStandby can be called without system changes', () async {
+        when(() => mockService.enableModernStandby()).thenAnswer((_) async {});
 
-          await mockService.enableModernStandby();
-          verify(() => mockService.enableModernStandby()).called(1);
-        },
-      );
+        await mockService.enableModernStandby();
+        verify(() => mockService.enableModernStandby()).called(1);
+      });
 
-      test(
-        'disableModernStandby can be called without system changes',
-        () async {
-          when(
-            () => mockService.disableModernStandby(),
-          ).thenAnswer((_) async {});
+      test('disableModernStandby can be called without system changes', () async {
+        when(() => mockService.disableModernStandby()).thenAnswer((_) async {});
 
-          await mockService.disableModernStandby();
-          verify(() => mockService.disableModernStandby()).called(1);
-        },
-      );
+        await mockService.disableModernStandby();
+        verify(() => mockService.disableModernStandby()).called(1);
+      });
 
       test('toggle Modern Standby from enabled to disabled', () async {
         when(() => mockService.statusModernStandby).thenReturn(true);
@@ -278,25 +248,18 @@ void main() {
       });
 
       test('enableTMMonitoring can be called without system changes', () async {
-        when(
-          () => mockService.enableTMMonitoring(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableTMMonitoring()).thenAnswer((_) async => Future.value());
 
         await mockService.enableTMMonitoring();
         verify(() => mockService.enableTMMonitoring()).called(1);
       });
 
-      test(
-        'disableTMMonitoring can be called without system changes',
-        () async {
-          when(
-            () => mockService.disableTMMonitoring(),
-          ).thenAnswer((_) async => Future.value());
+      test('disableTMMonitoring can be called without system changes', () async {
+        when(() => mockService.disableTMMonitoring()).thenAnswer((_) async => Future.value());
 
-          await mockService.disableTMMonitoring();
-          verify(() => mockService.disableTMMonitoring()).called(1);
-        },
-      );
+        await mockService.disableTMMonitoring();
+        verify(() => mockService.disableTMMonitoring()).called(1);
+      });
     });
 
     group('Usage Reporting', () {
@@ -305,37 +268,25 @@ void main() {
         expect(mockService.statusUsageReporting, isFalse);
       });
 
-      test(
-        'enableUsageReporting can be called without system changes',
-        () async {
-          when(
-            () => mockService.enableUsageReporting(),
-          ).thenAnswer((_) async => Future.value());
+      test('enableUsageReporting can be called without system changes', () async {
+        when(() => mockService.enableUsageReporting()).thenAnswer((_) async => Future.value());
 
-          await mockService.enableUsageReporting();
-          verify(() => mockService.enableUsageReporting()).called(1);
-        },
-      );
+        await mockService.enableUsageReporting();
+        verify(() => mockService.enableUsageReporting()).called(1);
+      });
 
-      test(
-        'disableUsageReporting can be called without system changes',
-        () async {
-          when(
-            () => mockService.disableUsageReporting(),
-          ).thenAnswer((_) async => Future.value());
+      test('disableUsageReporting can be called without system changes', () async {
+        when(() => mockService.disableUsageReporting()).thenAnswer((_) async => Future.value());
 
-          await mockService.disableUsageReporting();
-          verify(() => mockService.disableUsageReporting()).called(1);
-        },
-      );
+        await mockService.disableUsageReporting();
+        verify(() => mockService.disableUsageReporting()).called(1);
+      });
     });
 
     group('Call Order Verification', () {
       test('can verify method call order', () async {
         when(() => mockService.statusHibernation).thenReturn(false);
-        when(
-          () => mockService.enableFastStartup(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableFastStartup()).thenAnswer((_) async => Future.value());
         when(() => mockService.statusFastStartup).thenReturn(true);
 
         final bool hibernationStatus = mockService.statusHibernation;
@@ -353,9 +304,7 @@ void main() {
       });
 
       test('can verify a method was never called', () {
-        when(
-          () => mockService.enableHibernation(),
-        ).thenAnswer((_) async => Future.value());
+        when(() => mockService.enableHibernation()).thenAnswer((_) async => Future.value());
 
         verifyNever(() => mockService.disableHibernation());
       });

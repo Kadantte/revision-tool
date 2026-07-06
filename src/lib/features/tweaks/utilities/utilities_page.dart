@@ -88,9 +88,7 @@ class _ModernStandbyCard extends ConsumerWidget {
       label: t.tweaksUtilitiesModernStandby,
       description: t.tweaksUtilitiesModernStandbyDescription,
       action: CardToggleSwitch(value: false, onChanged: (value) {}),
-      children: [
-        CardListTile(title: t.tweaksUtilitiesModernStandbyFullDescription),
-      ],
+      children: [CardListTile(title: t.tweaksUtilitiesModernStandbyFullDescription)],
     );
   }
 }
@@ -134,9 +132,7 @@ class _UsageReportingCard extends ConsumerWidget {
         onChanged: (value) async {
           value
               ? await ref.read(utilitiesServiceProvider).enableUsageReporting()
-              : await ref
-                    .read(utilitiesServiceProvider)
-                    .disableUsageReporting();
+              : await ref.read(utilitiesServiceProvider).disableUsageReporting();
           ref.invalidate(usageReportingStatusProvider);
         },
       ),

@@ -66,7 +66,7 @@ class UtilitiesServiceImpl implements UtilitiesService {
   @override
   bool get statusHibernation {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power',
           'HibernateEnabled',
         ) ==
@@ -77,13 +77,13 @@ class UtilitiesServiceImpl implements UtilitiesService {
   Future<void> enableHibernation() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\System',
         'ShowHibernateOption',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Power',
         'HibernateEnabled',
         1,
@@ -99,13 +99,13 @@ powercfg /h /type full
   Future<void> disableHibernation() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\System',
         'ShowHibernateOption',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Power',
         'HibernateEnabled',
         0,
@@ -117,7 +117,7 @@ powercfg -h off
   }
 
   // int? get statusHibernationMode {
-  //   return await WinRegistryService.readInt(RegistryHive.localMachine,
+  //   return await WinRegistryService.readInt(LOCAL_MACHINE,
   //       r'System\ControlSet001\Control\Power', 'HiberFileType');
   // }
 
@@ -132,7 +132,7 @@ powercfg -h off
   @override
   bool get statusFastStartup {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'System\ControlSet001\Control\Session Manager\Power',
           'HiberbootEnabled',
         ) ==
@@ -144,13 +144,13 @@ powercfg -h off
     await Future.wait([
       enableHibernation(),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'System\ControlSet001\Control\Session Manager\Power',
         'HiberbootEnabled',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\System',
         'HiberbootEnabled',
         1,
@@ -162,13 +162,13 @@ powercfg -h off
   Future<void> disableFastStartup() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'System\ControlSet001\Control\Session Manager\Power',
         'HiberbootEnabled',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\System',
         'HiberbootEnabled',
         0,
@@ -179,7 +179,7 @@ powercfg -h off
   @override
   bool get statusModernStandby {
     return WinRegistryService.readInt(
-          .localMachine,
+          LOCAL_MACHINE,
           r'System\CurrentControlSet\Control\Power',
           'PlatformAoAcOverride',
         ) !=
@@ -189,7 +189,7 @@ powercfg -h off
   @override
   Future<void> enableModernStandby() {
     return WinRegistryService.deleteValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'System\CurrentControlSet\Control\Power',
       'PlatformAoAcOverride',
     );
@@ -198,7 +198,7 @@ powercfg -h off
   @override
   Future<void> disableModernStandby() {
     return WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'System\CurrentControlSet\Control\Power',
       'PlatformAoAcOverride',
       0,
@@ -208,13 +208,13 @@ powercfg -h off
   @override
   bool get statusTMMonitoring {
     return WinRegistryService.readInt(
-              RegistryHive.localMachine,
+              LOCAL_MACHINE,
               r'SYSTEM\ControlSet001\Services\GraphicsPerfSvc',
               'Start',
             ) ==
             2 &&
         WinRegistryService.readInt(
-              RegistryHive.localMachine,
+              LOCAL_MACHINE,
               r'SYSTEM\ControlSet001\Services\Ndu',
               'Start',
             ) ==
@@ -225,19 +225,19 @@ powercfg -h off
   Future<void> enableTMMonitoring() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\GraphicsPerfSvc',
         'Start',
         2,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\Ndu',
         'Start',
         2,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\DPS',
         'Start',
         2,
@@ -249,19 +249,19 @@ powercfg -h off
   Future<void> disableTMMonitoring() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\GraphicsPerfSvc',
         'Start',
         4,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\Ndu',
         'Start',
         4,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\DPS',
         'Start',
         4,
@@ -272,7 +272,7 @@ powercfg -h off
   @override
   bool get statusUsageReporting {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Services\DPS',
           'Start',
         ) !=
@@ -298,30 +298,30 @@ powercfg -h off
         '/q:true',
       ]),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Session Manager\Power',
         'SleepStudyDisabled',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\DPS',
         'Start',
         2,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\diagsvc',
         'Start',
         2,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\WdiServiceHost',
         'Start',
         2,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\WdiSystemHost',
         'Start',
         2,
@@ -348,31 +348,31 @@ powercfg -h off
         '/q:false',
       ]),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Session Manager\Power',
         'SleepStudyDisabled',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\DPS',
         'Start',
         4,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\diagsvc',
         'Start',
         4,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\WdiServiceHost',
         'Start',
         4,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\WdiSystemHost',
         'Start',
         4,

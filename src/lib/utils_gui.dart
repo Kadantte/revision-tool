@@ -7,7 +7,7 @@ import 'core/services/win_registry_service.dart';
 
 final settingsExperimentalStatus = Provider<bool>((ref) {
   return WinRegistryService.readInt(
-        RegistryHive.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Revision\Revision Tool',
         'Experimental',
       ) ==

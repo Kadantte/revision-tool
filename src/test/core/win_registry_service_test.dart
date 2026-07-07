@@ -12,13 +12,13 @@ void main() {
   setUpAll(() {
     if (skipIntegration) return;
     try {
-      Registry.currentUser.createKey(testRegistryPath);
+      CURRENT_USER.create(testRegistryPath);
     } catch (_) {}
   });
   tearDownAll(() {
     if (skipIntegration) return;
     try {
-      Registry.currentUser.deleteKey(testRegistryPath, recursive: true);
+      CURRENT_USER.removeSubkey(testRegistryPath);
     } catch (_) {}
   });
 
@@ -60,7 +60,7 @@ void main() {
 
       test('currentUser is accessible', () {
         expect(WinRegistryService.currentUser, isNotNull);
-        expect(WinRegistryService.currentUser, isA<RegistryKey>());
+        expect(WinRegistryService.currentUser, isA<PredefinedRegistryKey>());
       });
 
       test('defaultUser constant is defined', () {
@@ -95,7 +95,7 @@ void main() {
     () {
       test('readString returns null for non-existent key', () {
         final String? result = WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\NonExistentKey\SubKey',
           'NonExistentValue',
         );
@@ -104,7 +104,7 @@ void main() {
 
       test('readString returns null for non-existent value', () {
         final String? result = WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
           'NonExistentValue12345',
         );
@@ -113,7 +113,7 @@ void main() {
 
       test('readString returns string for existing value', () {
         final String? result = WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
           'CurrentBuildNumber',
         );
@@ -125,7 +125,7 @@ void main() {
 
       test('readInt returns null for non-existent key', () {
         final int? result = WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\NonExistentKey\SubKey',
           'NonExistentValue',
         );
@@ -134,7 +134,7 @@ void main() {
 
       test('readInt returns null for non-existent value', () {
         final int? result = WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
           'NonExistentIntValue12345',
         );
@@ -144,7 +144,7 @@ void main() {
       test('readInt returns integer for existing value', () {
         // Test with a known integer registry value
         final int? result = WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize',
           'EnableTransparency',
         );
@@ -157,7 +157,7 @@ void main() {
 
       test('readBinary returns null for non-existent key', () {
         final Uint8List? result = WinRegistryService.readBinary(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\NonExistentKey\SubKey',
           'NonExistentValue',
         );
@@ -166,7 +166,7 @@ void main() {
 
       test('readBinary returns null for non-existent value', () {
         final Uint8List? result = WinRegistryService.readBinary(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
           'NonExistentBinaryValue12345',
         );
@@ -175,7 +175,7 @@ void main() {
 
       test('readBinary returns Uint8List when value exists', () {
         final Uint8List? result = WinRegistryService.readBinary(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
           'DigitalProductId',
         );
@@ -187,14 +187,14 @@ void main() {
 
       test('read operations handle different registry hives', () {
         final String? lmResult = WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
           'ProductName',
         );
         expect(lmResult, isNotNull);
 
         final String? cuResult = WinRegistryService.readString(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Environment',
           'TEMP',
         );
@@ -213,7 +213,7 @@ void main() {
         String? result;
         expect(
           () => result = WinRegistryService.readString(
-            RegistryHive.localMachine,
+            LOCAL_MACHINE,
             r'SOFTWARE\NonExistent',
             'Value',
           ),
@@ -225,11 +225,8 @@ void main() {
       test('readInt handles null safely', () {
         int? result;
         expect(
-          () => result = WinRegistryService.readInt(
-            RegistryHive.localMachine,
-            r'SOFTWARE\NonExistent',
-            'Value',
-          ),
+          () =>
+              result = WinRegistryService.readInt(LOCAL_MACHINE, r'SOFTWARE\NonExistent', 'Value'),
           returnsNormally,
         );
         expect(result, isNull);
@@ -239,7 +236,7 @@ void main() {
         Uint8List? result;
         expect(
           () => result = WinRegistryService.readBinary(
-            RegistryHive.localMachine,
+            LOCAL_MACHINE,
             r'SOFTWARE\NonExistent',
             'Value',
           ),
@@ -327,7 +324,7 @@ void main() {
       test('writeRegistryValue accepts int type', () async {
         await expectLater(
           WinRegistryService.writeRegistryValue(
-            Registry.currentUser,
+            CURRENT_USER,
             testRegistryPath,
             'TestIntValue',
             123,
@@ -339,7 +336,7 @@ void main() {
       test('writeRegistryValue accepts String type', () async {
         await expectLater(
           WinRegistryService.writeRegistryValue(
-            Registry.currentUser,
+            CURRENT_USER,
             testRegistryPath,
             'TestStringValue',
             'test',
@@ -351,7 +348,7 @@ void main() {
       test('writeRegistryValue accepts List<String> type', () async {
         await expectLater(
           WinRegistryService.writeRegistryValue(
-            Registry.currentUser,
+            CURRENT_USER,
             testRegistryPath,
             'TestStringArrayValue',
             ['test1', 'test2'],
@@ -363,7 +360,7 @@ void main() {
       test('writeRegistryValue accepts Uint8List type', () async {
         await expectLater(
           WinRegistryService.writeRegistryValue(
-            Registry.currentUser,
+            CURRENT_USER,
             testRegistryPath,
             'TestBinaryValue',
             Uint8List.fromList([1, 2, 3, 4]),
@@ -374,56 +371,49 @@ void main() {
 
       test('deleteValue handles non-existent value gracefully', () async {
         await expectLater(
-          WinRegistryService.deleteValue(
-            Registry.currentUser,
-            testRegistryPath,
-            'NonExistentValue12345',
-          ),
+          WinRegistryService.deleteValue(CURRENT_USER, testRegistryPath, 'NonExistentValue12345'),
           completes,
         );
       });
 
       test('deleteKey handles non-existent key gracefully', () async {
         await expectLater(
-          WinRegistryService.deleteKey(
-            Registry.currentUser,
-            r'SOFTWARE\Revision\NonExistentKey12345',
-          ),
+          WinRegistryService.deleteKey(CURRENT_USER, r'SOFTWARE\Revision\NonExistentKey12345'),
           completes,
         );
       });
 
       test('createKey creates key without crashing', () {
         expect(
-          () => WinRegistryService.createKey(Registry.currentUser, '$testRegistryPath\\SubKey'),
+          () => WinRegistryService.createKey(CURRENT_USER, '$testRegistryPath\\SubKey'),
           returnsNormally,
         );
       });
 
       test('read back written values', () async {
         await WinRegistryService.writeRegistryValue(
-          Registry.currentUser,
+          CURRENT_USER,
           testRegistryPath,
           'TestReadBackInt',
           456,
         );
 
         await WinRegistryService.writeRegistryValue(
-          Registry.currentUser,
+          CURRENT_USER,
           testRegistryPath,
           'TestReadBackString',
           'hello',
         );
 
         final int? intValue = WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           testRegistryPath,
           'TestReadBackInt',
         );
         expect(intValue, equals(456));
 
         final String? stringValue = WinRegistryService.readString(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           testRegistryPath,
           'TestReadBackString',
         );
@@ -441,7 +431,7 @@ void main() {
       test('read operations never throw exceptions', () {
         expect(
           () => WinRegistryService.readString(
-            RegistryHive.currentUser,
+            CURRENT_USER,
             r'SOFTWARE\Revision\INVALID\PATH\THAT\DOES\NOT\EXIST',
             'Value',
           ),
@@ -450,7 +440,7 @@ void main() {
 
         expect(
           () => WinRegistryService.readInt(
-            RegistryHive.currentUser,
+            CURRENT_USER,
             r'SOFTWARE\Revision\INVALID\PATH\THAT\DOES\NOT\EXIST',
             'Value',
           ),
@@ -459,7 +449,7 @@ void main() {
 
         expect(
           () => WinRegistryService.readBinary(
-            RegistryHive.currentUser,
+            CURRENT_USER,
             r'SOFTWARE\Revision\INVALID\PATH\THAT\DOES\NOT\EXIST',
             'Value',
           ),
@@ -470,7 +460,7 @@ void main() {
       test('write operations handle errors gracefully', () async {
         await expectLater(
           WinRegistryService.deleteValue(
-            Registry.currentUser,
+            CURRENT_USER,
             r'SOFTWARE\Revision\NonExistent\Path\That\Does\Not\Exist',
             'Value',
           ),
@@ -479,7 +469,7 @@ void main() {
 
         await expectLater(
           WinRegistryService.deleteKey(
-            Registry.currentUser,
+            CURRENT_USER,
             r'SOFTWARE\Revision\NonExistent\Path\That\Does\Not\Exist',
           ),
           completes,
@@ -502,7 +492,7 @@ void main() {
     () {
       test('buildNumber matches CurrentBuildNumber in registry', () {
         final String? registryBuildNumber = WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
           'CurrentBuildNumber',
         );
@@ -512,7 +502,7 @@ void main() {
 
       test('cpuArch matches registry value', () {
         final String? registryArch = WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
           'PROCESSOR_ARCHITECTURE',
         );
@@ -522,7 +512,7 @@ void main() {
 
       test('themeTransparencyEffect matches registry EnableTransparency', () {
         final int? registryValue = WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize',
           'EnableTransparency',
         );
@@ -569,21 +559,21 @@ void main() {
       test('REGRESSION: read methods return null instead of throwing', () {
         // Ensure null is returned, not an exception
         final String? stringResult = WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\NonExistent',
           'Value',
         );
         expect(stringResult, isNull);
 
         final int? intResult = WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\NonExistent',
           'Value',
         );
         expect(intResult, isNull);
 
         final Uint8List? binaryResult = WinRegistryService.readBinary(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\NonExistent',
           'Value',
         );
@@ -602,9 +592,9 @@ void main() {
 
       test('REGRESSION: null-related operations never crash the app', () async {
         expect(() async {
-          WinRegistryService.readString(RegistryHive.localMachine, '', '');
-          WinRegistryService.readInt(RegistryHive.localMachine, '', '');
-          WinRegistryService.readBinary(RegistryHive.localMachine, '', '');
+          WinRegistryService.readString(LOCAL_MACHINE, '', '');
+          WinRegistryService.readInt(LOCAL_MACHINE, '', '');
+          WinRegistryService.readBinary(LOCAL_MACHINE, '', '');
           WinRegistryService.getUserServices('');
           await WinRegistryService.hidePageVisibilitySettings('');
           await WinRegistryService.unhidePageVisibilitySettings('');

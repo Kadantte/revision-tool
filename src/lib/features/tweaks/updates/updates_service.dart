@@ -90,31 +90,31 @@ class UpdatesServiceImpl implements UpdatesService {
       );
 
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\KGL\OneSettings',
         'ActivateOnUpdate',
         kgl.activateOnUpdate,
       );
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\KGL\OneSettings',
         'Hash',
         kgl.hash,
       );
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\KGL\OneSettings',
         'URI',
         kgl.uri,
       );
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\KGL\OneSettings',
         'Version',
         kgl.version,
       );
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\KGL\OneSettings',
         'VersionCheckTimeout',
         kgl.versionCheckTimeout,
@@ -130,7 +130,7 @@ class UpdatesServiceImpl implements UpdatesService {
   @override
   bool get statusPauseUpdatesWU {
     return WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
           'PauseUpdatesExpiryTime',
         )?.contains('2038-01-19T03:14:07Z') ??
@@ -141,43 +141,43 @@ class UpdatesServiceImpl implements UpdatesService {
   Future<void> enablePauseUpdatesWU() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'FlightSettingsMaxPauseDays',
         5269,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseFeatureUpdatesStartTime',
         '2023-08-17T12:47:51Z',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseFeatureUpdatesEndTime',
         '2038-01-19T03:14:07Z',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseQualityUpdatesStartTime',
         '2023-08-17T12:47:51Z',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseQualityUpdatesEndTime',
         '2038-01-19T03:14:07Z',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseUpdatesStartTime',
         '2023-08-17T12:47:51Z',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseUpdatesExpiryTime',
         '2038-01-19T03:14:07Z',
@@ -189,37 +189,37 @@ class UpdatesServiceImpl implements UpdatesService {
   Future<void> disablePauseUpdatesWU() async {
     await Future.wait([
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'FlightSettingsMaxPauseDays',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseFeatureUpdatesStartTime',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseFeatureUpdatesEndTime',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseQualityUpdatesStartTime',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseQualityUpdatesEndTime',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseUpdatesStartTime',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'PauseUpdatesExpiryTime',
       ),
@@ -229,7 +229,7 @@ class UpdatesServiceImpl implements UpdatesService {
   @override
   bool get statusVisibilityWU {
     return WinRegistryService.readString(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer',
           'SettingsPageVisibility',
         )?.contains('windowsupdate') ??
@@ -249,7 +249,7 @@ class UpdatesServiceImpl implements UpdatesService {
   @override
   bool get statusDriversWU {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows\CurrentVersion\Device Metadata',
           'PreventDeviceMetadataFromNetwork',
         ) ==
@@ -264,26 +264,26 @@ class UpdatesServiceImpl implements UpdatesService {
         r'Software\Policies\Microsoft\Windows\DriverSearching',
       ),
       WinRegistryService.deleteKey(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\DriverSearching',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\WindowsUpdate',
         'ExcludeWUDriversInQualityUpdate',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'ExcludeWUDriversInQualityUpdate',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\Device Metadata',
         'PreventDeviceMetadataFromNetwork',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Device Metadata',
         'PreventDeviceMetadataFromNetwork',
         0,
@@ -314,37 +314,37 @@ class UpdatesServiceImpl implements UpdatesService {
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\DriverSearching',
         'DontPromptForWindowsUpdate',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\DriverSearching',
         'SearchOrderConfig',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\WindowsUpdate',
         'ExcludeWUDriversInQualityUpdate',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\WindowsUpdate\UX\Settings',
         'ExcludeWUDriversInQualityUpdate',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Device Metadata',
         'PreventDeviceMetadataFromNetwork',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\Device Metadata',
         'PreventDeviceMetadataFromNetwork',
         1,

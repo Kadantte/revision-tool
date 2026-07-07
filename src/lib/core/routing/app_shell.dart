@@ -60,7 +60,7 @@ class _AppShellState extends ConsumerState<AppShell> {
       .toList(growable: false);
 
   static final String? _username = WinRegistryService.readString(
-    RegistryHive.currentUser,
+    CURRENT_USER,
     r'Volatile Environment',
     'USERNAME',
   );
@@ -70,7 +70,7 @@ class _AppShellState extends ConsumerState<AppShell> {
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\AccountPicture\Users\' +
         WinRegistryService.currentUserSid;
 
-    final String? imagePath = WinRegistryService.readString(.localMachine, path, 'Image192');
+    final String? imagePath = WinRegistryService.readString(LOCAL_MACHINE, path, 'Image192');
     if (imagePath != null && File(imagePath).existsSync()) {
       return File(imagePath);
     }
@@ -216,7 +216,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                 : null,
             captionControls: WindowCaption(),
             onDragStarted: () {
-              PostMessage(WindowPlus.instance.handle, WM_CAPTIONAREA, 0, 0);
+              PostMessage(WindowPlus.instance.hwnd, WM_CAPTIONAREA, const .new(0), const .new(0));
             },
           ),
           pane: NavigationPane(

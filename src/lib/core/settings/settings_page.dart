@@ -81,7 +81,7 @@ class _ExperimentalCard extends ConsumerWidget {
         value: status,
         onChanged: (value) async {
           await WinRegistryService.writeRegistryValue(
-            Registry.localMachine,
+            LOCAL_MACHINE,
             r'SOFTWARE\Revision\Revision Tool',
             'Experimental',
             value ? 1 : 0,
@@ -224,7 +224,7 @@ class _LanguageCard extends ConsumerWidget {
         onChanged: (value) async {
           final String localeName = value ?? AppLocale.en.name;
           await WinRegistryService.writeRegistryValue(
-            Registry.localMachine,
+            LOCAL_MACHINE,
             r'SOFTWARE\Revision\Revision Tool',
             'Language',
             localeName,

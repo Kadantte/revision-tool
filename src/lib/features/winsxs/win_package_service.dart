@@ -70,23 +70,23 @@ abstract base class WinPackageService {
       r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\Packages\';
 
   static bool checkPackageInstalled(WinPackageType packageType) {
-    final String? key = Registry.openPath(
-      RegistryHive.localMachine,
-      path: cbsPackagesRegPath,
-    ).subkeyNames.lastWhereOrNull((e) => e.startsWith(packageType.packageName));
+    final String? key = LOCAL_MACHINE
+        .open(cbsPackagesRegPath)
+        .keys
+        .lastWhereOrNull((e) => e.startsWith(packageType.packageName));
 
     if (key == null) {
       return false;
     }
 
     final int currentState = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       cbsPackagesRegPath + key,
       'CurrentState',
     )!;
 
     final int? lastError = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       cbsPackagesRegPath + key,
       'LastError',
     );
@@ -222,7 +222,7 @@ abstract base class WinPackageService {
     }
 
     WinRegistryService.createKey(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'Software\Microsoft\SystemCertificates\ROOT\Certificates\8A334AA8052DD244A647306A76B8178FA215F344',
     );
 

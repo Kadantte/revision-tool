@@ -254,7 +254,7 @@ class PerformanceServiceImpl implements PerformanceService {
   @override
   bool get statusReviPowerPlan {
     return WinRegistryService.readString(
-          .localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6',
           'FriendlyName',
         ) !=
@@ -287,25 +287,25 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\3ff983
     await TrustedInstallerServiceImpl().executeWithTrustedInstaller(
       () async => Future.wait([
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\465e1f50-b610-473a-ab58-00d1077dc418', // Processor power management -> Processor performance increase policy; PERFINCPOL
           'ACSettingIndex',
           2,
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\40fbefc7-2e9d-4d25-a185-0cfd8574bac6', // Processor power management -> Processor performance decrease policy; PERFDECPOL
           'ACSettingIndex',
           1,
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\06cadf0e-64ed-448a-8927-ce7bf90eb35d', // Processor power management -> Processor performance increase threshold; PERFINCTHRESHOLD
           'ACSettingIndex',
           10,
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\12a0ab44-fe28-4fa9-b3bd-4b64f44960a6', // Processor power management -> Processor performance decrease threshold; PERFDECTHRESHOLD
           'ACSettingIndex',
           8,
@@ -314,20 +314,20 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\3ff983
         // **CPMINCORES** and **CPMINCORES1** to 100 prevents core parking.
         // When hybrid architecture processsor is present (such as E and P Cores) powerplan GUID parameters suffix ending with 1 is for P Cores else E-Cores, meaning the P cores are parked by default on high performance power plans.
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583', // Processor power management -> Processor performance core parking min cores; CPMINCORES
           'ACSettingIndex',
           100,
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318584', // Processor power management -> Processor performance core parking min cores for Processor Power Efficiency Class 1; CPMINCORES1
           'ACSettingIndex',
           100,
         ),
 
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\2a737441-1930-4402-8d77-b2bebba308a3\d4e98f31-5ffe-4ce1-be31-1b38b384c009', // USB settings -> USB 3 Link Power Mangement
           'ACSettingIndex',
           0,
@@ -362,12 +362,12 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusReviPowerPlanC6States {
     final int? idlePromote = WinRegistryService.readInt(
-      .localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\7b224883-b3cc-4d79-819f-8374152cbe7c',
       'ACSettingIndex',
     );
     final int? idleDemote = WinRegistryService.readInt(
-      .localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\4b92d758-5a24-4851-a470-815d78aee119',
       'ACSettingIndex',
     );
@@ -382,20 +382,20 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
     await TrustedInstallerServiceImpl().executeWithTrustedInstaller(
       () async => Future.wait([
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\7b224883-b3cc-4d79-819f-8374152cbe7c',
           'ACSettingIndex',
           60,
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\4b92d758-5a24-4851-a470-815d78aee119',
           'ACSettingIndex',
           40,
         ),
         WinRegistryService.deleteValue(
           // LEGACY approach: https://learn.microsoft.com/en-us/previous-versions/troubleshoot/windows-server/virtual-machines-slow-startup-shutdown
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Processor',
           'Capabilities',
         ),
@@ -412,13 +412,13 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
     await TrustedInstallerServiceImpl().executeWithTrustedInstaller(
       () async => Future.wait([
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\7b224883-b3cc-4d79-819f-8374152cbe7c',
           'ACSettingIndex',
           100,
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec26-284d-4943-9fc4-c9616def55c6\54533251-82be-4824-96c1-47b60b740d00\4b92d758-5a24-4851-a470-815d78aee119',
           'ACSettingIndex',
           80,
@@ -432,13 +432,13 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusSuperfetch {
     return !(WinRegistryService.readInt(
-              RegistryHive.localMachine,
+              LOCAL_MACHINE,
               r'SYSTEM\ControlSet001\Services\rdyboost',
               'Start',
             ) ==
             4 &&
         WinRegistryService.readInt(
-              RegistryHive.localMachine,
+              LOCAL_MACHINE,
               r'SYSTEM\ControlSet001\Services\SysMain',
               'Start',
             ) ==
@@ -448,14 +448,14 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   Future<void> enableSuperfetch() async {
     final List<String>? lowerFilters = WinRegistryService.getStringArrayValue(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control\Class\{71a27cdd-812a-11d0-bec7-08002be2092f}',
       'LowerFilters',
     );
     if (lowerFilters != null && !lowerFilters.any((e) => e.toLowerCase() == 'rdyboost')) {
       lowerFilters.add('rdyboost');
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Class\{71a27cdd-812a-11d0-bec7-08002be2092f}',
         'LowerFilters',
         lowerFilters,
@@ -464,19 +464,19 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
 
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\rdyboost',
         'Start',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\SysMain',
         'Start',
         2,
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Session Manager\Memory Management\PrefetchParameters',
         'EnableSuperfetch',
       ),
@@ -488,7 +488,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
 
     if (hardDriveType == 'HDD') {
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Session Manager\Memory Management\PrefetchParameters',
         'EnableSuperfetch',
         3,
@@ -497,18 +497,18 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
 
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Session Manager\Memory Management\PrefetchParameters',
         'EnablePrefetcher',
         3,
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt',
         'GroupPolicyDisallowCaches',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt',
         'AllowNewCachesByDefault',
       ),
@@ -518,13 +518,13 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   Future<void> disableSuperfetch() async {
     final List<String>? lowerFilters = WinRegistryService.getStringArrayValue(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control\Class\{71a27cdd-812a-11d0-bec7-08002be2092f}',
       'LowerFilters',
     );
     lowerFilters!.removeWhere((e) => e.toLowerCase() == 'rdyboost');
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control\Class\{71a27cdd-812a-11d0-bec7-08002be2092f}',
       'LowerFilters',
       lowerFilters,
@@ -532,37 +532,37 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
 
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\SysMain',
         'Start',
         4,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\rdyboost',
         'Start',
         4,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Session Manager\Memory Management\PrefetchParameters',
         'EnablePrefetcher',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\Session Manager\Memory Management\PrefetchParameters',
         'EnableSuperfetch',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt',
         'GroupPolicyDisallowCaches',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt',
         'AllowNewCachesByDefault',
         0,
@@ -588,7 +588,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusIntelTSX {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\Session Manager\Kernel',
           'DisableTsx',
         ) ==
@@ -598,7 +598,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   Future<void> enableIntelTSX() async {
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\CurrentControlSet\Control\Session Manager\kernel',
       'DisableTsx',
       0,
@@ -608,7 +608,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   Future<void> disableIntelTSX() async {
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\CurrentControlSet\Control\Session Manager\kernel',
       'DisableTsx',
       1,
@@ -618,7 +618,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusFullscreenOptimization {
     return WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'System\GameConfigStore',
           'GameDVR_FSEBehaviorMode',
         ) ==
@@ -655,28 +655,28 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
         'GameDVR_EFSEFeatureFlags',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.allUsers,
+        USERS,
         r'.DEFAULT\System\GameConfigStore',
         'GameDVR_FSEBehaviorMode',
         0,
       ),
       WinRegistryService.deleteValue(
-        Registry.allUsers,
+        USERS,
         r'.DEFAULT\System\GameConfigStore',
         'GameDVR_FSEBehavior',
       ),
       WinRegistryService.deleteValue(
-        Registry.allUsers,
+        USERS,
         r'.DEFAULT\System\GameConfigStore',
         'GameDVR_HonorUserFSEBehaviorMode',
       ),
       WinRegistryService.deleteValue(
-        Registry.allUsers,
+        USERS,
         r'.DEFAULT\System\GameConfigStore',
         'GameDVR_DXGIHonorFSEWindowsCompatible',
       ),
       WinRegistryService.deleteValue(
-        Registry.allUsers,
+        USERS,
         r'.DEFAULT\System\GameConfigStore',
         'GameDVR_EFSEFeatureFlags',
       ),
@@ -722,7 +722,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusWindowedOptimization {
     final String? value = WinRegistryService.readString(
-      RegistryHive.currentUser,
+      CURRENT_USER,
       r'Software\Microsoft\DirectX\UserGpuPreferences',
       'DirectXUserGlobalSettings',
     );
@@ -732,7 +732,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   Future<void> enableWindowedOptimization() async {
     final String? currentValue = WinRegistryService.readString(
-      RegistryHive.currentUser,
+      CURRENT_USER,
       r'Software\Microsoft\DirectX\UserGpuPreferences',
       'DirectXUserGlobalSettings',
     );
@@ -756,7 +756,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   Future<void> disableWindowedOptimization() async {
     final String? currentValue = WinRegistryService.readString(
-      RegistryHive.currentUser,
+      CURRENT_USER,
       r'Software\Microsoft\DirectX\UserGpuPreferences',
       'DirectXUserGlobalSettings',
     );
@@ -780,7 +780,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusMPO {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows\Dwm',
           'OverlayTestMode',
         ) !=
@@ -790,7 +790,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   Future<void> enableMPO() async {
     await WinRegistryService.deleteValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Microsoft\Windows\Dwm',
       'OverlayTestMode',
     );
@@ -799,7 +799,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   Future<void> disableMPO() async {
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Microsoft\Windows\Dwm',
       'OverlayTestMode',
       5,
@@ -809,19 +809,19 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusBackgroundApps {
     return WinRegistryService.readInt(
-              RegistryHive.localMachine,
+              LOCAL_MACHINE,
               r'Software\Policies\Microsoft\Windows\AppPrivacy',
               'LetAppsRunInBackground',
             ) !=
             2 &&
         WinRegistryService.readInt(
-              RegistryHive.currentUser,
+              CURRENT_USER,
               r'Software\Microsoft\Windows\CurrentVersion\Search',
               'BackgroundAppGlobalToggle',
             ) !=
             0 &&
         WinRegistryService.readInt(
-              RegistryHive.currentUser,
+              CURRENT_USER,
               r'Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications',
               'GlobalUserDisabled',
             ) !=
@@ -837,7 +837,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
         'BackgroundAppGlobalToggle',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Microsoft\Windows\CurrentVersion\Search',
         'BackgroundAppGlobalToggle',
       ),
@@ -847,7 +847,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
         'GlobalUserDisabled',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\AppPrivacy',
         'LetAppsRunInBackground',
       ),
@@ -870,7 +870,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\AppPrivacy',
         'LetAppsRunInBackground',
         2,
@@ -881,12 +881,12 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusCtfmonInput {
     final int? inputServiceEnabled = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'Software\Microsoft\Input',
       'InputServiceEnabled',
     );
     final int? inputServiceEnabledForCci = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'Software\Microsoft\Input',
       'InputServiceEnabledForCCI',
     );
@@ -898,22 +898,22 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   Future<void> enableCtfmonInput() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Microsoft\Input',
         'InputServiceEnabled',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Microsoft\Input',
         'InputServiceEnabledForCCI',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\TextInputManagementService\Parameters',
         'ServiceDll',
-        const RegistryValue.unexpandedString('ServiceDll', r'%SystemRoot%\System32\TabSvc.dll'),
+        const RegistryValue.unexpandedString(r'%SystemRoot%\System32\TabSvc.dll'),
       ),
     ]);
   }
@@ -922,22 +922,22 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   Future<void> disableCtfmonInput() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Microsoft\Input',
         'InputServiceEnabled',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Microsoft\Input',
         'InputServiceEnabledForCCI',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Services\TextInputManagementService\Parameters',
         'ServiceDll',
-        const RegistryValue.unexpandedString('ServiceDll', r'%SystemRoot%\System32\MSCTF.DLL'),
+        const RegistryValue.unexpandedString(r'%SystemRoot%\System32\MSCTF.DLL'),
       ),
     ]);
   }
@@ -945,7 +945,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusLastTimeAccessNTFS {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\FileSystem',
           'RefsDisableLastAccessUpdate',
         ) !=
@@ -965,7 +965,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get status8dot3NamingNTFS {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\FileSystem',
           'NtfsDisable8dot3NameCreation',
         ) !=
@@ -985,7 +985,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   bool get statusMemoryUsageNTFS {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\FileSystem',
           'NtfsMemoryUsage',
         ) ==
@@ -995,7 +995,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   @override
   ServiceGrouping get statusServicesGrouping {
     final int? value = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control',
       'SvcHostSplitThresholdInKB',
     );
@@ -1003,7 +1003,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
     if (value == 0xFFFFFFFF) {
       return ServiceGrouping.forced;
     } else if (WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Services\AudioEndpointBuilder',
           'SvcHostSplitDisable',
         ) ==
@@ -1022,7 +1022,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
     return switch (mode) {
       .forced => () async {
         await WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\CurrentControlSet\Control',
           'SvcHostSplitThresholdInKB',
           0xFFFFFFFF,
@@ -1030,7 +1030,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
       }(),
       .recommended => () async {
         await WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\CurrentControlSet\Control',
           'SvcHostSplitThresholdInKB',
           0x380000, // default value
@@ -1040,7 +1040,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
           () async => Future.wait(
             services.map(
               (service) => WinRegistryService.writeRegistryValue(
-                Registry.localMachine,
+                LOCAL_MACHINE,
                 r'SYSTEM\ControlSet001\Services\' + service,
                 'SvcHostSplitDisable',
                 1,
@@ -1057,13 +1057,13 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
           () async => Future.wait([
             ...servicesToDelete.map(
               (service) => WinRegistryService.deleteValue(
-                Registry.localMachine,
+                LOCAL_MACHINE,
                 'SYSTEM\\ControlSet001\\Services\\$service',
                 'SvcHostSplitDisable',
               ),
             ),
             WinRegistryService.writeRegistryValue(
-              Registry.localMachine,
+              LOCAL_MACHINE,
               r'SYSTEM\CurrentControlSet\Control',
               'SvcHostSplitThresholdInKB',
               0x380000,
@@ -1078,7 +1078,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
   int get statusBackgroundWindowMessageRateLimit {
     final rawMouseThrottleEnabled =
         WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Control Panel\Mouse',
           'RawMouseThrottleEnabled',
         ) !=
@@ -1090,7 +1090,7 @@ if (Test-Path "HKLM:\SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\6a93ec
 
     final int rawMouseThrottleDuration =
         WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Control Panel\Mouse',
           'RawMouseThrottleDuration',
         ) ??

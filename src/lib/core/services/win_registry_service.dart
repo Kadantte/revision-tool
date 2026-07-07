@@ -28,13 +28,13 @@ abstract class WinRegistryService {
   static int get buildNumber => _buildNumber;
   static final int _buildNumber = int.parse(
     WinRegistryService.readString(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\',
       'CurrentBuildNumber',
     )!,
   );
 
-  static final RegistryKey currentUser = Registry.currentUser;
+  static final BaseRegistryKey currentUser = CURRENT_USER;
   static late final String currentUserSid;
   static const defaultUser = 'DefaultUserHive';
   static const defaultUserHivePath = r'C:\Users\Default\NTUSER.DAT';
@@ -45,14 +45,14 @@ abstract class WinRegistryService {
   static final bool isW11 = buildNumber > 19045;
 
   static final String cpuArch = readString(
-    RegistryHive.localMachine,
+    LOCAL_MACHINE,
     r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
     'PROCESSOR_ARCHITECTURE',
   )!.toLowerCase();
 
   static final String _cpuVendorIdentifier =
       (readString(
-                RegistryHive.localMachine,
+                LOCAL_MACHINE,
                 r'HARDWARE\DESCRIPTION\System\CentralProcessor\0',
                 'VendorIdentifier',
               ) ??
@@ -69,13 +69,13 @@ abstract class WinRegistryService {
   static bool get isSupported {
     return _validate() ||
         readString(
-              RegistryHive.localMachine,
+              LOCAL_MACHINE,
               r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
               'EditionSubVersion',
             ) ==
             'ReviOS' ||
         readString(
-              RegistryHive.localMachine,
+              LOCAL_MACHINE,
               r'SOFTWARE\Microsoft\Windows NT\CurrentVersion',
               'EditionSubManufacturer',
             ) ==
@@ -83,15 +83,12 @@ abstract class WinRegistryService {
   }
 
   static bool _validate() {
-    final RegistryKey key = Registry.openPath(
-      RegistryHive.localMachine,
-      path: r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\Packages',
+    final RegistryKey key = LOCAL_MACHINE.open(
+      r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\Packages',
     );
 
     try {
-      return key.subkeyNames
-          .lastWhere((element) => element.startsWith('Revision-ReviOS'))
-          .isNotEmpty;
+      return key.keys.lastWhere((element) => element.startsWith('Revision-ReviOS')).isNotEmpty;
     } catch (e) {
       if (!isAmePlaybook) {
         logger.w('Error validating ReviOS');
@@ -115,14 +112,14 @@ abstract class WinRegistryService {
 
   static Future<void> _hidePageVisibilitySettingsSingle(String pageName) async {
     final String? currentValue = readString(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       _settingsPageVisibilityPath,
       _settingsPageVisibilityName,
     );
 
     if (currentValue == null || currentValue.isEmpty) {
       await writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         _settingsPageVisibilityPath,
         _settingsPageVisibilityName,
         'hide:$pageName',
@@ -131,7 +128,7 @@ abstract class WinRegistryService {
     }
     if (!currentValue.contains(pageName)) {
       await writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         _settingsPageVisibilityPath,
         _settingsPageVisibilityName,
         currentValue.endsWith(';') || currentValue.endsWith(':')
@@ -155,7 +152,7 @@ abstract class WinRegistryService {
 
   static Future<void> _unhidePageVisibilitySettingsSingle(String pageName) async {
     final String? currentValue = readString(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       _settingsPageVisibilityPath,
       _settingsPageVisibilityName,
     );
@@ -166,11 +163,7 @@ abstract class WinRegistryService {
       String newValue = currentValue;
 
       if (currentValue == 'hide:$pageName') {
-        await deleteValue(
-          Registry.localMachine,
-          _settingsPageVisibilityPath,
-          _settingsPageVisibilityName,
-        );
+        await deleteValue(LOCAL_MACHINE, _settingsPageVisibilityPath, _settingsPageVisibilityName);
         return;
       } else if (currentValue.contains('$pageName;')) {
         newValue = newValue.replaceAll('$pageName;', '');
@@ -179,14 +172,10 @@ abstract class WinRegistryService {
       }
 
       if (newValue == 'hide:' || newValue.isEmpty) {
-        await deleteValue(
-          Registry.localMachine,
-          _settingsPageVisibilityPath,
-          _settingsPageVisibilityName,
-        );
+        await deleteValue(LOCAL_MACHINE, _settingsPageVisibilityPath, _settingsPageVisibilityName);
       } else {
         await writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           _settingsPageVisibilityPath,
           _settingsPageVisibilityName,
           newValue,
@@ -196,33 +185,30 @@ abstract class WinRegistryService {
   }
 
   static Iterable<String> getUserServices(String subkey) {
-    final RegistryKey key = Registry.openPath(
-      RegistryHive.localMachine,
-      path: r'SYSTEM\ControlSet001\Services',
-    );
+    final RegistryKey key = LOCAL_MACHINE.open(r'SYSTEM\ControlSet001\Services');
     try {
-      return key.subkeyNames.where((String e) => e.startsWith(subkey)).toList();
+      return key.keys.where((String e) => e.startsWith(subkey)).toList();
     } finally {
       key.close();
     }
   }
 
   static String? get themeModeReg =>
-      readString(RegistryHive.localMachine, r'SOFTWARE\Revision\Revision Tool', 'ThemeMode');
+      readString(LOCAL_MACHINE, r'SOFTWARE\Revision\Revision Tool', 'ThemeMode');
 
   static bool get themeTransparencyEffect =>
       readInt(
-        RegistryHive.currentUser,
+        CURRENT_USER,
         r'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize',
         'EnableTransparency',
       ) ==
       1;
 
-  static int? readInt(RegistryHive hive, String path, String value) {
+  static int? readInt(BaseRegistryKey hive, String path, String value) {
     try {
-      final RegistryKey key = Registry.openPath(hive, path: path);
+      final RegistryKey key = hive.open(path);
       try {
-        return key.getIntValue(value);
+        return key.getInt(value);
       } finally {
         key.close();
       }
@@ -231,11 +217,11 @@ abstract class WinRegistryService {
     }
   }
 
-  static String? readString(RegistryHive hive, String path, String value) {
+  static String? readString(BaseRegistryKey hive, String path, String value) {
     try {
-      final RegistryKey key = Registry.openPath(hive, path: path);
+      final RegistryKey key = hive.open(path);
       try {
-        return key.getStringValue(value);
+        return key.getString(value);
       } finally {
         key.close();
       }
@@ -244,11 +230,11 @@ abstract class WinRegistryService {
     }
   }
 
-  static List<String>? getStringArrayValue(RegistryHive hive, String path, String value) {
+  static List<String>? getStringArrayValue(BaseRegistryKey hive, String path, String value) {
     try {
-      final RegistryKey key = Registry.openPath(hive, path: path);
+      final RegistryKey key = hive.open(path);
       try {
-        return key.getStringArrayValue(value);
+        return key.getMultiString(value);
       } finally {
         key.close();
       }
@@ -257,11 +243,11 @@ abstract class WinRegistryService {
     }
   }
 
-  static Uint8List? readBinary(RegistryHive hive, String path, String value) {
+  static Uint8List? readBinary(BaseRegistryKey hive, String path, String value) {
     try {
-      final RegistryKey key = Registry.openPath(hive, path: path);
+      final RegistryKey key = hive.open(path);
       try {
-        return key.getBinaryValue(value);
+        return key.getBinary(value);
       } finally {
         key.close();
       }
@@ -271,7 +257,7 @@ abstract class WinRegistryService {
   }
 
   static Future<void> writeRegistryValue<T extends Object>(
-    RegistryKey key,
+    BaseRegistryKey key,
     String path,
     String name,
     T value, {
@@ -289,20 +275,20 @@ abstract class WinRegistryService {
     try {
       final RegistryValue registryValue = switch (value) {
         final RegistryValue v => v,
-        final int v => RegistryValue.int32(name, v),
-        final String v => RegistryValue.string(name, v),
-        final List<String> v => RegistryValue.stringArray(name, v),
+        final int v => RegistryValue.dword(v),
+        final String v => RegistryValue.string(v),
+        final List<String> v => RegistryValue.multiString(v),
 
-        // final List<int> v => RegistryValue.binary(name, Uint8List.fromList(v)),
-        final Uint8List v => RegistryValue.binary(name, v),
+        // final List<int> v => RegistryValue.binary(Uint8List.fromList(v)),
+        final Uint8List v => RegistryValue.binary(v),
         final _ => throw ArgumentError(
           '$tag(writeRegistryValue): Unsupported type: ${value.runtimeType}',
         ),
       };
 
-      final RegistryKey subKey = key.createKey(path);
+      final RegistryKey subKey = key.create(path);
       try {
-        subKey.createValue(registryValue);
+        subKey.setValue(name, registryValue);
       } finally {
         subKey.close();
       }
@@ -315,18 +301,14 @@ abstract class WinRegistryService {
           defaultUserHivePath,
         ]);
 
-        final RegistryKey reg = Registry.allUsers;
+        final PredefinedRegistryKey reg = USERS;
+        final RegistryKey subKey = reg.create('$defaultUser\\$path');
         try {
-          final RegistryKey subKey = reg.createKey('$defaultUser\\$path');
-          try {
-            subKey.createValue(registryValue);
-          } finally {
-            subKey.close();
-          }
-          logger.i('$tag(writeRegistryValue): $defaultUser\\$path\\$name = $value');
+          subKey.setValue(name, registryValue);
         } finally {
-          reg.close();
+          subKey.close();
         }
+        logger.i('$tag(writeRegistryValue): $defaultUser\\$path\\$name = $value');
       }
     } on WindowsException catch (e) {
       // 0x80070005 = ERROR_ACCESS_DENIED
@@ -359,14 +341,14 @@ abstract class WinRegistryService {
     } catch (e) {
       logger.e('$tag(writeRegistryValue): $path\\$name', error: e, stackTrace: StackTrace.current);
     } finally {
-      if (shouldClose) {
+      if (shouldClose && key is RegistryKey) {
         key.close();
       }
     }
   }
 
   static Future<void> deleteValue(
-    RegistryKey key,
+    BaseRegistryKey key,
     String path,
     String name, {
     int retryCount = 0,
@@ -379,9 +361,9 @@ abstract class WinRegistryService {
     }
 
     try {
-      final RegistryKey subKey = key.createKey(path);
+      final RegistryKey subKey = key.create(path);
       try {
-        subKey.deleteValue(name);
+        subKey.removeValue(name);
       } finally {
         subKey.close();
       }
@@ -418,7 +400,7 @@ abstract class WinRegistryService {
   }
 
   static Future<void> deleteKey(
-    RegistryKey key,
+    BaseRegistryKey key,
     String path, {
     int retryCount = 0,
     bool useTrustedInstaller = false,
@@ -430,7 +412,7 @@ abstract class WinRegistryService {
     }
 
     try {
-      key.deleteKey(path, recursive: true);
+      key.removeSubkey(path);
       logger.i('$tag(deleteKey): $path');
     } on WindowsException catch (e) {
       // 0x80070005 = ERROR_ACCESS_DENIED
@@ -463,9 +445,9 @@ abstract class WinRegistryService {
     }
   }
 
-  static void createKey(RegistryKey key, String path) {
+  static void createKey(BaseRegistryKey key, String path) {
     try {
-      final RegistryKey subKey = key.createKey(path);
+      final RegistryKey subKey = key.create(path);
       subKey.close();
       logger.i('$tag(createKey): $path');
     } catch (e) {

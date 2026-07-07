@@ -57,26 +57,26 @@ Future<void> main(List<String> args) async {
   }
 
   if (WinRegistryService.readString(
-        RegistryHive.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Revision\Revision Tool',
         'ThemeMode',
       ) ==
       null) {
     logger.i('$tag Initializing Revision registry keys');
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Revision\Revision Tool',
       'ThemeMode',
       ThemeMode.system.name,
     );
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Revision\Revision Tool',
       'Experimental',
       0,
     );
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Revision\Revision Tool',
       'Language',
       AppLocale.en.name,

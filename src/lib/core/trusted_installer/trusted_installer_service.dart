@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:win32/win32.dart';
+
 import '../../utils.dart';
 import 'trusted_installer_exception.dart';
 import 'win32_token_helper.dart';
@@ -94,17 +96,17 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
       await initialize();
     }
 
-    var scManager = 0;
-    var service = 0;
-    var process = 0;
-    var processToken = 0;
-    var duplicatedToken = 0;
-    var systemToken = 0;
+    SC_HANDLE? scManager;
+    SC_HANDLE? service;
+    HANDLE? process;
+    HANDLE? processToken;
+    HANDLE? duplicatedToken;
+    HANDLE? systemToken;
 
     try {
       final int systemPid = _cachedSystemPid!;
 
-      final int winlogonProcess = Win32TokenHelper.openProcess(
+      final HANDLE winlogonProcess = Win32TokenHelper.openProcess(
         systemPid,
         Win32TokenHelper.PROCESS_QUERY_INFORMATION,
       );
@@ -118,26 +120,25 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
       }
 
       try {
-        systemToken =
-            Win32TokenHelper.openProcessToken(winlogonProcess, Win32TokenHelper.TOKEN_DUPLICATE) ??
-            0;
+        systemToken = Win32TokenHelper.openProcessToken(
+          winlogonProcess,
+          Win32TokenHelper.TOKEN_DUPLICATE,
+        );
 
-        if (!Win32TokenHelper.isValidHandle(systemToken)) {
+        if (systemToken == null || !Win32TokenHelper.isValidHandle(systemToken)) {
           final int error = Win32TokenHelper.getLastError();
           logger.e('[TrustedInstaller] Failed to open SYSTEM token (Error: $error)');
           throw TrustedInstallerException('Failed to open SYSTEM token', error);
         }
 
-        final int systemDupToken =
-            Win32TokenHelper.duplicateToken(
-              systemToken,
-              Win32TokenHelper.TOKEN_ALL_ACCESS,
-              Win32TokenHelper.SecurityImpersonation,
-              Win32TokenHelper.TokenImpersonation,
-            ) ??
-            0;
+        final HANDLE? systemDupToken = Win32TokenHelper.duplicateToken(
+          systemToken,
+          Win32TokenHelper.TOKEN_ALL_ACCESS,
+          Win32TokenHelper.SecurityImpersonation,
+          Win32TokenHelper.TokenImpersonation,
+        );
 
-        if (!Win32TokenHelper.isValidHandle(systemDupToken)) {
+        if (systemDupToken == null || !Win32TokenHelper.isValidHandle(systemDupToken)) {
           final int error = Win32TokenHelper.getLastError();
           logger.e('[TrustedInstaller] Failed to duplicate SYSTEM token (Error: $error)');
           throw TrustedInstallerException('Failed to duplicate SYSTEM token', error);
@@ -197,25 +198,22 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
           );
         }
 
-        processToken =
-            Win32TokenHelper.openProcessToken(process, Win32TokenHelper.TOKEN_DUPLICATE) ?? 0;
+        processToken = Win32TokenHelper.openProcessToken(process, Win32TokenHelper.TOKEN_DUPLICATE);
 
-        if (!Win32TokenHelper.isValidHandle(processToken)) {
+        if (processToken == null || !Win32TokenHelper.isValidHandle(processToken)) {
           final int error = Win32TokenHelper.getLastError();
           logger.e('[TrustedInstaller] Failed to open TrustedInstaller token (Error: $error)');
           throw TrustedInstallerException('Failed to open TrustedInstaller token', error);
         }
 
-        duplicatedToken =
-            Win32TokenHelper.duplicateToken(
-              processToken,
-              Win32TokenHelper.TOKEN_ALL_ACCESS,
-              Win32TokenHelper.SecurityImpersonation,
-              Win32TokenHelper.TokenImpersonation,
-            ) ??
-            0;
+        duplicatedToken = Win32TokenHelper.duplicateToken(
+          processToken,
+          Win32TokenHelper.TOKEN_ALL_ACCESS,
+          Win32TokenHelper.SecurityImpersonation,
+          Win32TokenHelper.TokenImpersonation,
+        );
 
-        if (!Win32TokenHelper.isValidHandle(duplicatedToken)) {
+        if (duplicatedToken == null || !Win32TokenHelper.isValidHandle(duplicatedToken)) {
           final int error = Win32TokenHelper.getLastError();
           logger.e('[TrustedInstaller] Failed to duplicate TrustedInstaller token (Error: $error)');
           throw TrustedInstallerException('Failed to duplicate TrustedInstaller token', error);
@@ -241,22 +239,22 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
     } finally {
       Win32TokenHelper.revertToSelf();
 
-      if (Win32TokenHelper.isValidHandle(systemToken)) {
+      if (systemToken != null && Win32TokenHelper.isValidHandle(systemToken)) {
         Win32TokenHelper.closeHandle(systemToken);
       }
-      if (Win32TokenHelper.isValidHandle(duplicatedToken)) {
+      if (duplicatedToken != null && Win32TokenHelper.isValidHandle(duplicatedToken)) {
         Win32TokenHelper.closeHandle(duplicatedToken);
       }
-      if (Win32TokenHelper.isValidHandle(processToken)) {
+      if (processToken != null && Win32TokenHelper.isValidHandle(processToken)) {
         Win32TokenHelper.closeHandle(processToken);
       }
-      if (Win32TokenHelper.isValidHandle(process)) {
+      if (process != null && Win32TokenHelper.isValidHandle(process)) {
         Win32TokenHelper.closeHandle(process);
       }
-      if (Win32TokenHelper.isValidHandle(service)) {
+      if (service != null && Win32TokenHelper.isValidHandle(service)) {
         Win32TokenHelper.closeServiceHandle(service);
       }
-      if (Win32TokenHelper.isValidHandle(scManager)) {
+      if (scManager != null && Win32TokenHelper.isValidHandle(scManager)) {
         Win32TokenHelper.closeServiceHandle(scManager);
       }
     }
@@ -266,18 +264,18 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
   Future<CommandResult> executeCommand(String command, List<String> args) async {
     logger.i('[TrustedInstaller] Executing command: $command ${args.join(' ')}');
 
-    int? tiToken;
+    HANDLE? tiToken;
 
     try {
       await executeWithTrustedInstaller(() async {
-        final int service = Win32TokenHelper.openService(
+        final SC_HANDLE service = Win32TokenHelper.openService(
           Win32TokenHelper.openServiceControlManager(),
           _serviceName,
           Win32TokenHelper.SERVICE_QUERY_STATUS,
         );
 
         final int? tiPid = Win32TokenHelper.getServiceProcessId(service);
-        Win32TokenHelper.closeHandle(service);
+        Win32TokenHelper.closeServiceHandle(service);
 
         if (tiPid == null || tiPid == 0) {
           throw TrustedInstallerException('Failed to get TrustedInstaller PID');
@@ -314,15 +312,15 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
   }
 
   /// Gets a PRIMARY token from a process ID for CreateProcessWithTokenW
-  int? _getPrimaryToken(int processId) {
-    final int process = Win32TokenHelper.openProcess(
+  HANDLE? _getPrimaryToken(int processId) {
+    final HANDLE process = Win32TokenHelper.openProcess(
       processId,
       Win32TokenHelper.PROCESS_QUERY_INFORMATION,
     );
     if (!Win32TokenHelper.isValidHandle(process)) return null;
 
     try {
-      final int? token = Win32TokenHelper.openProcessToken(
+      final HANDLE? token = Win32TokenHelper.openProcessToken(
         process,
         Win32TokenHelper.TOKEN_DUPLICATE,
       );
@@ -344,7 +342,7 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
   }
 
   /// Ensures TrustedInstaller service is running and returns its process ID.
-  Future<int?> _ensureServiceRunning(int service) async {
+  Future<int?> _ensureServiceRunning(SC_HANDLE service) async {
     for (var attempt = 0; attempt < _maxRetries; attempt++) {
       // Calculate exponential backoff delay
       final int delayMs = (_initialRetryDelay.inMilliseconds * (1 << attempt)).clamp(
@@ -408,8 +406,8 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
 
   @override
   bool isTrustedInstallerAvailable() {
-    var scManager = 0;
-    var service = 0;
+    SC_HANDLE? scManager;
+    SC_HANDLE? service;
 
     try {
       scManager = Win32TokenHelper.openServiceControlManager();
@@ -426,10 +424,10 @@ class TrustedInstallerServiceImpl implements TrustedInstallerService {
 
       return Win32TokenHelper.isValidHandle(service);
     } finally {
-      if (Win32TokenHelper.isValidHandle(service)) {
+      if (service != null && Win32TokenHelper.isValidHandle(service)) {
         Win32TokenHelper.closeServiceHandle(service);
       }
-      if (Win32TokenHelper.isValidHandle(scManager)) {
+      if (scManager != null && Win32TokenHelper.isValidHandle(scManager)) {
         Win32TokenHelper.closeServiceHandle(scManager);
       }
     }

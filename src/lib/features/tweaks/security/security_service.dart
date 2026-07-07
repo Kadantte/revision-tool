@@ -84,7 +84,7 @@ class SecurityServiceImpl implements SecurityService {
   const SecurityServiceImpl();
 
   String get _mpCmdRunString =>
-      '${WinRegistryService.readString(RegistryHive.localMachine, r'SOFTWARE\Microsoft\Windows Defender', 'InstallLocation') ?? r'C:\Program Files\Windows Defender'}\\MpCmdRun.exe';
+      '${WinRegistryService.readString(LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows Defender', 'InstallLocation') ?? r'C:\Program Files\Windows Defender'}\\MpCmdRun.exe';
 
   @override
   bool get statusDefender {
@@ -93,7 +93,7 @@ class SecurityServiceImpl implements SecurityService {
     }
 
     if (WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows Defender',
           'DisableAntiSpyware',
         ) ==
@@ -102,7 +102,7 @@ class SecurityServiceImpl implements SecurityService {
     }
 
     if (WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Services\WinDefend',
           'Start',
         ) ==
@@ -121,12 +121,12 @@ class SecurityServiceImpl implements SecurityService {
   @override
   bool get statusDefenderProtectionTamper {
     final int? tp = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Microsoft\Windows Defender\Features',
       'TamperProtection',
     );
     final int? tpSource = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Microsoft\Windows Defender\Features',
       'TamperProtectionSource',
     );
@@ -141,7 +141,7 @@ class SecurityServiceImpl implements SecurityService {
   @override
   bool get statusDefenderProtectionRealtime {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows Defender\Real-Time Protection',
           'DisableRealtimeMonitoring',
         ) !=
@@ -158,27 +158,27 @@ class SecurityServiceImpl implements SecurityService {
     try {
       await Future.wait([
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Policies\Microsoft\Windows Defender',
           'DisableAntiSpyware',
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Policies\Microsoft\Windows Defender',
           'DisableAntiVirus',
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection',
           'DisableRealtimeMonitoring',
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows Defender',
           'DisableAntiSpyware',
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows Defender',
           'DisableAntiVirus',
         ),
@@ -190,13 +190,13 @@ class SecurityServiceImpl implements SecurityService {
 
       await Future.wait([
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'System\ControlSet001\Services\MDCoreSvc',
           'Start',
           2,
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce',
           'RevisionEnableDefenderCMD',
           '"$_mpCmdRunString" -WDEnable',
@@ -205,12 +205,12 @@ class SecurityServiceImpl implements SecurityService {
 
       await Future.wait([
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray',
           'HideSystray',
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows\CurrentVersion\Run',
           'SecurityHealth',
           r'%windir%\system32\SecurityHealthSystray.exe',
@@ -239,7 +239,7 @@ class SecurityServiceImpl implements SecurityService {
       await Future.wait(
         subkeys.entries.map(
           (entry) => WinRegistryService.writeRegistryValue(
-            Registry.localMachine,
+            LOCAL_MACHINE,
             r'SYSTEM\ControlSet001\Services\' + entry.key,
             'Start',
             entry.value,
@@ -254,7 +254,7 @@ class SecurityServiceImpl implements SecurityService {
       await Future.wait(
         webthreatdefsvcList.map(
           (webthreatdefsvc) => WinRegistryService.writeRegistryValue(
-            Registry.localMachine,
+            LOCAL_MACHINE,
             r'SYSTEM\ControlSet001\Services\' + webthreatdefsvc,
             'Start',
             2,
@@ -264,13 +264,13 @@ class SecurityServiceImpl implements SecurityService {
 
       await Future.wait([
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows\CurrentVersion\Run',
           'SecurityHealth',
           r'%windir%\system32\SecurityHealthSystray.exe',
         ),
         WinRegistryService.deleteKey(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\smartscreen.exe',
         ),
       ]);
@@ -289,13 +289,13 @@ class SecurityServiceImpl implements SecurityService {
           r'Software\Microsoft\Windows\CurrentVersion\Policies\Associations',
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer',
           'SmartScreenEnabled',
           'On',
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'Software\Policies\Microsoft\System',
           'EnableSmartScreen',
         ),
@@ -310,51 +310,51 @@ class SecurityServiceImpl implements SecurityService {
           'PreventOverride',
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'Software\Microsoft\Windows\CurrentVersion\AppHost',
           'EnableWebContentEvaluation',
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\CI\Policy',
           'VerifiedAndReputablePolicyState',
         ),
         WinRegistryService.deleteKey(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'Software\Policies\Microsoft\Windows Defender',
         ),
         WinRegistryService.deleteKey(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'Software\Policies\Microsoft\Windows Advanced Threat Protection',
         ),
         WinRegistryService.deleteKey(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Policies\Microsoft\Windows Defender Security Center',
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows Defender',
           'PUAProtection',
           1,
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\CI\Config',
           'VulnerableDriverBlocklistEnable',
         ),
         WinRegistryService.deleteValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity',
           'Enabled',
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\WMI\Autologger\DefenderApiLogger',
           'Start',
           1,
         ),
         WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Control\WMI\Autologger\DefenderAuditLogger',
           'Start',
           1,
@@ -372,19 +372,19 @@ class SecurityServiceImpl implements SecurityService {
       Future<void> applyPolicyWrites() async {
         await Future.wait([
           WinRegistryService.writeRegistryValue(
-            Registry.localMachine,
+            LOCAL_MACHINE,
             r'SOFTWARE\Policies\Microsoft\Windows Defender',
             'DisableAntiSpyware',
             1,
           ),
           WinRegistryService.writeRegistryValue(
-            Registry.localMachine,
+            LOCAL_MACHINE,
             r'SOFTWARE\Policies\Microsoft\Windows Defender',
             'DisableAntiVirus',
             1,
           ),
           WinRegistryService.writeRegistryValue(
-            Registry.localMachine,
+            LOCAL_MACHINE,
             r'SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection',
             'DisableRealtimeMonitoring',
             1,
@@ -401,14 +401,14 @@ class SecurityServiceImpl implements SecurityService {
       await applyPolicyWrites();
 
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows Defender',
         'DisableAntiSpyware',
         1,
         useTrustedInstaller: true,
       );
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows Defender',
         'DisableAntiVirus',
         1,
@@ -419,7 +419,7 @@ class SecurityServiceImpl implements SecurityService {
       await applyPolicyWrites();
 
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'System\ControlSet001\Services\MDCoreSvc',
         'Start',
         4,
@@ -427,7 +427,7 @@ class SecurityServiceImpl implements SecurityService {
       );
 
       await WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce',
         'RevisionEnableDefenderCMD',
       );
@@ -480,7 +480,7 @@ class SecurityServiceImpl implements SecurityService {
   @override
   bool get statusUAC {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
           'EnableLUA',
         ) ==
@@ -491,61 +491,61 @@ class SecurityServiceImpl implements SecurityService {
   Future<void> enableUAC() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableVirtualization',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableInstallerDetection',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'PromptOnSecureDesktop',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableLUA',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableSecureUIAPaths',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'ConsentPromptBehaviorAdmin',
         5,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'ValidateAdminCodeSignatures',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableUIADesktopToggle',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'ConsentPromptBehaviorUser',
         3,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'FilterAdministratorToken',
         0,
@@ -557,61 +557,61 @@ class SecurityServiceImpl implements SecurityService {
   Future<void> disableUAC() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableVirtualization',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableInstallerDetection',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'PromptOnSecureDesktop',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableLUA',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableSecureUIAPaths',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'ConsentPromptBehaviorAdmin',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'ValidateAdminCodeSignatures',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'EnableUIADesktopToggle',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'ConsentPromptBehaviorUser',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
         'FilterAdministratorToken',
         0,
@@ -622,7 +622,7 @@ class SecurityServiceImpl implements SecurityService {
   @override
   bool isMitigationEnabled(Mitigation mitigation) {
     final int? val = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
       'FeatureSettingsOverride',
     );
@@ -636,18 +636,18 @@ class SecurityServiceImpl implements SecurityService {
         Mitigation.values[(mitigation.index + 1) % Mitigation.values.length];
     if (isMitigationEnabled(otherMitigation)) {
       await WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
         'FeatureSettings',
         0,
       );
       await WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
         'FeatureSettingsOverride',
       );
       await WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
         'FeatureSettingsOverrideMask',
       );
@@ -662,7 +662,7 @@ class SecurityServiceImpl implements SecurityService {
   @override
   Future<void> disableMitigation(Mitigation mitigation) async {
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
       'FeatureSettings',
       1,
@@ -678,12 +678,12 @@ class SecurityServiceImpl implements SecurityService {
     if (statusMemoryIntegrity) return true;
 
     final int? policyVbs = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Policies\Microsoft\Windows\DeviceGuard',
       'EnableVirtualizationBasedSecurity',
     );
     final int? systemVbs = WinRegistryService.readInt(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control\DeviceGuard',
       'EnableVirtualizationBasedSecurity',
     );
@@ -709,7 +709,7 @@ class SecurityServiceImpl implements SecurityService {
   @override
   bool get statusMemoryIntegrity {
     final int? hvciEnabled = WinRegistryService.readInt(
-      .localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity',
       'Enabled',
     );
@@ -724,31 +724,31 @@ class SecurityServiceImpl implements SecurityService {
         'Invoke-Command -ScriptBlock { bcdedit /deletevalue hypervisorlaunchtype; bcdedit /deletevalue vsmlaunchtype }',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\DeviceGuard',
         'EnableVirtualizationBasedSecurity',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard',
         'EnableVirtualizationBasedSecurity',
         1,
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard',
         'Mandatory',
       ),
 
       // Legacy: HVCIMATRequired can no longer be found in newer W11 builds
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\DeviceGuard',
         'HVCIMATRequired',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard',
         'HVCIMATRequired',
       ),
@@ -760,27 +760,27 @@ class SecurityServiceImpl implements SecurityService {
     await Future.wait([
       runPSCommand('Invoke-Command -ScriptBlock { bcdedit /set vsmlaunchtype off }'),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\DeviceGuard',
         'EnableVirtualizationBasedSecurity',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard',
         'EnableVirtualizationBasedSecurity',
         0,
       ),
 
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard',
         'Mandatory',
         0,
       ),
 
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\DeviceGuard',
         'LsaCfgFlags',
         0,
@@ -791,13 +791,13 @@ class SecurityServiceImpl implements SecurityService {
 
       // Legacy: HVCIMATRequired can no longer be found in newer W11 builds
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\DeviceGuard',
         'HVCIMATRequired',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard',
         'HVCIMATRequired',
         0,
@@ -808,7 +808,7 @@ class SecurityServiceImpl implements SecurityService {
   @override
   Future<void> enableMemoryIntegrity() async {
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\ControlSet001\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity',
       'Enabled',
       1,
@@ -819,18 +819,18 @@ class SecurityServiceImpl implements SecurityService {
   Future<void> disableMemoryIntegrity() async {
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity',
         'Enabled',
         0,
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity',
         'WasEnabledBy',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\ControlSet001\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity',
         'ChangedInBootCycle',
       ),
@@ -840,7 +840,7 @@ class SecurityServiceImpl implements SecurityService {
 
 int _readOverride() {
   return WinRegistryService.readInt(
-        RegistryHive.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
         'FeatureSettingsOverride',
       ) ??
@@ -849,13 +849,13 @@ int _readOverride() {
 
 Future<void> _writeOverride(int value) async {
   await WinRegistryService.writeRegistryValue(
-    Registry.localMachine,
+    LOCAL_MACHINE,
     r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
     'FeatureSettingsOverride',
     value,
   );
   await WinRegistryService.writeRegistryValue(
-    Registry.localMachine,
+    LOCAL_MACHINE,
     r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
     'FeatureSettingsOverrideMask',
     value,

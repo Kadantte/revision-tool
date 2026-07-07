@@ -21,6 +21,7 @@ final class RetryPolicy {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.connectionError:
+      case DioExceptionType.transformTimeout:
         return true;
       case DioExceptionType.badResponse:
         return (error.response?.statusCode ?? 0) >= 500;

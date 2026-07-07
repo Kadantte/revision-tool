@@ -219,7 +219,7 @@ class SettingsService {
 
   static void updateThemeMode(ThemeMode theme) {
     WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Revision\Revision Tool',
       'ThemeMode',
       theme.name,

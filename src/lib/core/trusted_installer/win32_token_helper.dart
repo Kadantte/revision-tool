@@ -66,7 +66,6 @@ class Win32TokenHelper {
         )
       >('AdjustTokenPrivileges');
 
-  // CreateProcessWithTokenW - simpler alternative to CreateProcessAsUserW
   static final int Function(
     int hToken,
     int dwLogonFlags,
@@ -144,22 +143,22 @@ class Win32TokenHelper {
 
   /// Enables SeDebugPrivilege for the current process.
   static bool enableDebugPrivilege() {
-    final Pointer<HANDLE> tokenHandle = calloc<HANDLE>();
+    final Pointer<Pointer> tokenHandlePtr = calloc<Pointer>();
     final Pointer<LUID> luidDebug = calloc<LUID>();
     final Pointer<Utf16> debugNamePtr = SE_DEBUG_NAME.toNativeUtf16();
 
     try {
-      if (OpenProcessToken(
-            GetCurrentProcess(),
-            TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
-            tokenHandle,
-          ) ==
-          0) {
+      final Win32Result<bool> result = OpenProcessToken(
+        HANDLE(GetCurrentProcess()),
+        TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
+        tokenHandlePtr,
+      );
+      if (!result.value) {
         return false;
       }
 
       if (_lookupPrivilegeValue(nullptr, debugNamePtr, luidDebug) == 0) {
-        CloseHandle(tokenHandle.value);
+        CloseHandle(HANDLE(tokenHandlePtr.value));
         return false;
       }
 
@@ -174,14 +173,14 @@ class Win32TokenHelper {
         (tkp + 12).cast<Uint32>().value = SE_PRIVILEGE_ENABLED;
 
         final int result = _adjustTokenPrivileges(
-          tokenHandle.value,
+          tokenHandlePtr.value.address,
           0,
           tkp.cast(),
           tkpSize,
           nullptr,
           nullptr,
         );
-        CloseHandle(tokenHandle.value);
+        CloseHandle(HANDLE(tokenHandlePtr.value));
 
         if (result == 0) return false;
         final int lastError = GetLastError();
@@ -190,14 +189,14 @@ class Win32TokenHelper {
         calloc.free(tkp);
       }
     } finally {
-      calloc.free(tokenHandle);
+      calloc.free(tokenHandlePtr);
       calloc.free(luidDebug);
       calloc.free(debugNamePtr);
     }
   }
 
   /// Opens the Service Control Manager with specified access rights.
-  static int openServiceControlManager({
+  static SC_HANDLE openServiceControlManager({
     String? machineName,
     String? databaseName,
     int desiredAccess = SC_MANAGER_CONNECT,
@@ -206,7 +205,11 @@ class Win32TokenHelper {
     final Pointer<Utf16> database = databaseName?.toNativeUtf16() ?? nullptr;
 
     try {
-      return OpenSCManager(machine, database, desiredAccess);
+      return OpenSCManager(
+        machine != nullptr ? PCWSTR(machine) : null,
+        database != nullptr ? PCWSTR(database) : null,
+        desiredAccess,
+      ).value;
     } finally {
       if (machine != nullptr) calloc.free(machine);
       if (database != nullptr) calloc.free(database);
@@ -214,34 +217,34 @@ class Win32TokenHelper {
   }
 
   /// Opens a service with specified access rights.
-  static int openService(int scManager, String serviceName, int desiredAccess) {
+  static SC_HANDLE openService(SC_HANDLE scManager, String serviceName, int desiredAccess) {
     final Pointer<Utf16> namePtr = serviceName.toNativeUtf16();
     try {
-      return OpenService(scManager, namePtr, desiredAccess);
+      return OpenService(scManager, PCWSTR(namePtr), desiredAccess).value;
     } finally {
       calloc.free(namePtr);
     }
   }
 
   /// Starts a service.
-  static bool startService(int service) {
-    return StartService(service, 0, nullptr) != 0;
+  static bool startService(SC_HANDLE service) {
+    return StartService(service, 0, nullptr).value;
   }
 
   /// Queries service status and returns process ID if running.
-  static int? getServiceProcessId(int service) {
+  static int? getServiceProcessId(SC_HANDLE service) {
     final Pointer<SERVICE_STATUS_PROCESS> statusPtr = calloc<SERVICE_STATUS_PROCESS>();
-    final Pointer<DWORD> bytesNeeded = calloc<DWORD>();
+    final Pointer<Uint32> bytesNeeded = calloc<Uint32>();
 
     try {
-      if (QueryServiceStatusEx(
-            service,
-            SC_STATUS_PROCESS_INFO,
-            statusPtr.cast(),
-            sizeOf<SERVICE_STATUS_PROCESS>(),
-            bytesNeeded,
-          ) ==
-          0) {
+      final Win32Result<bool> result = QueryServiceStatusEx(
+        service,
+        SC_STATUS_PROCESS_INFO,
+        statusPtr.cast<Uint8>(),
+        sizeOf<SERVICE_STATUS_PROCESS>(),
+        bytesNeeded,
+      );
+      if (!result.value) {
         return null;
       }
       return statusPtr.ref.dwCurrentState == SERVICE_RUNNING ? statusPtr.ref.dwProcessId : null;
@@ -252,19 +255,19 @@ class Win32TokenHelper {
   }
 
   /// Gets the current state of a service.
-  static int getServiceState(int service) {
+  static int getServiceState(SC_HANDLE service) {
     final Pointer<SERVICE_STATUS_PROCESS> statusPtr = calloc<SERVICE_STATUS_PROCESS>();
-    final Pointer<DWORD> bytesNeeded = calloc<DWORD>();
+    final Pointer<Uint32> bytesNeeded = calloc<Uint32>();
 
     try {
-      if (QueryServiceStatusEx(
-            service,
-            SC_STATUS_PROCESS_INFO,
-            statusPtr.cast(),
-            sizeOf<SERVICE_STATUS_PROCESS>(),
-            bytesNeeded,
-          ) ==
-          0) {
+      final Win32Result<bool> result = QueryServiceStatusEx(
+        service,
+        SC_STATUS_PROCESS_INFO,
+        statusPtr.cast<Uint8>(),
+        sizeOf<SERVICE_STATUS_PROCESS>(),
+        bytesNeeded,
+      );
+      if (!result.value) {
         return SERVICE_STOPPED;
       }
       return statusPtr.ref.dwCurrentState;
@@ -275,8 +278,8 @@ class Win32TokenHelper {
   }
 
   /// Opens a process with specified access rights.
-  static int openProcess(int processId, int desiredAccess) {
-    return OpenProcess(desiredAccess, FALSE, processId);
+  static HANDLE openProcess(int processId, int desiredAccess) {
+    return OpenProcess(PROCESS_ACCESS_RIGHTS(desiredAccess), false, processId).value;
   }
 
   /// Finds a process by name (e.g., "lsass.exe") and returns its PID.
@@ -304,30 +307,34 @@ class Win32TokenHelper {
   }
 
   /// Opens a process token with specified access rights.
-  static int? openProcessToken(int processHandle, int desiredAccess) {
-    final Pointer<HANDLE> tokenPtr = calloc<HANDLE>();
+  static HANDLE? openProcessToken(HANDLE processHandle, int desiredAccess) {
+    final Pointer<Pointer> tokenPtr = calloc<Pointer>();
     try {
-      final int result = OpenProcessToken(processHandle, desiredAccess, tokenPtr);
-      if (result == 0) {
+      final Win32Result<bool> result = OpenProcessToken(
+        processHandle,
+        TOKEN_ACCESS_MASK(desiredAccess),
+        tokenPtr,
+      );
+      if (!result.value) {
         return null;
       }
-      return tokenPtr.value;
+      return HANDLE(tokenPtr.value);
     } finally {
       calloc.free(tokenPtr);
     }
   }
 
   /// Duplicates a token for impersonation.
-  static int? duplicateToken(
-    int existingToken,
+  static HANDLE? duplicateToken(
+    HANDLE existingToken,
     int desiredAccess,
     int impersonationLevel,
     int tokenType,
   ) {
-    final Pointer<HANDLE> newTokenPtr = calloc<HANDLE>();
+    final Pointer<IntPtr> newTokenPtr = calloc<IntPtr>();
     try {
       return _duplicateTokenEx(
-                existingToken,
+                existingToken.address,
                 desiredAccess,
                 nullptr,
                 impersonationLevel,
@@ -336,34 +343,35 @@ class Win32TokenHelper {
               ) ==
               0
           ? null
-          : newTokenPtr.value;
+          : HANDLE(Pointer.fromAddress(newTokenPtr.value));
     } finally {
       calloc.free(newTokenPtr);
     }
   }
 
   /// Impersonates a logged-on user using their token.
-  static bool impersonateLoggedOnUser(int token) => _impersonateLoggedOnUser(token) != 0;
+  static bool impersonateLoggedOnUser(HANDLE token) => _impersonateLoggedOnUser(token.address) != 0;
 
   /// Reverts the current thread to its original security context.
   static bool revertToSelf() => _revertToSelf() != 0;
 
   /// Closes a handle.
-  static bool closeHandle(int handle) => CloseHandle(handle) != 0;
+  static void closeHandle(HANDLE handle) => CloseHandle(handle);
 
   /// Closes a service handle.
-  static bool closeServiceHandle(int handle) => CloseServiceHandle(handle) != 0;
+  static void closeServiceHandle(SC_HANDLE handle) => CloseServiceHandle(handle);
 
   /// Gets the last Win32 error code.
   static int getLastError() => GetLastError();
 
   /// Checks if a handle is valid (non-zero and not INVALID_HANDLE_VALUE).
-  static bool isValidHandle(int handle) => handle != 0 && handle != INVALID_HANDLE_VALUE;
+  static bool isValidHandle(Pointer handle) =>
+      handle != Pointer.fromAddress(-1) && handle != Pointer.fromAddress(0);
 
   /// Executes a command with the specified token using CreateProcessWithTokenW.
   /// Returns a map with exitCode, stdout, and stderr.
   static Future<Map<String, dynamic>> executeAsToken(
-    int token,
+    HANDLE token,
     String command,
     List<String> args,
   ) async {
@@ -386,7 +394,7 @@ class Win32TokenHelper {
           ..wShowWindow = SW_HIDE;
 
         if (_createProcessWithToken(
-              token,
+              token.address,
               LOGON_WITH_PROFILE,
               nullptr,
               commandLinePtr,
@@ -436,10 +444,10 @@ class Win32TokenHelper {
 
         return {'exitCode': exitCode, 'stdout': stdout, 'stderr': stderr};
       } finally {
-        if (processInfo.ref.hProcess != 0) {
+        if (processInfo.ref.hProcess.isValid) {
           CloseHandle(processInfo.ref.hProcess);
         }
-        if (processInfo.ref.hThread != 0) CloseHandle(processInfo.ref.hThread);
+        if (processInfo.ref.hThread.isValid) CloseHandle(processInfo.ref.hThread);
         calloc.free(commandLinePtr);
         calloc.free(startupInfo);
         calloc.free(processInfo);

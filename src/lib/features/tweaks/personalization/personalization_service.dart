@@ -125,14 +125,14 @@ class PersonalizationServiceImpl implements PersonalizationService {
   NotificationMode get statusNotification {
     final isToastEnabled =
         WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Software\Microsoft\Windows\CurrentVersion\PushNotifications',
           'ToastEnabled',
         ) !=
         0;
     final isNotificationCenterEnabled =
         WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'SOFTWARE\Policies\Microsoft\Windows\Explorer',
           'DisableNotificationCenter',
         ) !=
@@ -188,7 +188,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
         'DisableNotificationCenter',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\Explorer',
         'DisableNotificationCenter',
       ),
@@ -198,7 +198,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
         'ToastEnabled',
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Policies\Microsoft\Windows\Explorer',
         'ToastEnabled',
       ),
@@ -209,7 +209,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
         1,
       ),
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Microsoft\Windows\CurrentVersion\PushNotifications',
         'ToastEnabled',
       ),
@@ -224,7 +224,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
         'NoTileApplicationNotification',
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userNotificationListener',
         'Value',
         'Allow',
@@ -245,7 +245,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
     await Future.wait(
       wpnServices.map(
         (service) => WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Services\' + service,
           'Start',
           2,
@@ -260,7 +260,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   Future<void> _disableNotification() async {
     await Future.wait([
       WinRegistryService.deleteValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\Explorer',
         'DisableNotificationCenter',
       ),
@@ -300,7 +300,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\Explorer',
         'ToastEnabled',
         0,
@@ -312,7 +312,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'Software\Microsoft\Windows\CurrentVersion\PushNotifications',
         'ToastEnabled',
         0,
@@ -324,7 +324,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userNotificationListener',
         'Value',
         'Deny',
@@ -345,7 +345,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
     await _disableNotification();
     await Future.wait([
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\Windows\Explorer',
         'DisableNotificationCenter',
         1,
@@ -362,7 +362,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
     await Future.wait(
       wpnServices.map(
         (service) => WinRegistryService.writeRegistryValue(
-          Registry.localMachine,
+          LOCAL_MACHINE,
           r'SYSTEM\ControlSet001\Services\' + service,
           'Start',
           4,
@@ -378,7 +378,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   bool get statusLegacyBalloon {
     return WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Software\Policies\Microsoft\Windows\Explorer',
           'EnableLegacyBalloonNotifications',
         ) !=
@@ -412,7 +412,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   bool get statusScreenEdgeSwipe {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Policies\Microsoft\Windows\EdgeUI',
           'AllowEdgeSwipe',
         ) !=
@@ -422,7 +422,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   Future<void> enableScreenEdgeSwipe() async {
     await WinRegistryService.deleteValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Policies\Microsoft\Windows\EdgeUI',
       'AllowEdgeSwipe',
     );
@@ -431,7 +431,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   Future<void> disableScreenEdgeSwipe() async {
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Policies\Microsoft\Windows\EdgeUI',
       'AllowEdgeSwipe',
       0,
@@ -441,7 +441,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   bool get statusNewContextMenu {
     return WinRegistryService.readString(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32',
           '',
         )?.isNotEmpty ??
@@ -473,7 +473,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   bool get statusInputPersonalization {
     return WinRegistryService.readInt(
-          RegistryHive.localMachine,
+          LOCAL_MACHINE,
           r'SOFTWARE\Policies\Microsoft\InputPersonalization',
           'AllowInputPersonalization',
         ) ==
@@ -520,19 +520,19 @@ class PersonalizationServiceImpl implements PersonalizationService {
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\InputPersonalization',
         'RestrictImplicitInkCollection',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\InputPersonalization',
         'RestrictImplicitTextCollection',
         0,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\InputPersonalization',
         'AllowInputPersonalization',
         1,
@@ -580,19 +580,19 @@ class PersonalizationServiceImpl implements PersonalizationService {
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\InputPersonalization',
         'RestrictImplicitInkCollection',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\InputPersonalization',
         'RestrictImplicitTextCollection',
         1,
       ),
       WinRegistryService.writeRegistryValue(
-        Registry.localMachine,
+        LOCAL_MACHINE,
         r'SOFTWARE\Policies\Microsoft\InputPersonalization',
         'AllowInputPersonalization',
         0,
@@ -605,7 +605,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
     Uint8List? value;
     try {
       value = WinRegistryService.readBinary(
-        RegistryHive.localMachine,
+        LOCAL_MACHINE,
         r'SYSTEM\CurrentControlSet\Control\Keyboard Layout',
         'Scancode Map',
       );
@@ -619,7 +619,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   Future<void> enableCapsLock() async {
     await WinRegistryService.deleteValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\CurrentControlSet\Control\Keyboard Layout',
       'Scancode Map',
     );
@@ -628,7 +628,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   Future<void> disableCapsLock() async {
     await WinRegistryService.writeRegistryValue(
-      Registry.localMachine,
+      LOCAL_MACHINE,
       r'SYSTEM\CurrentControlSet\Control\Keyboard Layout',
       'Scancode Map',
       _cplValue,
@@ -638,7 +638,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   bool get statusExplorerHome {
     return WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Software\Classes\CLSID\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}',
           'System.IsPinnedToNameSpaceTree',
         ) !=
@@ -672,7 +672,7 @@ class PersonalizationServiceImpl implements PersonalizationService {
   @override
   bool get statusExplorerGallery {
     return WinRegistryService.readInt(
-          RegistryHive.currentUser,
+          CURRENT_USER,
           r'Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}',
           'System.IsPinnedToNameSpaceTree',
         ) !=

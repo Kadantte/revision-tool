@@ -19,7 +19,7 @@ final String directoryExe = Directory(
 
 String systemLanguage =
     WinRegistryService.readString(
-      RegistryHive.currentUser,
+      CURRENT_USER,
       r'Control Panel\International',
       'LocaleName',
     ) ??
@@ -27,7 +27,7 @@ String systemLanguage =
 
 String appLanguage =
     WinRegistryService.readString(
-      RegistryHive.localMachine,
+      LOCAL_MACHINE,
       r'SOFTWARE\Revision\Revision Tool',
       'Language',
     ) ??

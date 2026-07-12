@@ -67,11 +67,11 @@ bool isProcessRunning(String name) {
 
   final IsRunningDart isRunning = dylib.lookupFunction<IsRunningFunc, IsRunningDart>('IsRunning');
 
-  final Pointer<Utf16> processName = name.toNativeUtf16();
-  final int result = isRunning(processName);
-  calloc.free(processName);
-
-  return result == 1;
+  return using((arena) {
+    final Pointer<Utf16> processName = name.toNativeUtf16(allocator: arena);
+    final int result = isRunning(processName);
+    return result == 1;
+  });
 }
 
 /// PowerShell helper for executing commands with faster startup time

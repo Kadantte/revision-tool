@@ -142,89 +142,71 @@ class Win32TokenHelper {
   static const int TokenImpersonation = 2;
 
   /// Enables SeDebugPrivilege for the current process.
-  static bool enableDebugPrivilege() {
-    final Pointer<Pointer> tokenHandlePtr = calloc<Pointer>();
-    final Pointer<LUID> luidDebug = calloc<LUID>();
-    final Pointer<Utf16> debugNamePtr = SE_DEBUG_NAME.toNativeUtf16();
+  static bool enableDebugPrivilege() => using((arena) {
+    final Pointer<Pointer> tokenHandlePtr = arena.allocate<Pointer>(sizeOf<Pointer>());
+    final Pointer<LUID> luidDebug = arena.allocate<LUID>(sizeOf<LUID>());
+    final Pointer<Utf16> debugNamePtr = SE_DEBUG_NAME.toNativeUtf16(allocator: arena);
 
-    try {
-      final Win32Result<bool> result = OpenProcessToken(
-        HANDLE(GetCurrentProcess()),
-        TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
-        tokenHandlePtr,
-      );
-      if (!result.value) {
-        return false;
-      }
-
-      if (_lookupPrivilegeValue(nullptr, debugNamePtr, luidDebug) == 0) {
-        CloseHandle(HANDLE(tokenHandlePtr.value));
-        return false;
-      }
-
-      const tkpSize = 16; // TOKEN_PRIVILEGES with 1 privilege
-      final Pointer<Uint8> tkp = calloc<Uint8>(tkpSize);
-
-      try {
-        tkp.cast<Uint32>().value = 1; // PrivilegeCount
-        final Pointer<LUID> luidPtr = (tkp + 4).cast<LUID>();
-        luidPtr.ref.LowPart = luidDebug.ref.LowPart;
-        luidPtr.ref.HighPart = luidDebug.ref.HighPart;
-        (tkp + 12).cast<Uint32>().value = SE_PRIVILEGE_ENABLED;
-
-        final int result = _adjustTokenPrivileges(
-          tokenHandlePtr.value.address,
-          0,
-          tkp.cast(),
-          tkpSize,
-          nullptr,
-          nullptr,
-        );
-        CloseHandle(HANDLE(tokenHandlePtr.value));
-
-        if (result == 0) return false;
-        final int lastError = GetLastError();
-        return lastError == 0 || lastError == ERROR_NOT_ALL_ASSIGNED;
-      } finally {
-        calloc.free(tkp);
-      }
-    } finally {
-      calloc.free(tokenHandlePtr);
-      calloc.free(luidDebug);
-      calloc.free(debugNamePtr);
+    final Win32Result<bool> result = OpenProcessToken(
+      HANDLE(GetCurrentProcess()),
+      TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
+      tokenHandlePtr,
+    );
+    if (!result.value) {
+      return false;
     }
-  }
+
+    if (_lookupPrivilegeValue(nullptr, debugNamePtr, luidDebug) == 0) {
+      CloseHandle(HANDLE(tokenHandlePtr.value));
+      return false;
+    }
+
+    const tkpSize = 16; // TOKEN_PRIVILEGES with 1 privilege
+    final Pointer<Uint8> tkp = arena.allocate<Uint8>(tkpSize);
+
+    tkp.cast<Uint32>().value = 1; // PrivilegeCount
+    final Pointer<LUID> luidPtr = (tkp + 4).cast<LUID>();
+    luidPtr.ref.LowPart = luidDebug.ref.LowPart;
+    luidPtr.ref.HighPart = luidDebug.ref.HighPart;
+    (tkp + 12).cast<Uint32>().value = SE_PRIVILEGE_ENABLED;
+
+    final int adjustResult = _adjustTokenPrivileges(
+      tokenHandlePtr.value.address,
+      0,
+      tkp.cast(),
+      tkpSize,
+      nullptr,
+      nullptr,
+    );
+    CloseHandle(HANDLE(tokenHandlePtr.value));
+
+    if (adjustResult == 0) return false;
+    final int lastError = GetLastError();
+    return lastError == 0 || lastError == ERROR_NOT_ALL_ASSIGNED;
+  });
 
   /// Opens the Service Control Manager with specified access rights.
   static SC_HANDLE openServiceControlManager({
     String? machineName,
     String? databaseName,
     int desiredAccess = SC_MANAGER_CONNECT,
-  }) {
-    final Pointer<Utf16> machine = machineName?.toNativeUtf16() ?? nullptr;
-    final Pointer<Utf16> database = databaseName?.toNativeUtf16() ?? nullptr;
+  }) => using((arena) {
+    final Pointer<Utf16> machine = machineName?.toNativeUtf16(allocator: arena) ?? nullptr;
+    final Pointer<Utf16> database = databaseName?.toNativeUtf16(allocator: arena) ?? nullptr;
 
-    try {
-      return OpenSCManager(
-        machine != nullptr ? PCWSTR(machine) : null,
-        database != nullptr ? PCWSTR(database) : null,
-        desiredAccess,
-      ).value;
-    } finally {
-      if (machine != nullptr) calloc.free(machine);
-      if (database != nullptr) calloc.free(database);
-    }
-  }
+    return OpenSCManager(
+      machine != nullptr ? PCWSTR(machine) : null,
+      database != nullptr ? PCWSTR(database) : null,
+      desiredAccess,
+    ).value;
+  });
 
   /// Opens a service with specified access rights.
-  static SC_HANDLE openService(SC_HANDLE scManager, String serviceName, int desiredAccess) {
-    final Pointer<Utf16> namePtr = serviceName.toNativeUtf16();
-    try {
-      return OpenService(scManager, PCWSTR(namePtr), desiredAccess).value;
-    } finally {
-      calloc.free(namePtr);
-    }
-  }
+  static SC_HANDLE openService(SC_HANDLE scManager, String serviceName, int desiredAccess) =>
+      using((arena) {
+        final Pointer<Utf16> namePtr = serviceName.toNativeUtf16(allocator: arena);
+        return OpenService(scManager, PCWSTR(namePtr), desiredAccess).value;
+      });
 
   /// Starts a service.
   static bool startService(SC_HANDLE service) {
@@ -232,50 +214,44 @@ class Win32TokenHelper {
   }
 
   /// Queries service status and returns process ID if running.
-  static int? getServiceProcessId(SC_HANDLE service) {
-    final Pointer<SERVICE_STATUS_PROCESS> statusPtr = calloc<SERVICE_STATUS_PROCESS>();
-    final Pointer<Uint32> bytesNeeded = calloc<Uint32>();
+  static int? getServiceProcessId(SC_HANDLE service) => using((arena) {
+    final Pointer<SERVICE_STATUS_PROCESS> statusPtr = arena.allocate<SERVICE_STATUS_PROCESS>(
+      sizeOf<SERVICE_STATUS_PROCESS>(),
+    );
+    final Pointer<Uint32> bytesNeeded = arena.allocate<Uint32>(sizeOf<Uint32>());
 
-    try {
-      final Win32Result<bool> result = QueryServiceStatusEx(
-        service,
-        SC_STATUS_PROCESS_INFO,
-        statusPtr.cast<Uint8>(),
-        sizeOf<SERVICE_STATUS_PROCESS>(),
-        bytesNeeded,
-      );
-      if (!result.value) {
-        return null;
-      }
-      return statusPtr.ref.dwCurrentState == SERVICE_RUNNING ? statusPtr.ref.dwProcessId : null;
-    } finally {
-      calloc.free(statusPtr);
-      calloc.free(bytesNeeded);
+    final Win32Result<bool> result = QueryServiceStatusEx(
+      service,
+      SC_STATUS_PROCESS_INFO,
+      statusPtr.cast<Uint8>(),
+      sizeOf<SERVICE_STATUS_PROCESS>(),
+      bytesNeeded,
+    );
+    if (!result.value) {
+      return null;
     }
-  }
+    return statusPtr.ref.dwCurrentState == SERVICE_RUNNING ? statusPtr.ref.dwProcessId : null;
+  });
 
   /// Gets the current state of a service.
-  static int getServiceState(SC_HANDLE service) {
-    final Pointer<SERVICE_STATUS_PROCESS> statusPtr = calloc<SERVICE_STATUS_PROCESS>();
-    final Pointer<Uint32> bytesNeeded = calloc<Uint32>();
+  static int getServiceState(SC_HANDLE service) => using((arena) {
+    final Pointer<SERVICE_STATUS_PROCESS> statusPtr = arena.allocate<SERVICE_STATUS_PROCESS>(
+      sizeOf<SERVICE_STATUS_PROCESS>(),
+    );
+    final Pointer<Uint32> bytesNeeded = arena.allocate<Uint32>(sizeOf<Uint32>());
 
-    try {
-      final Win32Result<bool> result = QueryServiceStatusEx(
-        service,
-        SC_STATUS_PROCESS_INFO,
-        statusPtr.cast<Uint8>(),
-        sizeOf<SERVICE_STATUS_PROCESS>(),
-        bytesNeeded,
-      );
-      if (!result.value) {
-        return SERVICE_STOPPED;
-      }
-      return statusPtr.ref.dwCurrentState;
-    } finally {
-      calloc.free(statusPtr);
-      calloc.free(bytesNeeded);
+    final Win32Result<bool> result = QueryServiceStatusEx(
+      service,
+      SC_STATUS_PROCESS_INFO,
+      statusPtr.cast<Uint8>(),
+      sizeOf<SERVICE_STATUS_PROCESS>(),
+      bytesNeeded,
+    );
+    if (!result.value) {
+      return SERVICE_STOPPED;
     }
-  }
+    return statusPtr.ref.dwCurrentState;
+  });
 
   /// Opens a process with specified access rights.
   static HANDLE openProcess(int processId, int desiredAccess) {
@@ -307,22 +283,18 @@ class Win32TokenHelper {
   }
 
   /// Opens a process token with specified access rights.
-  static HANDLE? openProcessToken(HANDLE processHandle, int desiredAccess) {
-    final Pointer<Pointer> tokenPtr = calloc<Pointer>();
-    try {
-      final Win32Result<bool> result = OpenProcessToken(
-        processHandle,
-        TOKEN_ACCESS_MASK(desiredAccess),
-        tokenPtr,
-      );
-      if (!result.value) {
-        return null;
-      }
-      return HANDLE(tokenPtr.value);
-    } finally {
-      calloc.free(tokenPtr);
+  static HANDLE? openProcessToken(HANDLE processHandle, int desiredAccess) => using((arena) {
+    final Pointer<Pointer> tokenPtr = arena.allocate<Pointer>(sizeOf<Pointer>());
+    final Win32Result<bool> result = OpenProcessToken(
+      processHandle,
+      TOKEN_ACCESS_MASK(desiredAccess),
+      tokenPtr,
+    );
+    if (!result.value) {
+      return null;
     }
-  }
+    return HANDLE(tokenPtr.value);
+  });
 
   /// Duplicates a token for impersonation.
   static HANDLE? duplicateToken(
@@ -331,8 +303,8 @@ class Win32TokenHelper {
     int impersonationLevel,
     int tokenType,
   ) {
-    final Pointer<IntPtr> newTokenPtr = calloc<IntPtr>();
-    try {
+    return using((arena) {
+      final Pointer<IntPtr> newTokenPtr = arena.allocate<IntPtr>(sizeOf<IntPtr>());
       return _duplicateTokenEx(
                 existingToken.address,
                 desiredAccess,
@@ -344,9 +316,7 @@ class Win32TokenHelper {
               0
           ? null
           : HANDLE(Pointer.fromAddress(newTokenPtr.value));
-    } finally {
-      calloc.free(newTokenPtr);
-    }
+    });
   }
 
   /// Impersonates a logged-on user using their token.
@@ -381,13 +351,15 @@ class Win32TokenHelper {
     final stderrFile = '$tempDir\\ti_stderr_$timestamp.tmp';
 
     try {
-      final fullCommand = args.isEmpty ? command : '$command ${args.join(' ')}';
-      final commandLine = 'cmd.exe /c $fullCommand > "$stdoutFile" 2> "$stderrFile"';
-      final Pointer<Utf16> commandLinePtr = commandLine.toNativeUtf16();
-      final Pointer<STARTUPINFO> startupInfo = calloc<STARTUPINFO>();
-      final Pointer<PROCESS_INFORMATION> processInfo = calloc<PROCESS_INFORMATION>();
+      return await using((arena) async {
+        final fullCommand = args.isEmpty ? command : '$command ${args.join(' ')}';
+        final commandLine = 'cmd.exe /c $fullCommand > "$stdoutFile" 2> "$stderrFile"';
+        final Pointer<Utf16> commandLinePtr = commandLine.toNativeUtf16(allocator: arena);
+        final Pointer<STARTUPINFO> startupInfo = arena.allocate<STARTUPINFO>(sizeOf<STARTUPINFO>());
+        final Pointer<PROCESS_INFORMATION> processInfo = arena.allocate<PROCESS_INFORMATION>(
+          sizeOf<PROCESS_INFORMATION>(),
+        );
 
-      try {
         startupInfo.ref
           ..cb = sizeOf<STARTUPINFO>()
           ..dwFlags = STARTF_USESHOWWINDOW
@@ -410,14 +382,9 @@ class Win32TokenHelper {
 
         WaitForSingleObject(processInfo.ref.hProcess, INFINITE);
 
-        final Pointer<DWORD> exitCodePtr = calloc<DWORD>();
-        int exitCode;
-        try {
-          GetExitCodeProcess(processInfo.ref.hProcess, exitCodePtr);
-          exitCode = exitCodePtr.value;
-        } finally {
-          calloc.free(exitCodePtr);
-        }
+        final Pointer<DWORD> exitCodePtr = arena.allocate<DWORD>(sizeOf<DWORD>());
+        GetExitCodeProcess(processInfo.ref.hProcess, exitCodePtr);
+        final int exitCode = exitCodePtr.value;
 
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
@@ -442,16 +409,13 @@ class Win32TokenHelper {
           stderr = '(error reading stderr: $e)';
         }
 
-        return {'exitCode': exitCode, 'stdout': stdout, 'stderr': stderr};
-      } finally {
         if (processInfo.ref.hProcess.isValid) {
           CloseHandle(processInfo.ref.hProcess);
         }
         if (processInfo.ref.hThread.isValid) CloseHandle(processInfo.ref.hThread);
-        calloc.free(commandLinePtr);
-        calloc.free(startupInfo);
-        calloc.free(processInfo);
-      }
+
+        return {'exitCode': exitCode, 'stdout': stdout, 'stderr': stderr};
+      });
     } finally {
       try {
         final f = File(stdoutFile);

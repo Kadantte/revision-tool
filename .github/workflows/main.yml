@@ -86,7 +86,28 @@ jobs:
         working-directory: src
 
       - name: Build revitool CLI
-        run: dart compile exe src/lib/main_cli.dart -o revitool.exe --define=APP_VERSION=${{ env.NEW_VERSION }} 
+        run: dart compile exe src/lib/main_cli.dart -o revitool.exe --define=APP_VERSION=${{ env.NEW_VERSION }}
+
+      # fix meetrevision/playbook/issues/219
+      # todo: when AME Wizard allows certain tasks to run iso:true (like !run), we can remove this step
+      - name: Download bundled AppX packages
+        shell: pwsh
+        run: |
+          $path = "src\additionals\packages\appx"
+          New-Item -Path $path -ItemType Directory -Force | Out-Null
+
+          Write-Host "Downloading VCLibs AppX packages via revitool..."
+          .\revitool.exe msstore-apps --id 9NBLGGH3FRZM,9NBLGGH4RV3K -r RP --download $path
+
+          $deps = Join-Path $path "Dependencies"
+          if (Test-Path $deps) {
+            Get-ChildItem -Path $deps -File -Recurse | Move-Item -Destination $path -Force
+            Remove-Item $deps -Recurse -Force
+          }
+
+          $count = @(Get-ChildItem -Path $path -File | Where-Object { $_.Extension -match '\.(appx|msix)$' }).Count
+          Write-Host "Bundled $count AppX packages into $path"
+          if ($count -eq 0) { throw "No AppX packages downloaded" }
       
       - name: Run tests
         continue-on-error: true

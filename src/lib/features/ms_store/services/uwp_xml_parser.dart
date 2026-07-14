@@ -1,7 +1,6 @@
-import 'dart:io';
 import 'package:riverpod/riverpod.dart';
 import 'package:xml/xml.dart';
-import '../../../utils.dart';
+
 import '../models/uwp/uwp_package.dart';
 
 final storeUwpXmlParserProvider = Provider<UwpXmlParser>((_) => const UwpXmlParser());
@@ -210,22 +209,4 @@ class UwpXmlParser {
     }
     return urlElement.innerText;
   }
-
-  /// Lazy-loads XML templates from assets
-  static final Map<String, String> _templates = {};
-
-  String getTemplateSync(String name) {
-    if (_templates.containsKey(name)) return _templates[name]!;
-
-    final file = File('$directoryExe\\msstore\\$name.xml');
-    if (!file.existsSync()) {
-      throw Exception('Template $name.xml not found at ${file.path}');
-    }
-
-    final String content = file.readAsStringSync();
-    _templates[name] = content;
-    return content;
-  }
-
-  Future<String> getTemplate(String name) async => getTemplateSync(name);
 }

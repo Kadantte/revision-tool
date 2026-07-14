@@ -680,9 +680,6 @@ final class _FakeStoreRepository extends StoreRepository {
 
 final class _FakeUwpXmlParser extends UwpXmlParser {
   @override
-  Future<String> getTemplate(String name) async => name;
-
-  @override
   String parseCookieResponse(String xmlString) => 'cookie';
 
   @override

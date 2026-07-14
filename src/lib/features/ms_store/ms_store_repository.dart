@@ -14,6 +14,7 @@ import 'models/uwp/product_dto.dart';
 import 'models/uwp/uwp_package.dart';
 import 'models/win32/win32_manifest_dto.dart';
 import 'ms_store_endpoints.dart';
+import 'services/ms_store_xml_templates.dart';
 import 'services/uwp_xml_parser.dart';
 import 'store_enums.dart';
 
@@ -153,8 +154,7 @@ final class UwpStoreRepository extends StoreRepository {
     if (cached != null) return cached;
 
     if (_cookie == null) {
-      final String cookieTemplate = await _xmlParser.getTemplate('cookie');
-      await _getCookie(cookieTemplate);
+      await _getCookie(MsStoreXmlTemplate.cookie.xml);
     }
 
     final Result<Response<dynamic>> categoryResponse = await _api.get<dynamic>(
@@ -192,9 +192,10 @@ final class UwpStoreRepository extends StoreRepository {
       );
     }
 
-    final String pkgBody = (await _xmlParser.getTemplate(
-      'wu',
-    )).replaceAll('{1}', _cookie!).replaceAll('{2}', categoryId).replaceAll('{3}', ring.value);
+    final String pkgBody = MsStoreXmlTemplate.wu.xml
+        .replaceAll('{1}', _cookie!)
+        .replaceAll('{2}', categoryId)
+        .replaceAll('{3}', ring.value);
     final Result<Response<dynamic>> pkgResult = await _api.post(
       MSStoreEndpoints.fe3Delivery(),
       data: pkgBody,
@@ -245,7 +246,7 @@ final class UwpStoreRepository extends StoreRepository {
     if (package.updateIdentity == null) return '';
 
     final UpdateIdentity identity = package.updateIdentity!;
-    final String body = (await _xmlParser.getTemplate('url'))
+    final String body = MsStoreXmlTemplate.url.xml
         .replaceAll('{1}', identity.id)
         .replaceAll('{2}', identity.revisionNumber)
         .replaceAll('{3}', ring.value);

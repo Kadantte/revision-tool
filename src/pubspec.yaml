@@ -1,4 +1,4 @@
-name: revitool
+﻿name: revitool
 description: A tool to personalize ReviOS to your needs
 publish_to: "none"
 
@@ -96,5 +96,5 @@ flutter:
     - assets/icon/
     - assets/icon/pane/
     - additionals/
-    - additionals/msstore/
     - additionals/packages/winsxs/
+    - additionals/packages/appx/

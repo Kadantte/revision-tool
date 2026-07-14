@@ -93,11 +93,16 @@ jobs:
       - name: Download bundled AppX packages
         shell: pwsh
         run: |
+          # CLI refuses non-ReviOS hosts
+          New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' `
+            -Name 'EditionSubVersion' -Value 'ReviOS' -PropertyType String -Force | Out-Null
+
           $path = "src\additionals\packages\appx"
           New-Item -Path $path -ItemType Directory -Force | Out-Null
 
           Write-Host "Downloading VCLibs AppX packages via revitool..."
           .\revitool.exe msstore-apps --id 9NBLGGH3FRZM,9NBLGGH4RV3K -r RP --download $path
+          if ($LASTEXITCODE -ne 0) { throw "revitool exited with code $LASTEXITCODE" }
 
           $deps = Join-Path $path "Dependencies"
           if (Test-Path $deps) {
